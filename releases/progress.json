@@ -1,22 +1,22 @@
 {
-  "updated": "2026-10-19T18:41:44.174Z",
+  "updated": "2026-10-19T19:05:59.663Z",
   "release": {
-    "version": "0.100.0",
-    "released": "2026-10-19T18:41:30.866Z"
+    "version": "0.100.1",
+    "released": "2026-10-19T19:05:50.148Z"
   },
   "tokens": {
-    "total": 233068,
-    "generated": 651,
+    "total": 0,
+    "generated": 0,
     "countedFrom": null
   },
-  "sessions": 1,
+  "sessions": 0,
   "files": 0,
   "added": 0,
   "removed": 0,
   "linesCountedFrom": null,
   "pictures": 0,
   "typical": {
-    "tokens": 15747808,
+    "tokens": 15895860,
     "releases": 10
   }
 }
