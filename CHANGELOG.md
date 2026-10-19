@@ -1,6 +1,42 @@
 # Changelog
 
 
+## 0.99.0 — 2026-07-28
+The visitor carries a flashlight now, on `F`.
+
+  A warm cone of light from the sight, eight metres out, with a little dust in it so the beam
+  shows from the side and not only where it falls. Nothing else to press: one key, and this
+  garden is dark enough at eleven at night to want one. `?flash=0` leaves it out of the build.
+  Frames unchanged at 60.
+
+  Measured and not assumed: with the cone of dust hidden, the lamp lifts the paving under the
+  sight from 11 to 15 and its brightest part from 14 to 30; with the lamp hidden, the dust lifts
+  a night frame's middle from 21 to 24 and eats half of its black (3.5% to 1.7%).
+
+  Three faults found on the way and mended, none of them visible in a single picture: the module
+  imported a library this Villa loads as a script, so the page never booted at all; the
+  constructor's sixth argument is the width of a cone and not its brightness, so the lamp was a
+  pinprick; and the dust was given a decal blend instead of an additive one, so it painted a
+  black wedge over the garden where a little warmth was meant.
+
+## 0.98.3 — 2026-07-28
+The raven pays its coin properly now, and so does the Villa's metal.
+
+  Its coins used to land ankle-deep in lawn, in flowerbeds and on the table where the fruit sits,
+  and they lay so low that the paving stones ran over them: a 26 mm coin standing on its edge was
+  showing about 4 mm above the ground. The twelve places it chooses are places a visitor can
+  actually stand — paved, dry, outdoors, clear of furniture — and the coin now rests on the top of
+  what it falls on, showing 18 to 20 mm of itself.
+
+  Every metal in this Villa was lying. The material helper wrote `mat.metalness`, and this library
+  reads `mat.metallic`, so sword, muzzle, barrel, shark's eye and ploughshare were all struck as
+  though they were made of plaster. They are metal again, and the coin is painted the colour of the
+  gold it is struck from: where it used to draw a muddy (32,27,11) it now draws (184,148,44).
+
+  Only the materials that asked for metal were touched. Setting the same value on everything would
+  re-shade the whole garden — the lawn by the pond went from 60 to 44 mean — and that is the master's
+  colour call, not mine.
+
 ## 0.98.2 — 2026-10-19
 
 - **The head of the watercourse is a hill now, not a lid.** The earthen hummock where the water comes in was a
