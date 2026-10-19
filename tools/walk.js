@@ -31,10 +31,17 @@ const places = process.argv[2]
 			{ name: "lawn up to the paving", view: "0,1.74,17.5,3.14,0" },
 			{ name: "paving up to the pool", view: "0,1.74,10,3.14,0" },
 			{ name: "west paving onto terrace", view: "-11,1.74,3.7,1.57,0" },
-			{ name: "onto the sala", view: "6.5,1.74,9,3.14,0" },
+			// The sala stands at 10.6, 5.4 with its steps on the west at x 7.98, so the walk has to start in
+			// front of the steps and face them. The old start, 6.5, 9, was a lawn square an arm's width inside
+			// the sala's side table, and the test reported 0.0 m walked, which was a story about the test and
+			// not about the Villa.
+			{ name: "onto the sala", view: "7,1.74,5.4,1.57,0" },
 			{ name: "through the string lights", view: "-4,1.74,11,3.14,0" },
 			{ name: "into the south hedge", view: "0,1.74,16,0.4,0" },
-			{ name: "along the west hedge", view: "-20,1.74,10,-1.57,0" },
+			// The west strip is the watercourse now, and a visitor is not allowed in the stream, so the walk
+			// goes along the lawn east of it instead: same test of a long north-south walk, on the side a
+			// visitor actually has.
+			{ name: "west lawn toward the pool", view: "-15,1.74,10,1.57,0" },
 		];
 
 const browser = await chromium.launch({ executablePath: "/usr/bin/chromium", args: [...flags, "--window-size=640x360"] });

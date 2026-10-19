@@ -38,6 +38,18 @@ const PROBES = {
 		{ name: "pool water", at: [0, 0.34, 1.0] },
 		{ name: "terrace", at: [3, 0.52, 6] },
 	],
+	// The store's face on the lawn behind the house: the band of glass, the cement around it, the roof
+	// over it, and the lit things the room puts behind the glass. This is where the owner's "dark panel
+	// inside a grey frame" lands when tools/matchowner.js is asked what the owner's picture is.
+	store: [
+		{ name: "glass of the band", at: [5.6, 3.11, -13.86] },
+		{ name: "glass west end", at: [4.8, 3.11, -13.86] },
+		{ name: "cement left of glass", at: [4.3, 2.5, -13.86] },
+		{ name: "cement right of glass", at: [6.9, 2.5, -13.86] },
+		{ name: "cement below glass", at: [5.6, 2.4, -13.86] },
+		{ name: "roof over it", at: [5.6, 3.85, -13.86] },
+		{ name: "shelf lamp behind", at: [5.6, 3.2, -13.6] },
+	],
 };
 
 const [x0, y0, z0, yaw, pitch] = VIEW.split(",").map(Number);
