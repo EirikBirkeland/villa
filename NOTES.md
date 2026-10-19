@@ -10541,3 +10541,12 @@ tone mapping switched on (`:391`) and bloom on (`:376`). What the edict asks for
 SSAO2, larger soft shadow maps, and the image-based lighting from a Poly Haven HDRI, which is where the block and
 the measurements already written above live. So a next hand should not re-litigate the simple settings: they are
 done, measured, and shipped.
+
+## Where this session's pictures are
+
+`pictures/` is gitignored in this folder, so the shots I took are on disk and not in git. In `pictures/`:
+`s84-kumquat.png` and `s84-kumquat-close.png` (the potted kumquat as it now fruits), `s84-fill-noon.png` (the front
+of the house at one o'clock after the daylight rebalance), and `s100-panel-now.png` (the store's dark panel,
+cropped from the stand that matches the master's `owner-flickering-wall.png` — the diagonal and the comb are still
+visible there, which is what stopped me calling the panel cured). `owner-flickering-wall.png` in the folder root is
+the master's own picture and is tracked.
