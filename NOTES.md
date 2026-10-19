@@ -9690,3 +9690,16 @@ tidy answer, and it is not history rewriting: `git diff -U3 <file>` → keep onl
 subject → `git apply --cached your.patch` (check it first with `--check`) → plain `git commit`, which commits the
 index and not the working tree. Verified after the fact: `git diff src/materials.js` afterwards still shows their
 two materials and nothing of mine. Worth knowing better than "be careful".
+
+**Standing photo pass after the night change.** `./tools/photos.sh`, `001` to `045`, read back pixel by pixel: no
+view has more than 4.4% pure white or more than 25% pure black, and none falls below luminance 25 — so taking the
+leaves' borrowed light down 62% at midnight did not black out any standing view. `044-streamup.png` and
+`045-streamdown.png` are the two cameras that look along the watercourse.
+
+**Released:** v0.98.2, and its `preview.png` is mean luminance 114 with 61 fps and 1475 meshes measured inside
+the release copy itself. Like v0.97.0's, that copy carries another hand's uncommitted work in `src/` — the koi's
+fins and eyes and `src/loft.js` — because `release.sh` copies the whole `src/` folder. Not this session's work.
+
+**What is left, in the order I would do it:** the watercourse and its veil have no mirror of their own (the pool
+has `poolCube`); the raven still has no coin on the ground under it; the dawn chorus and the cicada are still
+synthesised; and the trickle's recording stands or falls on the master's ear, which has not been heard yet.
