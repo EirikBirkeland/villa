@@ -9,8 +9,12 @@
 // in the next, back and forth, is a quarrel over depth, and that is what a flicker is.
 //
 // Everything that moves of its own accord is stopped with `?still=1`, which stops the day too: an advancing sun
-// changes every pixel and would be read as a flicker. What is left moving is what this Villa cannot help —
-// water, and the shimmer of things whose own animation is not on that switch.
+// changes every pixel and would be read as a flicker. Until session eighty-four this line was a lie about the
+// water: `pool`, `pond` and `stream` were handed the live clock whatever the switch said, so a view over the pond
+// moved 29.59% of its pixels between two frames of a "still" scene and every number this tool printed over water
+// was noise. They now take `still ? 0 : time`, and with the switch on, four stands — front and pool, rear at dusk,
+// by the pond, inside at night — all read nothing moved at all. So if this tool finds a pixel that will not settle
+// with `?still=1`, it is a real fault in the scene and not the water being water.
 //
 // The answer is given as places, not numbers alone: the picture is divided into cells, the cells that will not
 // settle are listed with the mesh that is nearest to the camera there, so a fault can be walked to.
