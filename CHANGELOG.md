@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 0.98.1 — 2026-10-19
+
+- **The trickle no longer turns itself up as you lean in.** Inside the bank distance the held-sound gain kept
+  climbing past the level it is set to — measured 0.157 against 0.12 — because it was clamped at the bottom and
+  not at the top. Now: in the water 0.12, at the lip 0.117, on the bank 0.102, at the house silent.
+
 ## 0.98.0 — 2026-10-19
 
 - **The stream runs straight to the back of the property now.** It used to start at the north-east hedge, run
