@@ -1197,14 +1197,6 @@ function makePotGreenery(scene, mats, { kind = "mass", x, z, y, size = 1, seed =
 	const parts = [...makeLeafyMass(scene, mats, { x, z, size: crownSize * size, seed, y: y - size * sink + rise, name: `${name}Bush`, clip: 1 })];
 	const middle = y - size * sink + rise + crownSize * size * 0.72;
 	const reach = crownSize * size * 0.82;
-	/** `count` things scattered over the crown's own width, at `height` above its middle. */
-	const sow = (count, height, make) => {
-		for (let i = 0; i < count; i++) {
-			const a = rand() * Math.PI * 2;
-			const out = reach * (0.3 + rand() * 0.62);
-			make(x + Math.sin(a) * out, middle + height + (rand() - 0.5) * crownSize * size * 0.22, z + Math.cos(a) * out, a);
-		}
-	};
 	// The stump and its limbs, for the one pot plant that is a tree. The stump is a finger thicker than the
 	// pot's rim is wide and it is leaned a degree or two, because nothing that grew is plumb.
 	if (rise) {
@@ -1266,7 +1258,26 @@ function makePotGreenery(scene, mats, { kind = "mass", x, z, y, size = 1, seed =
 			pod.rotation.z = 0.25 + rand() * 0.5;
 		}
 	} else if (kind === "kumquat") {
-		sow(7, 0, (px, py, pz) => sphere(scene, "kumquat", { diameterX: size * 0.06, diameterY: size * 0.05, diameterZ: size * 0.06, segments: 6, px, py, pz, mat: mats.citrus }));
+		// A potted kumquat carries its fruit THROUGH the crown — dozens of small deep oranges just under the
+		// surface of the leaves, most of them half hidden. A browser showed what this used to be: seven spheres
+		// most of a fist across, sitting out on top of the crown against the open sky, which read as tennis balls
+		// laid on a hedge. Then the second try threw them too wide and a browser showed fruit hanging in the air
+		// beside the tree, which is worse. So: more of them, smaller, round enough that the sun has somewhere to
+		// go, and kept well inside the crown's own width so that leaves are always in front of a few of them.
+		for (let i = 0; i < 19; i++) {
+			const a = rand() * Math.PI * 2;
+			const out = reach * (0.12 + rand() * 0.6);
+			sphere(scene, "kumquat", {
+				diameterX: size * 0.044,
+				diameterY: size * 0.038,
+				diameterZ: size * 0.044,
+				segments: 12,
+				px: x + Math.sin(a) * out,
+				py: middle + (rand() - 0.5) * crownSize * size * 0.5,
+				pz: z + Math.cos(a) * out,
+				mat: mats.citrus,
+			});
+		}
 	}
 	return parts;
 }
