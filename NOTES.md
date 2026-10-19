@@ -10309,3 +10309,8 @@ What stands from the attempt, and it is what the attempt was really for:
 The marks themselves are still explained by the environment — zeroing the material's environment took hard steps
 from 3.13% to 0.47% and took most of the light with it — and the cure is still a properly convolved sky. It is
 simply not done, and no picture of mine says it is.
+
+Asked the Poly Haven API directly (`api.polyhaven.com/files/<name>`): this sky ships `hdr` at 1k, 2k, 4k, 8k,
+16k and a tonemapped jpg — **no `.env`**, and the CDN 404s any `.env` name. So the Babylon-prefiltered file is
+not on offer, and the route must be the `.hdr` (1k is 1.4 MB, CC0) coaxed into a real cube texture by hand, since
+`new CubeTexture("....hdr")` is the part that silently does nothing in this build.
