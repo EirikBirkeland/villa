@@ -1,11 +1,22 @@
-// The stream: water that comes in at the north-east hedge and runs the length of the garden to the pond.
+// The stream: water that comes in at the back hedge and runs straight down the garden to the pond.
 //
 // WHAT IT IS. A shallow stone-lined channel, one metre and three quarters of water between coping stones,
-// grass banks falling away from the coping to the lawn, a plank bridge where the garden path crosses it, and
-// a lip at the end where the water falls a hand's height into the pond. It is 62 metres from head to mouth.
-// It begins at the north-east hedge, which is the far corner of the property from the pond, and it ends at
-// the pond's south edge, which is what the master asked for: the water comes from the other end of the
-// garden and the pond is where it stops.
+// grass banks falling away from the coping to the lawn, and a lip at the end where the water falls a hand's
+// height into the pond. It is 34 metres from head to mouth. It begins at the north hedge — the back of the
+// property, the side away from the gate — and it ends at the pond's north edge, and it goes there in nearly a
+// straight line. That is the master's ordering, and it is worth keeping in its own words, because the first
+// version of this went the other way about: it started at the north-east corner, ran the length of the east
+// side, turned the corner and followed the whole south boundary west to the pond — 62 metres of snake that
+// went round the entire yard. The master's word for that was that it ran in the opposite direction to the one
+// he intended, and he asked for a stream that goes straight towards the back of the property.
+//
+// WHY IT IS STRAIGHT AND NOT BENT, AND BENT AND NOT STRAIGHT. A watercourse laid with a ruler is a drain and
+// the garden will say so. A watercourse that wanders is the 62-metre mistake over again. So the centre line
+// here holds one bearing and sways across it: two metres of sideways drift over thirty-four of ground, one
+// long swing and a shorter one against it, with no turn sharper than a couple of degrees to a station. That
+// is how a stream in flat ground behaves — it goes where it was going and changes its mind by inches. The
+// numbers are written out in `course` below rather than generated, so the next session can see the sway and
+// argue with it.
 //
 // WHY IT IS BUILT UP AND NOT DUG IN. The lawn of this Villa is a plane at y = 0 with a hole cut round the
 // pond (`pondHole` in src/pond.js, cut by `buildGround` in src/world.js). There is no terrain to dig: a
@@ -21,12 +32,13 @@
 // that cannot be changed without a browser complaining.
 //
 // WHY IT IS ONE MESH AND NOT SIXTY. The channel, the bed, the banks and the water are each a single strip
-// built along the course with `poly` (src/mesh.js), resampled at 1.4 metres to a station. Sixty metres of
-// channel is therefore four meshes and about a thousand vertices, and not sixty boxes: the walk in
-// `src/ground.js` reads walls off the bounding boxes of meshes that say they collide, and sixty boxes along
-// a snake would be sixty walls to test on every step of every frame. Keeping the water off the visitor is
-// done instead by `blockers` below — one axis-aligned rectangle to each stretch of the course, handed to
-// `makeGround` beside the pool's and the pond's own blocks, which is the mechanism that already works.
+// built along the course with `poly` (src/mesh.js), resampled at 1.4 metres to a station. Thirty-four metres
+// of channel is therefore four meshes and about a thousand vertices, and not thirty-four boxes: the walk in
+// `src/ground.js` reads walls off the bounding boxes of meshes that say they collide, and thirty-four boxes
+// along a line would be thirty-four walls to test on every step of every frame. Keeping the water off the
+// visitor is done instead by `blockers` below — one axis-aligned rectangle to each stretch of the course,
+// handed to `makeGround` beside the pool's and the pond's own blocks, which is the mechanism that already
+// works.
 //
 // THE WATER MOVES. The water strip's texture coordinates are laid in metres of ground along the course, so
 // `vOffset` slides the pattern downstream at a stated speed in metres per second — the same trick the pond
@@ -35,63 +47,82 @@
 // flowing pattern turned the other way; the pond is handed the splash, so rings go out from the mouth every
 // couple of seconds and the garden can see its own water arriving.
 
-import { box, poly, groundUVs } from "./mesh.js";
+import { box, crumple, groundUVs, poly, skinTint, sphere } from "./mesh.js";
 import { randomGenerator } from "./noise.js";
 
 /**
- * The centre line, in metres, from the head at the north-east hedge to the mouth at the pond's south edge.
+ * The centre line, in metres, from the head at the back (north) hedge to the mouth at the pond's north edge.
  *
- * It is a snake and not a straight line for the same reason the hedge's crest is: a straight watercourse is
- * a drain, and this is a garden. The bends are wide — three or four metres of offset over twenty — because
- * a channel this narrow turned tighter than that reads as a kink in a hose. The course was laid to miss what
- * was already planted: the sala at x 8..13, the court's east deck to x 11.9, the palms, and the pond's two
- * south corner boulders, which the mouth passes between.
+ * One bearing, with a sway across it: the line never strays more than a metre either side of x = -20.4 over
+ * thirty-four metres of ground. The sway is two waves laid one on top of the other — a long one and a shorter
+ * one against it — because a single wave reads as a drawn arc and two of unequal length read as water that
+ * went on its way. Nothing here turns more than a couple of degrees: the master asked for no major bends, and
+ * a channel this narrow shows a bend at once.
+ *
+ * The line was laid where the garden would let it. `tools/streamroute.js` walks a proposed course and names
+ * everything standing in it: the six lawn boulders that were sown at x -19 to -22.5 have been moved west of
+ * the water for that reason, and the palms at x -17 stand far enough off that their fronds shade the channel
+ * without a trunk in the water. The head stops a metre and a half short of the hedge, because the hedge's own
+ * box is seventy centimetres thick and the coping would otherwise be buried in it.
  */
 export const course = [
-	{ x: 22.6, z: -21.6 }, // at the north-east hedge, where the water comes in from outside the garden
-	{ x: 21.8, z: -16.4 },
-	{ x: 20.8, z: -10.6 },
-	{ x: 20.4, z: -4.6 }, // east of the house, and the closest it comes: eight metres from the plaster
-	{ x: 20.8, z: 1.4 },
-	{ x: 21.4, z: 6.6 }, // east of the sala and of the court's east deck
-	{ x: 21.0, z: 11.4 },
-	{ x: 19.4, z: 15.4 }, // the corner: the garden turns west here
-	{ x: 16.2, z: 18.0 },
-	{ x: 11.0, z: 18.8 },
-	{ x: 5.6, z: 18.8 },
-	{ x: 0.6, z: 18.8 }, // the path out through the south gate crosses here, and the bridge is here
-	{ x: -4.4, z: 18.8 },
-	{ x: -9.2, z: 18.6 },
-	{ x: -13.4, z: 18.4 },
-	{ x: -16.6, z: 18.2 },
-	{ x: -19.0, z: 17.9 },
-	{ x: -20.3, z: 17.45 }, // the mouth: the pond's south edge, between its two corner boulders
+	{ x: -19.5, z: -20.4 }, // the head: the water comes in at the back hedge, a metre and a half short of it
+	{ x: -19.62, z: -17.2 },
+	{ x: -20.28, z: -13.78 },
+	{ x: -21.06, z: -9.97 },
+	{ x: -21.06, z: -6.16 },
+	{ x: -21.07, z: -2.34 },
+	{ x: -21.44, z: 1.47 }, // the furthest the water swings west
+	{ x: -21.22, z: 5.28 },
+	{ x: -20.19, z: 9.09 },
+	{ x: -19.5, z: 12.9 }, // the mouth: the pond's north edge, between its two corner boulders
 ];
 
-/** Half the width of the water, metres. */
-const HALF = 0.88;
-/** How wide the coping stone is, laid flat on top of the channel's walls. */
-const LIP = 0.16;
-/** How high the coping stands above the lawn. A boot fits on it; a visitor steps over it without climbing. */
-const DECK = 0.2;
-/** How high the bed stands above the lawn. Two centimetres: the channel is lined, not sunk. */
-const BED = 0.02;
-/** How far the grass bank runs out from under the coping before it is level with the lawn again. */
-const SLOPE = 0.62;
-/** How far the bank's foot is buried under the lawn plane. See the head of this file: this is the seam. */
+/** The widest the water gets, metres: the mean half-width with both of its waves at their top. */
+const HW_MAX = 1.07;
+/** The widest the bare damp band outside the water gets. */
+const BERM_MAX = 0.64;
+/** How far the grass apron runs out beyond the bare band before it is level with the lawn again. */
+const APRON = 0.62;
+/** How far the apron's foot is buried under the lawn plane. See the head of this file: this is the seam. */
 const TUCK = 0.06;
-/** The water's surface: five centimetres under the coping, so the lip reads as a lip and the water sits in. */
-const WATER_Y = DECK - 0.05;
-/** How far the works reach from the centre line: what the walk must keep off, and what may not be planted. */
-export const streamReach = HALF + SLOPE + 0.2;
+/** How far the works reach from the centre line: where the grass apron ends and the lawn begins again. */
+export const streamReach = HW_MAX + BERM_MAX + APRON;
+/**
+ * How far the walk must be kept from the centre line: the water at its widest and a hand's width of bank to
+ * stand on. This is deliberately much tighter than `streamReach`. The pond stops a visitor at the water and
+ * lets them stand on the rim — "standing on one is what a pond rim is for" — and a stream's dirt bank is the
+ * same gift: you may walk the bank of this watercourse and crouch at its edge, which the old dressed channel,
+ * blocked a metre and eight tenths out, would not let you do.
+ */
+export const streamKeepOff = HW_MAX + 0.2;
 /** The mouth, where the water leaves the channel and falls into the pond. `src/pond.js` clears its stones here. */
 export const streamMouth = course[course.length - 1];
-/** How wide the gap in the pond's rim stones is: the channel's width, plus the coping on each side. */
-export const mouthGap = 2 * (HALF + LIP) + 0.2;
+/** How wide the gap in the pond's rim stones is: the water at the mouth, plus a boulder on each side. */
+export const mouthGap = 2 * HW_MAX + 0.5;
 /** How the course is resampled: metres between stations of the strip. */
-const STATION = 1.4;
-/** Where the garden path crosses, and how wide the bridge's opening is along the course. */
-const bridgeAt = { x: 0.6, z: 18.8, half: 1.15 };
+const STATION = 0.9;
+
+/**
+ * The four phases of the sway. FIXED, and not drawn with the random generator, and this is the one number in
+ * this file that is a rule and not a taste: the shape of the water's edge has to be answerable by the garden
+ * before the garden is built, because `inStream` asks how wide the water is at a given place in order to let
+ * grass grow up to it and not in it. A phase drawn inside `buildStream` would be invisible to that question,
+ * and the answer would be a guess.
+ */
+const SWAY = [0.7, 2.4, 1.1, 4.2];
+/** Half the width of the water at a running distance along the course. */
+export function halfAtRun(run) {
+	return 0.8 + 0.17 * Math.sin(run * 0.29 + SWAY[0]) + 0.1 * Math.sin(run * 0.71 + SWAY[1]);
+}
+/** How wide the bare damp band is at a running distance. */
+export function bermAtRun(run) {
+	return 0.44 + 0.2 * Math.sin(run * 0.23 + SWAY[2]);
+}
+/** How high the bank's inner lip stands at a running distance. */
+export function deckAtRun(run) {
+	return 0.17 + 0.055 * Math.sin(run * 0.41 + SWAY[3]);
+}
 
 /**
  * The course, resampled at an even spacing, with a unit normal at every station.
@@ -139,31 +170,59 @@ export function stations(step = STATION) {
 	return out;
 }
 
-/** The distance from a point to the centre line, in metres. */
-export function distanceToStream(x, z) {
+/** The distance from a point to the centre line, and how far along the course the nearest point lies. */
+export function streamAt(x, z) {
 	let best = Infinity;
+	let run = 0;
+	let walked = 0;
 	for (let i = 0; i < course.length - 1; i++) {
 		const a = course[i];
 		const b = course[i + 1];
 		const dx = b.x - a.x;
 		const dz = b.z - a.z;
-		const sq = dx * dx + dz * dz;
+		const len = Math.hypot(dx, dz);
+		const sq = len * len;
 		const t = sq ? Math.max(0, Math.min(1, ((x - a.x) * dx + (z - a.z) * dz) / sq)) : 0;
 		const d = Math.hypot(x - (a.x + dx * t), z - (a.z + dz * t));
-		if (d < best) best = d;
+		if (d < best) {
+			best = d;
+			run = walked + len * t;
+		}
+		walked += len;
 	}
-	return best;
+	return { d: best, run };
+}
+
+/** The distance from a point to the centre line, in metres. */
+export function distanceToStream(x, z) {
+	return streamAt(x, z).d;
 }
 
 /**
- * Whether a foot of ground stands in the stream and its banks.
+ * Whether a foot of ground stands IN THE WATER.
  *
- * The garden asks this before it plants anything, the same way it asks `inPond`: a clump of sedge planted
- * inside a channel is grass growing out of water, and `tools/tuftfoot.js` would spend the next session
- * finding it.
+ * This used to mean "anywhere near the watercourse", out to `streamReach` of 1.7 metres, and the garden obeyed:
+ * no clump of sedge within a metre and three quarters of the channel, which bought a bald ring down both banks
+ * and a stream that had been swept clean. The pond was asked the same question and answered it the other way —
+ * a 6 cm margin, because "the sedges at a real edge grow UP TO the water and a little into it" — and the
+ * watercourse now takes the same answer: the margin is measured from the water's own edge at that place along
+ * the course, which is why `halfAtRun` is fixed and exported rather than drawn at build time. Stones are kept
+ * off by `inStreamStone` below, so grass comes where there is soil and stops where there is rock.
  */
 export function inStream(x, z, margin = 0) {
-	return distanceToStream(x, z) < streamReach + margin;
+	const at = streamAt(x, z);
+	return at.d < halfAtRun(at.run) + margin;
+}
+
+let stoneFeet = [];
+/**
+ * Whether a foot of ground stands on one of the watercourse's stones. `buildStream` fills this as it lays them,
+ * at each stone's widest half-span, and the garden asks it before it plants a clump — the same bargain the
+ * pond keeps with `inPondStone`. It is better to lose a tuft of sedge than to grow one out of a boulder.
+ */
+export function inStreamStone(x, z) {
+	for (const r of stoneFeet) if (Math.hypot(x - r.x, z - r.z) < r.r) return true;
+	return false;
 }
 
 /**
@@ -174,26 +233,58 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	const built = [];
 	const line = stations();
 
+	// How the channel is shaped at each station. Three numbers, each with its own wave, and a little jitter on
+	// top of the waves:
+	//
+	//   hw    half the width of the water. It breathes between about 0.55 and 1.05 metres. A watercourse of one
+	//         width throughout is a gutter: real ones are pinched where a stone sits and wider where the water
+	//         has been allowed to spread, and the eye reads the variation as water having been there.
+	//   berm  the bare, damp band between the water's edge and the grass. This is the dirt the master asked
+	//         for, and it is the pond's own trick: the pond has `MARGIN`, a band of wet gravel between the
+         //         water and the cut edge of the lawn, and the grass never meets the water directly.
+	//   deck  how high the bank's inner lip stands. Uneven, because a level top edge along thirty-four metres
+	//         is precisely the dressed look that made the first version a canal.
+	//
+	// The waves are of deliberately unequal length (0.29, 0.71, 0.23 and 0.41 radians to the metre) so nothing
+	// along the course repeats at a pitch the eye can catch.
+	const sway = SWAY;
+	for (const s of line) {
+		s.hw = halfAtRun(s.run) + (rand() - 0.5) * 0.07;
+		s.berm = bermAtRun(s.run) + (rand() - 0.5) * 0.08;
+		s.deck = deckAtRun(s.run);
+		s.bedY = s.deck - 0.2;
+		// The water's surface: five and a half centimetres under the lip. Deep enough that the bank's face shows
+		// above the water as a band of damp earth; shallow enough that the bed is plainly there under it.
+		s.waterY = s.bedY + 0.145;
+		// How far the grass apron reaches.
+		s.outer = s.hw + s.berm + APRON;
+	}
+
 	// A box that spans the channel has its long axis along the section normal, and `ry` turns a box's local +z to
 	// (sin ry, cos ry): the normal's x first, then its z. Turned the other way the plank lies along the water and
 	// the coping stones stand end-on in the grass.
 	const normalYaw = (s) => Math.atan2(s.nx, s.nz);
 
-	/** One strip of the channel: a cross-section of [offset, height] pairs laid along the course. */
-	function strip(name, section, mat, { uvAlong = false } = {}) {
+	/**
+	 * One strip of the watercourse: a cross-section laid along the course. `sectionAt(station)` answers the
+	 * [offset, height] pairs at that station, because an organic edge is not the same width all the way down —
+	 * a section fixed once is a trench with a snake drawn on it. Every station must answer the SAME NUMBER of
+	 * points, or the strip's triangles join the wrong vertices and the bank turns inside out.
+	 */
+	function strip(name, sectionAt, mat, { uvAlong = false } = {}) {
 		const positions = [];
 		const uvs = [];
 		const indices = [];
 		for (let k = 0; k < line.length; k++) {
 			const s = line[k];
-			for (const [off, y] of section) {
+			for (const [off, y] of sectionAt(s)) {
 				positions.push(s.x + s.nx * off, y, s.z + s.nz * off);
 				// `u` is metres across the section and `v` metres along the course, so a pattern laid on
 				// this strip is measured in ground and not in fractions of a shape.
 				uvs.push(off, uvAlong ? s.run : y + off);
 			}
 		}
-		const across = section.length;
+		const across = sectionAt(line[0]).length;
 		for (let k = 0; k < line.length - 1; k++) {
 			for (let j = 0; j < across - 1; j++) {
 				const a = k * across + j;
@@ -211,64 +302,235 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 
 	// ---- the channel, the bed and the banks -------------------------------------
 	//
-	// The section, from the left bank's foot to the right one's. The coping is a flat band 16 cm wide on
-	// top of the walls, which is what makes the whole thing read as built rather than as a wet dip in the
-	// grass: a flat top edge catches the light along 62 metres of it, and nothing else in the garden does
-	// that.
+	// DIRT, AND NOT DRESSED STONE. The first version was lined: a stone wall each side, a pale stone bed, and
+	// a flat coping band sixteen centimetres wide running the whole thirty-four metres. It was well built and
+	// it was a canal. The master's word for what he wanted was "organic, and dirt-based", and he named the
+	// pond as the model — so the lining is gone. The section, from the water outward, is now the bank's face
+	// (earth), a bare damp band of earth (the `berm`), and the grass apron beyond; and one material, the
+	// pond's own silt, runs from the bed up over the lip and out to the grass, so there is no line where one
+	// built thing stops and another begins. That is how the pond hides its straight edges too: damp gravel,
+	// sunk stones, and grass grown up to the water (`src/pond.js`).
 	//
-	// FIVE STRIPS, NOT ONE. The first drawing of this laid the whole section — bank, coping, wall, bed, wall,
-	// coping, bank — as a single strip, and the browser showed a grass band where the watercourse was and no
-	// water at all: a strip joins its section points in order, so the one strip carried a lid of grass across
-	// the top of the channel at coping height (`tools/pickat.js` answered `streamBanks` at every pixel that
-	// should have been water). Each of the five pieces below therefore stops where the next begins: they meet
-	// at an edge and never lie on one another, which is also why there is no flicker in the joint.
-	const foot = HALF + SLOPE + TUCK * (SLOPE / DECK);
-	const wallSouth = strip("streamWallSouth", [[-(HALF + LIP), DECK], [-HALF, DECK], [-(HALF - 0.14), BED]], mats.coping);
-	const wallNorth = strip("streamWallNorth", [[HALF - 0.14, BED], [HALF, DECK], [HALF + LIP, DECK]], mats.coping);
-	// The bed, in the same pale stone as the coping and the walls: a lined channel, and one material from wall
-	// to wall means no line where the two meet. It is pale on purpose. The first bed wore the pond's silt, which
-	// is nearly black, and twenty centimetres of water over a black floor paints as a wet gutter whatever is
-	// done to the surface — the same lesson the pool's colour cost (v0.94.1: the pool's blue lives in the tile
-	// under the film and not in the film).
-	const bed = strip("streamBed", [[-(HALF - 0.14), BED], [HALF - 0.14, BED]], mats.coping);
-	// The grass banks: the two outer legs, in lawn, laid with the lawn's own pattern measured from the ground
-	// so a bank and the turf it rises out of are the same grass at the same scale.
-	const bankSouth = strip("streamBankSouth", [[-foot, -TUCK], [-(HALF + LIP), DECK]], mats.lawn);
-	const bankNorth = strip("streamBankNorth", [[HALF + LIP, DECK], [foot, -TUCK]], mats.lawn);
-	for (const m of [wallSouth, wallNorth]) groundUVs(m, 1.1);
-	groundUVs(bed, 0.7);
-	for (const m of [bankSouth, bankNorth]) groundUVs(m, 6);
+	// SEVEN STRIPS, NOT ONE. The lesson that cost a session stands: a strip joins its section points in order,
+	// so one strip carrying the whole section lays a lid of grass across the water — `tools/pickat.js` answered
+	// `streamBanks` at every pixel that should have been water. Each strip below stops where the next begins:
+	// they meet at an edge and never lie on one another, which is also why there is no flicker in the joint.
+	//
+	// THE BED IS EARTH AND THE WATER IS TUNED FOR IT. The old bed was pale coping because the pond's silt AT
+	// ITS FIRST COLOUR was nearly black, and twenty centimetres of water over a black floor paints as a wet
+	// gutter whatever the surface is doing. `mats.pondSilt` has been lightened since, to a damp brown that is
+	// allowed to be seen, and the stream's film has been taken off blue and put back to the pond's tannin: a
+	// shallow run of muddy water over a mud bottom, which is what a lowland stream actually is.
+	// The earth the channel is cut in. The fallback is for a checkout where `src/materials.js` has not yet been
+	// committed with `streamEarth` in it (it carries another hand's staged work): the pond's silt is the same
+	// dirt a shade greener, and better than a strip with no material at all.
+	const earth = mats.streamEarth || mats.pondSilt;
+	const faceSouth = (s) => [[-s.hw, s.deck], [-(s.hw - 0.1), s.bedY]];
+	const faceNorth = (s) => [[s.hw - 0.1, s.bedY], [s.hw, s.deck]];
+	const wallSouth = strip("streamWallSouth", faceSouth, earth);
+	const wallNorth = strip("streamWallNorth", faceNorth, earth);
+	const bed = strip("streamBed", (s) => [[-(s.hw - 0.1), s.bedY], [s.hw - 0.1, s.bedY]], earth);
+	// The bare bands either side of the water: the dirt, and the pond's `MARGIN` over again. Grass is not
+	// allowed to reach the water anywhere in this garden, and this is why — the cut edge of a lawn meeting
+	// water is a black hairline and a green fringe at the same time.
+	//
+	// EVERY SECTION RUNS FROM THE NEGATIVE OFFSET TO THE POSITIVE ONE, and this is not a style. Wound the other
+	// way, `poly` computes a normal pointing DOWN into the bank, and the surface is then lit by the ground's own
+	// light instead of by the sky: the south bank came out (47,51,14) — more green than red, the colour of the
+	// lawn's bounce seen from inside the earth — while the north bank, wound rightly, was brown. A reversed
+	// section is invisible in the geometry and plain as day in the picture.
+	const bankSouth = strip("streamBermSouth", (s) => [[-(s.hw + s.berm), 0.015], [-s.hw, s.deck]], earth);
+	const bankNorth = strip("streamBermNorth", (s) => [[s.hw, s.deck], [s.hw + s.berm, 0.015]], earth);
+	// The grass aprons, in the lawn's own material with its pattern measured from the ground, so a bank and the
+	// turf it rises out of are one sward. Their feet are laid TUCK under the lawn plane: the seam where grass
+	// meets bare earth keeps going below the turf, so no ray can slip through the joint and find sky.
+	const apronSouth = strip("streamBankSouth", (s) => [[-s.outer, -TUCK], [-(s.hw + s.berm), 0.015]], mats.lawn);
+	const apronNorth = strip("streamBankNorth", (s) => [[s.hw + s.berm, 0.015], [s.outer, -TUCK]], mats.lawn);
+	// A bend in the pattern's grid: soil laid on a grid is a floor. Two sines of unequal length push the tiles
+	// off their lines by a decimetre, which is enough that the eye cannot find the repeat.
+	const soilBend = (x, z) => [0.13 * Math.sin(z * 0.71), 0.13 * Math.sin(x * 0.63)];
+	for (const m of [wallSouth, wallNorth, bankSouth, bankNorth]) groundUVs(m, 0.8, soilBend);
+	groundUVs(bed, 0.55, soilBend);
+	for (const m of [apronSouth, apronNorth]) groundUVs(m, 6);
 
 	// ---- the water -------------------------------------------------------------
 	//
-	// Laid 2 cm inside the coping's inner edge, so the water's edge is under the stone's overhang and not
-	// beside it: from a visitor's eye on the bank, the water tucks under the lip the way it does in a real
-	// channel, and there is no line of bed between the two.
+	// Laid 3 cm inside the bank's face, so the water's edge is tucked under the lip rather than drawn beside it:
+	// from a visitor's eye on the bank the water disappears under the earth the way it does where a stream has
+	// been eating its own bank for years.
 	const water = strip(
 		"streamWater",
-		[
-			[-(HALF - 0.02), WATER_Y],
-			[HALF - 0.02, WATER_Y],
-		],
+		(s) => [[-(s.hw - 0.03), s.waterY], [s.hw - 0.03, s.waterY]],
 		mats.streamWater,
 		{ uvAlong: true }
 	);
 	water.isPickable = true;
 
-	// ---- the head: where the water comes in over the hedge ----------------------
+	// ---- stones laid along the edge, the pond's way ------------------------------
+	//
+	// The pond is rimmed with thirty separate lumps, each turned and sunk a little differently, and that is the
+	// reason a rectangular hole does not read as one (`src/pond.js`). The watercourse gets the same treatment
+	// for the same reason: an earth bank with nothing on it is a gutter cut in a lawn, and an earth bank with
+	// stones half-buried along its edge is a bank that was pushed out by hand and then left alone.
+	//
+	// They sit AT the water's edge and not back on the grass, because that is where stones collect in a stream —
+	// where the water has sorted them. Each is sunk to its own depth: some buried to the shoulder, some standing
+	// a hand high, which is what a barrow tipped out along an edge actually leaves. They are laid at no fixed
+	// spacing either; a barrow load is not laid at intervals.
+	const stones = [];
+	/**
+	 * Where each stone stands, at its widest half-span. The garden asks `inStreamStone` before it plants a
+	 * clump, so no tuft grows out of a boulder — the same bargain the pond keeps with `inPondStone`.
+	 */
+	const feet = [];
+	/**
+	 * The station nearest a running distance along the course. This searches the stations by their own `run`
+	 * rather than dividing by `STATION`: the resampling rounds the station COUNT, so the true spacing is the
+	 * length divided by that count and not `STATION` itself, and dividing drifts by a whole station over
+	 * thirty-four metres. It did drift, and a station out is a decimetre out on the water's width, which is
+	 * how the first stones came to be sunk at the wrong height.
+	 */
+	const atRun = (r) => {
+		let best = line[0];
+		let gap = Infinity;
+		for (const s of line) {
+			const d = Math.abs(s.run - r);
+			if (d < gap) {
+				gap = d;
+				best = s;
+			}
+		}
+		return best;
+	};
+	/** A box or a stone's yaw that lays its local +z ALONG the water's way (the normal's, turned a quarter turn). */
+	const tangentYaw = (s) => Math.atan2(-s.nz, s.nx);
+	const totalRun = line[line.length - 1].run;
+	/**
+	 * How high the bank's surface stands at a given offset from the centre line. The bare band runs from the
+	 * lip (height `deck`, at the water's edge) down to the lawn (0.015, at `hw + berm`), and a stone laid on
+	 * that band must be sunk into THAT surface. The first attempt put them at the water's edge at a height of
+	 * its own, and the bank swallowed every one: a view down the channel measured 0.1% stone, and `pickat`
+	 * answered the pond's boulders rather than a single `streamStone`.
+	 */
+	const bankAt = (s, off) => s.deck - (Math.max(0, off - s.hw) / s.berm) * (s.deck - 0.015);
+	/**
+	 * Sink a worked stone into a surface until it shows the height asked for, in metres.
+	 *
+	 * This has to happen AFTER the stone is tilted and crumpled, because both of those move its crown: a stone
+	 * half a metre long tipped fourteen degrees drops four centimetres, and a crumple taken off at thirty per
+	 * cent drops three more. Telling the stone where its middle belongs BEFORE that happens — which is what the
+	 * first attempt did — left eight of the thirty-one edging stones under the bank they were laid on, and the
+	 * whole stone edge measured 0.1% of a picture.
+	 */
+	const settle = (mesh, surfaceY, show) => {
+		mesh.refreshBoundingInfo();
+		// The LOCAL top: the mesh's own middle is its origin, so this is the crown's height above the middle the
+		// position will be set to.
+		const top = mesh.getBoundingInfo().boundingBox.maximum.y;
+		mesh.position.y = surfaceY + show - top;
+		mesh.refreshBoundingInfo();
+	};
+	let stoneRun = 0.5 + rand() * 0.7;
+	while (stoneRun < totalRun - 0.5) {
+		const s = atRun(stoneRun);
+		const side = rand() < 0.5 ? -1 : 1;
+		const across = 0.26 + rand() * 0.34; // its width across the bank
+		const long = across * (1.1 + rand() * 0.7); // and its length along the course: these lie end to end
+		const tall = 0.14 + rand() * 0.2;
+		// Where it sits across the bank: mostly on the bare band, a few out at the grass and a few right at the
+		// water, because that is how a bank of stone sorted by water looks — thickest at the edge, straggling out.
+		const off = s.hw + rand() * s.berm * 0.9;
+		const px = s.x + s.nx * side * off;
+		const pz = s.z + s.nz * side * off;
+		const stone = sphere(scene, `streamStone${stones.length}`, {
+			diameterX: across,
+			diameterY: tall,
+			diameterZ: long,
+			// Seven cuts: at five the sphere's pole opens as a handful of big flat leaves and the stone turns
+			// into a paper parasol, which is the lesson the pond's rim learned at eight (`src/pond.js`).
+			segments: 7,
+			px,
+			// Sunk INTO the bank, and no more: the crown is set to stand three to fifteen centimetres over the
+			// earth it sits in, which is a stone the water has partly buried and not a boulder parked on a lawn.
+			py: bankAt(s, off),
+			pz,
+			mat: mats.pondStone,
+		});
+		stone.rotation.y = tangentYaw(s) + (rand() - 0.5) * 0.7;
+		stone.rotation.x = (rand() - 0.5) * 0.5;
+		stone.rotation.z = (rand() - 0.5) * 0.5;
+		const worked = crumple(stone, { at: 0.3, seed: 2200 + stones.length * 11, lobes: 4 });
+		skinTint(stone, worked, { at: 0.3, low: 0.55 });
+		settle(stone, bankAt(s, off), 0.03 + rand() * 0.12);
+		stone.refreshBoundingInfo();
+		stone.receiveShadows = true;
+		if (shadows) shadows.addShadowCaster(stone);
+		built.push(stone);
+		stones.push(stone);
+		feet.push({ x: px, z: pz, r: Math.max(across, long) / 2 });
+		stoneRun += 0.55 + rand() * 1.15;
+	}
+	// The garden is built after the watercourse, and it asks where the stones are before it sows a single tuft.
+	stoneFeet = feet;
+
+	// ---- the head: where the water comes in --------------------------------------
+	//
+	// The first version put a dressed slab across the channel there, which is a sluice. Water in a garden comes
+	// in under a hedge, out of a lump of gravel, between two stones. So: a low mound of the same damp earth the
+	// banks are made of, laid behind the channel's start, and three stones about the opening.
 	const head = line[0];
-	const headWall = box(scene, "streamHeadStone", {
-		x: 0.5,
-		y: DECK + 0.1,
-		z: 2 * (HALF + LIP) + 0.3,
-		px: head.x - head.nx * 0.0,
-		py: (DECK + 0.1) / 2 - 0.04,
-		pz: head.z,
-		mat: mats.stone,
-		ry: normalYaw(head),
+	const headNext = line[1];
+	const inX = (headNext.x - head.x) / Math.hypot(headNext.x - head.x, headNext.z - head.z);
+	const inZ = (headNext.z - head.z) / Math.hypot(headNext.x - head.x, headNext.z - head.z);
+	const mound = sphere(scene, "streamHeadMound", {
+		diameterX: 3.4,
+		diameterY: 0.4,
+		diameterZ: 2.2,
+		segments: 9,
+		// Behind the head and a little under the lawn, so the channel looks cut INTO the mound rather than a
+		// strip of earth laid up against a dome.
+		px: head.x - inX * 0.9,
+		py: -0.14,
+		pz: head.z - inZ * 0.9,
+		mat: earth,
 	});
-	headWall.receiveShadows = true;
-	built.push(headWall);
+	const moundWorked = crumple(mound, { at: 0.16, seed: 5111, lobes: 5 });
+	skinTint(mound, moundWorked, { at: 0.24, low: 0.6 });
+	mound.refreshBoundingInfo();
+	mound.receiveShadows = true;
+	if (shadows) shadows.addShadowCaster(mound);
+	built.push(mound);
+	for (let i = 0; i < 3; i++) {
+		// Two on the banks where the water comes through, and one behind on the mound: three stones at an
+		// opening are the smallest number that reads as a place rather than an accident.
+		const where =
+			i === 2
+				? { x: head.x - inX * 1.15, z: head.z - inZ * 1.15, off: 0 }
+				: { x: head.x + head.nx * (i === 0 ? 1 : -1) * (head.hw + 0.3), z: head.z + head.nz * (i === 0 ? 1 : -1) * (head.hw + 0.3), off: head.hw + 0.3 };
+		const across = 0.5 + rand() * 0.4;
+		const tall = 0.24 + rand() * 0.22;
+		const boulder = sphere(scene, `streamHeadBoulder${i}`, {
+			diameterX: across,
+			diameterY: tall,
+			diameterZ: across * (0.8 + rand() * 0.3),
+			segments: 6,
+			px: where.x,
+			py: (i === 2 ? 0.02 : bankAt(head, where.off)) - tall * (0.05 + rand() * 0.2),
+			pz: where.z,
+			mat: mats.pondStone,
+		});
+		boulder.rotation.y = rand() * 3;
+		boulder.rotation.x = (rand() - 0.5) * 0.5;
+		boulder.rotation.z = (rand() - 0.5) * 0.5;
+		const workedBig = crumple(boulder, { at: 0.34, seed: 6100 + i * 17, lobes: 5 });
+		skinTint(boulder, workedBig, { at: 0.3, low: 0.55 });
+		settle(boulder, i === 2 ? 0.02 : bankAt(head, where.off), 0.1 + rand() * 0.14);
+		boulder.refreshBoundingInfo();
+		boulder.receiveShadows = true;
+		if (shadows) shadows.addShadowCaster(boulder);
+		built.push(boulder);
+		feet.push({ x: where.x, z: where.z, r: across / 2 });
+	}
 
 	// ---- the mouth: a lip, a fall, and the pond taking the water -----------------
 	const mouth = line[line.length - 1];
@@ -283,14 +545,18 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	// into a pond. The rim stones are cleared here (`inStreamMouth` in src/pond.js) so the sheet has a gap to
 	// pass through.
 	const fallRun = 1.35;
+	// The veil is narrower than the channel — eight tenths of the water's own width at the mouth — because a
+	// fall across the whole of a bank-to-bank sheet is a weir. Water goes over an earth step at the place where
+	// it has cut through, and the banks stand either side of it dry.
+	const veilHalf = mouth.hw * 0.8;
 	const fall = poly(scene, "streamFall", {
 		positions: [
-			mouth.x + mouth.nx * -(HALF - 0.06), WATER_Y, mouth.z + mouth.nz * -(HALF - 0.06),
-			mouth.x + mouth.nx * (HALF - 0.06), WATER_Y, mouth.z + mouth.nz * (HALF - 0.06),
-			mouth.x + mouth.nx * -(HALF - 0.06) + (runX / runLen) * fallRun, fallTo,
-			mouth.z + mouth.nz * -(HALF - 0.06) + (runZ / runLen) * fallRun,
-			mouth.x + mouth.nx * (HALF - 0.06) + (runX / runLen) * fallRun, fallTo,
-			mouth.z + mouth.nz * (HALF - 0.06) + (runZ / runLen) * fallRun,
+			mouth.x + mouth.nx * -veilHalf, mouth.waterY, mouth.z + mouth.nz * -veilHalf,
+			mouth.x + mouth.nx * veilHalf, mouth.waterY, mouth.z + mouth.nz * veilHalf,
+			mouth.x + mouth.nx * -veilHalf + (runX / runLen) * fallRun, fallTo,
+			mouth.z + mouth.nz * -veilHalf + (runZ / runLen) * fallRun,
+			mouth.x + mouth.nx * veilHalf + (runX / runLen) * fallRun, fallTo,
+			mouth.z + mouth.nz * veilHalf + (runZ / runLen) * fallRun,
 		],
 		uvs: [0, 0, 1, 0, 0, -1.6, 1, -1.6],
 		// Two triangles for the veil. The winding does not matter here: the material is self-lit and painted
@@ -300,107 +566,82 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	});
 	fall.isPickable = false;
 	built.push(fall);
-	// The lip stone the water goes over, and the stone it lands on. Both are stone the colour of the
-	// coping, and both are low enough that the pond's own rim stones still read as the pond's edge.
-	const lipStone = box(scene, "streamLipStone", {
-		// `ry` turns the box's local z across the channel and its local x along the water's way, so the stone that
-		// lies across the water is the long one in z.
-		x: 0.42,
-		y: 0.1,
-		z: 2 * HALF + 2 * LIP + 0.2,
-		px: mouth.x,
-		py: DECK - 0.06,
-		pz: mouth.z,
-		mat: mats.coping,
-		ry: normalYaw(mouth),
-	});
-	lipStone.receiveShadows = true;
-	built.push(lipStone);
+	// The stones the water goes over, one on each bank, and the stone it lands on. All three are boulders out
+	// of the same barrow as the edging stones, not cut stone: an earth step with a stone at each shoulder is
+	// how a garden's stream arrives at a pond, and a dressed lintel across the channel is how a mill does it.
+	for (let i = 0; i < 2; i++) {
+		const side = i === 0 ? -1 : 1;
+		const across = 0.42 + rand() * 0.3;
+		const tall = 0.22 + rand() * 0.2;
+		const off = mouth.hw + 0.22 + rand() * 0.2;
+		const px = mouth.x + mouth.nx * side * off;
+		const pz = mouth.z + mouth.nz * side * off;
+		const pinch = sphere(scene, `streamMouthBoulder${i}`, {
+			diameterX: across,
+			diameterY: tall,
+			diameterZ: across * (1.1 + rand() * 0.5),
+			segments: 7,
+			px,
+			py: bankAt(mouth, off) - tall * (0.05 + rand() * 0.2),
+			pz,
+			mat: mats.pondStone,
+		});
+		pinch.rotation.y = tangentYaw(mouth) + (rand() - 0.5) * 0.5;
+		pinch.rotation.x = (rand() - 0.5) * 0.4;
+		pinch.rotation.z = (rand() - 0.5) * 0.4;
+		const workedMouth = crumple(pinch, { at: 0.32, seed: 7300 + i * 13, lobes: 5 });
+		skinTint(pinch, workedMouth, { at: 0.3, low: 0.55 });
+		settle(pinch, bankAt(mouth, off), 0.1 + rand() * 0.12);
+		pinch.refreshBoundingInfo();
+		pinch.receiveShadows = true;
+		if (shadows) shadows.addShadowCaster(pinch);
+		built.push(pinch);
+		feet.push({ x: px, z: pz, r: across / 2 });
+	}
 	// The landing stone the water falls on, in the pond, a hand under the veil: without it the veil ends in
 	// mid-air over the water and the eye reads a picture of water rather than water arriving. It is not
 	// called an apron here: this folder already uses that word for the free stone round the pool deck.
-	const landing = box(scene, "streamLandingStone", {
-		x: 0.7,
-		y: 0.08,
-		z: 2 * HALF,
+	// The stone the water falls on, in the pond, a hand under the veil: without it the veil ends in mid-air over
+	// the water and the eye reads a picture of water rather than water arriving. It is a boulder out of the same
+	// barrow as the edging stones, not a slab, and it is not called an apron here: this folder already uses that
+	// word for the free stone round the pool deck.
+	const landing = sphere(scene, "streamLandingStone", {
+		diameterX: 0.9,
+		diameterY: 0.26,
+		diameterZ: 2 * mouth.hw * 0.8,
+		segments: 7,
 		px: mouth.x + (runX / runLen) * (fallRun * 0.72),
-		py: 0.02,
+		py: -0.06,
 		pz: mouth.z + (runZ / runLen) * (fallRun * 0.72),
-		mat: mats.coping,
-		ry: normalYaw(mouth),
+		mat: mats.pondStone,
+		ry: tangentYaw(mouth),
 	});
+	const workedLanding = crumple(landing, { at: 0.3, seed: 8100, lobes: 5 });
+	skinTint(landing, workedLanding, { at: 0.28, low: 0.55 });
+	landing.refreshBoundingInfo();
 	landing.receiveShadows = true;
 	built.push(landing);
 
-	// ---- the bridge over the garden path ----------------------------------------
-	//
-	// Six planks across, two stringers under them, and the deck standing eight centimetres proud of the
-	// coping so a person coming along the path steps up onto it rather than down into the channel. The
-	// planks say they collide, which is how the walk finds them: `src/ground.js` takes anything flat and
-	// level with the ground as a floor, and a bridge is that.
-	//
-	// The bridge's own station, and not the mouth's: the course turns between the two, and a plank laid on the
-	// mouth's bearing across the channel at the path would lie askew in the water.
-	const atBridge = line.reduce((best, s) =>
-		Math.hypot(s.x - bridgeAt.x, s.z - bridgeAt.z) < Math.hypot(best.x - bridgeAt.x, best.z - bridgeAt.z) ? s : best
-	);
-	const plankYaw = normalYaw(atBridge);
-	const flowX = -atBridge.nz;
-	const flowZ = atBridge.nx;
-	const bridge = [];
-	const deckY = DECK + 0.08;
-	const plankLen = 2 * (HALF + SLOPE);
-	for (let i = 0; i < 6; i++) {
-		const along = (i - 2.5) * 0.3;
-		const px = bridgeAt.x + flowX * along;
-		const pz = bridgeAt.z + flowZ * along;
-		const plank = box(scene, `bridgePlank${i}`, {
-			x: 0.26,
-			y: 0.06,
-			z: plankLen,
-			px,
-			py: deckY,
-			pz,
-			mat: mats.wood,
-			ry: plankYaw,
-		});
-		plank.receiveShadows = true;
-		plank.checkCollisions = true;
-		bridge.push(plank);
-		built.push(plank);
-	}
-	for (const side of [-1, 1]) {
-		const stringer = box(scene, `bridgeStringer${side > 0 ? "North" : "South"}`, {
-			x: 2.2,
-			y: 0.12,
-			z: 0.12,
-			px: bridgeAt.x,
-			py: deckY - 0.09,
-			pz: bridgeAt.z + side * (plankLen / 2 - 0.16),
-			mat: mats.wood,
-			ry: plankYaw,
-		});
-		stringer.receiveShadows = true;
-		bridge.push(stringer);
-		built.push(stringer);
-	}
-	if (shadows) for (const m of bridge) shadows.addShadowCaster(m);
-
 	// ---- keeping the walk out of the water --------------------------------------
 	//
-	// One rectangle to each stretch of the course, and the stretch the bridge stands on is cut in two so
-	// the path stays a path. These go to `makeGround` beside the pool's and the pond's own blocks; the
-	// meshes above say nothing about collisions on purpose, because a bounding box round 62 metres of
-	// snake is a wall across the whole garden.
+	// One rectangle to each stretch of the course. These go to `makeGround` beside the pool's and the pond's
+	// own blocks; the meshes above say nothing about collisions on purpose, because a bounding box round
+	// thirty-four metres of channel is a wall across the whole garden.
+	//
+	// There used to be a plank bridge here, and the reason it is gone is the reason the stream is shorter:
+	// the bridge stood where the garden path crosses, at x 0.6 z 18.8, and the path only crosses the water if
+	// the water goes round the south of the yard. Straight to the back, the channel never meets the path, so
+	// the bridge would be six planks over dry grass. If the water is ever laid so that it crosses a way again,
+	// the bridge is in the git history at v0.95.0 and v0.96.0, planks and stringers and all.
 	const blockers = [];
-	const reach = streamReach + 0.12;
+	const reach = streamKeepOff;
 	/**
 	 * One block for a stretch of the watercourse: the stretch's own length, widened by `reach` on each side of
-	 * the water, and run past its ends by `reach` only where the end joins the next stretch. `padP`/`padQ` are
-	 * switched off at a cut where the bridge's opening sits — padded there, the block closes the path again and
-	 * a visitor coming out of the gate walks into thin air.
+	 * the water, and run past its ends by `reach` as well. The ends overlap on purpose: two rectangles that
+	 * meet at a station leave no slot for a foot to slip through, and the ground's test is "inside any block",
+	 * so an overlap costs nothing.
 	 */
-	const pieceSeg = (p, q, padP = true, padQ = true) => {
+	const pieceSeg = (p, q) => {
 		const dx = q.x - p.x;
 		const dz = q.z - p.z;
 		const len = Math.hypot(dx, dz) || 1;
@@ -408,8 +649,8 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 		const uz2 = dz / len;
 		const nx2 = -uz2;
 		const nz2 = ux2;
-		const s0 = -(padP ? reach : 0);
-		const s1 = len + (padQ ? reach : 0);
+		const s0 = -reach;
+		const s1 = len + reach;
 		let x0 = Infinity;
 		let x1 = -Infinity;
 		let z0 = Infinity;
@@ -426,33 +667,7 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 		}
 		blockers.push([x0, x1, z0, z1]);
 	};
-	for (let i = 0; i < course.length - 1; i++) {
-		const a = course[i];
-		const b = course[i + 1];
-		// The bridge's opening: split this leg if it runs under the bridge.
-		const nearBridge =
-			Math.min(a.x, b.x) - reach < bridgeAt.x + bridgeAt.half &&
-			Math.max(a.x, b.x) + reach > bridgeAt.x - bridgeAt.half &&
-			Math.min(a.z, b.z) - reach < bridgeAt.z + bridgeAt.half &&
-			Math.max(a.z, b.z) + reach > bridgeAt.z - bridgeAt.half;
-		if (!nearBridge) {
-			pieceSeg(a, b);
-			continue;
-		}
-		// Where the deck's opening falls along this leg, in whichever order the leg runs: the water is kept out
-		// up to the near edge of the deck and from its far edge on, and the opening itself is left open.
-		const legLen = Math.hypot(b.x - a.x, b.z - a.z) || 1;
-		const ux = (b.x - a.x) / legLen;
-		const uz = (b.z - a.z) / legLen;
-		// Where the deck's opening falls along this leg. The leg the bridge stands on runs east and west, so the
-		// deck's two edges are found by their x, and the order the leg runs in is sorted out afterwards.
-		const tEdge = (ex) => (ex - a.x) * ux + (bridgeAt.z - a.z) * uz;
-		const tLo = Math.max(0, Math.min(tEdge(bridgeAt.x - bridgeAt.half), tEdge(bridgeAt.x + bridgeAt.half)));
-		const tHi = Math.min(legLen, Math.max(tEdge(bridgeAt.x - bridgeAt.half), tEdge(bridgeAt.x + bridgeAt.half)));
-		const at = (t) => ({ x: a.x + ux * t, z: a.z + uz * t });
-		if (tLo > 0.2) pieceSeg(a, at(tLo), true, false);
-		if (legLen - tHi > 0.2) pieceSeg(at(tHi), b, false, true);
-	}
+	for (let i = 0; i < course.length - 1; i++) pieceSeg(course[i], course[i + 1]);
 
 	// ---- the flow ---------------------------------------------------------------
 	//

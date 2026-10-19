@@ -6,7 +6,7 @@ import { makeGround } from "./ground.js";
 import { courtBeds, bedTop, courtEdge } from "./court.js";
 import { lawnTone } from "./lawn.js";
 import { inPond, inPondStone, pondRect } from "./pond.js";
-import { inStream } from "./stream.js";
+import { inStream, inStreamStone } from "./stream.js";
 import { bushAtlas, tuftAtlas } from "./textures.js";
 import { randomGenerator } from "./noise.js";
 
@@ -1698,9 +1698,12 @@ function makeTuftPlan(scene, feet = []) {
 			soil.heightAt(s.x, s.z) <= 0.05 &&
 			!inPond(s.x, s.z) &&
 			!inPondStone(s.x, s.z) &&
-			// And nothing is planted in the watercourse or its banks: a clump of sedge standing inside a
-			// channel is grass growing out of water (`src/stream.js`).
-			!inStream(s.x, s.z),
+			// And nothing is planted IN the watercourse or on its stones. The margin is 6 cm from the water's own
+			// edge at that place along the course, which is the pond's answer to the same question: the sedges at a
+			// real edge grow up to the water and a little into it, and a bald ring both sides of a stream is a
+			// swept garden and not a wet one (`src/stream.js`, `inStream`).
+			!inStream(s.x, s.z, 0.06) &&
+			!inStreamStone(s.x, s.z),
 	);
 }
 
@@ -1981,10 +1984,12 @@ export function buildGarden(scene, mats, shadows, { clip = SHRUB_CLIP } = {}) {	
 		...makeStringLights(scene, mats, post(6.85), new Vector3(8.8, 3.0, 3.6), 8, 0.5), // to the sala's near post, whose top is 3.16
 	);
 
-	// A few boulders in the lawn, so the ground is not bare everywhere. West of the pool court and no
-	// further east than x = -19: at -16 and -12, where these used to fall, half of them sat on the
-	// paving — a lump of stone laid on cut stone, sunk in nothing, and something to trip over on a
-	// walkway. `tools/planted.js` counts them with the plants for the same reason.
+	// A few boulders in the lawn, so the ground is not bare everywhere. West of the watercourse now, at x -24.5
+	// to -28: these were sown at x -19 to -22.5, which is exactly where the stream now runs, and
+	// `tools/streamroute.js` named all six of them standing in the channel. They were first moved off the pool
+	// court, at x -16 and -12, where half of them sat on the paving — a lump of stone laid on cut stone, sunk
+	// in nothing, and something to trip over on a walkway. `tools/planted.js` counts them with the plants for
+	// the same reason.
 	const rand = randomGenerator(88);
 	const rockFeet = [];
 	for (let i = 0; i < 6; i++) {
@@ -1995,7 +2000,7 @@ export function buildGarden(scene, mats, shadows, { clip = SHRUB_CLIP } = {}) {	
 		const width = 0.55 + rand() * rand() * 1.1;
 		const height = width * (0.5 + rand() * 0.35);
 		const depth = width * (0.7 + rand() * 0.4);
-		const rx = -19 - rand() * 3.5;
+		const rx = -24.5 - rand() * 3.5;
 		const rz = -6 + rand() * 10;
 		const rock = sphere(scene, `rock${i}`, {
 			diameterX: width,

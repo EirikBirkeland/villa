@@ -54,6 +54,13 @@ const RECORDINGS = {
 	// drawn-out squeak. Short slices, because the animal says three or four syllables and no more, and trimmed
 	// hard, because a tokay recorded at the microphone is a scream and a gecko two metres up a wall is not.
 	gecko: { file: "sounds/gecko-tokay.mp3", slice: [0.55, 1.5], trim: 1.3 },
+	// The raven's croak, given by the master and weighed before it was let in: loudest band 2600 Hz, a call that
+	// fills its own 1.26 seconds and stands far above the silence at either end — a creature and not weather.
+	// The slice is the whole call, because a croak is one thing and taking a piece of it is taking half a word.
+	// `trim` is settled by measurement, not by ear alone: at 1 the call came out at peak 0.54 against the
+	// borrowed frog's 0.153, which is a bird standing on the visitor's shoulder. At 0.4 it is the loudest call in
+	// the garden by a good margin, which is what a raven on the roof ridge a hundred feet away should be.
+	raven: { file: "sounds/raven-croak.mp3", slice: [1.26, 1.26], trim: 0.4 },
 	// The trickle: droplets over stone, recorded close up. Twelve and a half seconds, which is short enough
 	// that where the loop is cut matters — so `loopVoice` looks for quiet places to cut at instead of running
 	// the file end to end.
@@ -354,9 +361,14 @@ export function buildSound(camera) {
  */
 export function clip(rec, { slice, trim = 1 }, out, rand) {
 	const ctx = out.context;
-	const from = slice[0] + rand() * (slice[1] - slice[0]);
-	const room = rec.buffer.duration - from - 0.05;
-	if (room <= 0.05) return 0.1;
+	// `slice` is a range of LENGTHS, not a start and an end: a frog chorus is long and any piece of it is a frog,
+	// so the piece is drawn from between the two numbers and thrown in at a random place in the file. A file that
+	// is ONE call — the raven's croak, twelve hundred milliseconds and no more — wants the whole of it, which is
+	// a range of one number. And it must then start at the top: the old guard bailed out to a tenth of a second
+	// whenever the slice left less than five hundredths of slack, which would have played the raven's croak as a
+	// click. So the length is clamped to what the file holds and the random offset is allowed to be nought.
+	const from = Math.min(slice[0] + rand() * (slice[1] - slice[0]), rec.buffer.duration - 0.05);
+	if (from < 0.05) return 0.1;
 	const at = ctx.currentTime + 0.02;
 	const src = ctx.createBufferSource();
 	src.buffer = rec.buffer;
@@ -368,7 +380,7 @@ export function clip(rec, { slice, trim = 1 }, out, rand) {
 	env.gain.exponentialRampToValueAtTime(0.0008, at + from);
 	src.connect(env);
 	env.connect(out);
-	src.start(at, rand() * Math.max(0.01, rec.buffer.duration - from), from);
+	src.start(at, rand() * Math.max(0, rec.buffer.duration - from - 0.05), from);
 	return from;
 }
 

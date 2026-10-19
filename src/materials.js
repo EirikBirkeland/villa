@@ -1010,15 +1010,9 @@ export function createMaterials(scene) {
 	mats.duck.albedoColor = paint([240, 196, 44]);
 	mats.duck.specularIntensity = 0.32;
 	mats.duck.emissiveColor = new Color3(0.03, 0.024, 0.004);
-	mats.duckBeak = pbr(scene, "duckBeak", { roughness: 0.45, environmentalIntensity: 0.7 });
+	mats.duckBeak = pbr(scene, "duckBeak", { roughness: 0.55, environmentalIntensity: 0.55 });
 	mats.duckBeak.albedoColor = paint([226, 118, 24]);
 	mats.duckBeak.emissiveColor = new Color3(0.02, 0.01, 0.002);
-	// The nail — the horn sheath over the front of the bill (`src/duck.js`). A shade deeper than the bill
-	// and a little duller, because it is a different material on a real duck and one hard moulded edge on
-	// a toy: enough to see which end the bill is, not enough to look like somebody coloured it in.
-	mats.duckBeakNail = pbr(scene, "duckBeakNail", { roughness: 0.52, environmentalIntensity: 0.6 });
-	mats.duckBeakNail.albedoColor = paint([196, 90, 18]);
-	mats.duckBeakNail.emissiveColor = new Color3(0.014, 0.006, 0.001);
 
 	mats.wood = pbr(scene, "wood", { roughness: 0.72, pattern: 0.9 });
 	// Four repeats across whatever face a piece presents: on the long rail that is grain every metre

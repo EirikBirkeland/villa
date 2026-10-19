@@ -18,9 +18,11 @@
 # Keep the two tools on these cameras: a browser picture and a drawing of the same place are the only
 # way to tell a fault in the Villa from a fault in the drawing.
 #
-# Three of these stood in the watercourse when it was laid (`src/stream.js`) and were moved to dry ground:
-# `path` to the south end of the path where it looks north over the bridge, `pondbank` off the pond's bank
-# and across the stream to it, and `eastlawn` out into the lawn east of the channel.
+# Three of these stood in the watercourse when it was laid (`src/stream.js`) and were moved to dry ground.
+# The watercourse has since been re-laid straight down the west of the garden, so `westlawn` had to move again:
+# it stood at x -20 z 10, which is now the middle of the channel, and it now stands on the bank above it.
+# The two cameras at the end look along the new course, because a stream that runs in a line is best judged
+# from one of its ends.
 home        2.4,1.74,10.5,3.2,0.06        -
 rear        0,1.6,-19,0,0.06              -
 rearup      0,1.6,-21,0,-0.35             -
@@ -29,7 +31,7 @@ sala        3.5,1.6,11,2.25,-0.02         -
 path        -3,1.7,21.6,2.9,0.02          -
 west        -11,1.7,6.8,1.57,-0.02        -
 pool        0,2.1,-1.5,0,0.1              -
-westlawn    -20,1.6,10,1.57,-0.02         -
+westlawn    -23.6,1.62,1.5,1.57,-0.02         -
 pondbank    -14.4,1.62,20.9,-2.11,0.02  -
 pondlawn    -25,1.62,20,2.54,0.12      -
 eastlawn    24,1.6,-14,-1.57,0            -
@@ -40,3 +42,5 @@ westwall    -13,1.6,-8,1.57,0             -
 grass       -13.5,1.5,8,-1.57,0.18          -
 southborder 6,1.6,13,0.27,0            -
 backstore   5.6,1.6,-19,0,-0.14        -
+streamup    -19.4,1.62,11.6,3.14,-0.04  -
+streamdown  -19.4,1.62,-19.2,0,-0.04    -

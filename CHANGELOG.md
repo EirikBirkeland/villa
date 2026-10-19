@@ -1,6 +1,34 @@
 # Changelog
 
 
+## 0.98.0 — 2026-10-19
+
+- **The stream runs straight to the back of the property now.** It used to start at the north-east hedge, run
+  the length of the east side, turn the corner and follow the whole south boundary to the pond — 62 metres
+  round the entire yard. It now runs 33.7 metres from the back hedge to the pond's north edge, never straying a
+  metre off its bearing, with a sway of two unequal waves on it so it is not a drawn line. The plank bridge is
+  gone with the bend it stood on: straight to the back, the water never crosses the path.
+- **It is cut in earth and not lined in stone.** No coping course, no dressed walls, no pale stone bed: from
+  the water out there is the bank's face, a bare damp band 25-65 centimetres wide, and a grass apron down to
+  the lawn — the pond's own trick, since the cut edge of a lawn must never meet water. Stones are laid at the
+  edge, sunk and turned, 31 of them with five boulders at the head and mouth. The head's dressed slab is a
+  mound of earth with three stones in it, and the fall is eight tenths of the water's width instead of a weir
+  across the whole channel.
+- **The water's colour went with the bed.** Over dirt the film is the pond's tannin, not blue: measured across
+  a bank view, water (43,45,23), earth (47,35,15), stones (37,30,18), lawn (63,84,20).
+- **Grass comes to the water's edge, and so does the visitor.** The bald ring both sides is gone: sedges grow to
+  within 6 centimetres of the water and stop at the stones, and the walk is kept 1.27 metres from the centre
+  line instead of 1.82, so you may stand on the bank and crouch at the lip.
+- **Three faults fixed on the strength of the pictures**: edging stones buried under their own bank (the crown
+  is now set after the stone is tilted and crumpled — 36 stones, none showing less than 2 centimetres); a south
+  bank wound backwards and lit from below by the ground's own green light; and a station lookup that drifted by
+  a whole station over thirty-four metres.
+- **The raven's croak is a real croak**: `sounds/raven-croak.mp3`, "CrowOrRaven2.wav" by iwanPlays, CC0, from
+  freesound.org — weighed before it was let in (loudest band 2600 Hz, one call filling its own 1.26 seconds),
+  and the loudest call in the garden at peak 0.218 against the frog's 0.153.
+- **A new tool**: `tools/streamroute.js` walks a proposed watercourse and names everything standing in it,
+  which is how the six lawn boulders in the channel were found.
+
 ## 0.97.3 — 2026-10-19
 
 - **The cricket sound is gone, and it was the waterfall.** There is no waterfall in this garden: the thing being

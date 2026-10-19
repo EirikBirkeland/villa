@@ -542,16 +542,28 @@ sense, so they are set down here:
   `src/shark.js`.
 - **dread**: the seconds during which a shark that has been hit keeps clear of the visitor's boots — the
   number that stops a shot animal coming back for more at once. `dread` and `SPEC.patience` in `src/shark.js`.
-- **the watercourse, the channel, the banks and the mouth**: the stream that comes in at the north-east hedge
-  and ends in the pond (`src/stream.js`). The **channel** is the lined trough the water runs in — coping, two
-  walls and a bed, 1.76 m of water between the coping stones; the **banks** are the grass slopes that fall away
-  from under the coping to the lawn; the **mouth** is where the water leaves the channel and falls into the
-  pond, and the **head** is where it comes in over the hedge. `course` is the centre line, `stations()` lays it
-  out at 1.4 m to a station, and `streamReach` is how far the works spread from the line — which is what may
-  not be planted and what the walk keeps off. Ordinary watercourse English, written down because the mesh names
-  (`streamWallSouth`, `streamBankNorth`, `streamBed`) and the exports (`streamMouth`, `mouthGap`) depend on
-  which side of the water is meant: `south` and `north` here are the two sides of the channel, named for the way
-  the water runs westward, and the south wall is the one on the garden's near side wherever the stream turns.
+- **the watercourse, the channel, the banks and the mouth**: the stream that comes in at the back hedge and
+  ends in the pond (`src/stream.js`). The **channel** is the trough the water runs in — earth walls and an earth
+  bed, about 1.6 m of water, its width breathing between 1.2 and 2.1 m along the course; the **banks** are the
+  earth slopes either side of it; the **mouth** is where the water leaves the channel and falls into the pond,
+  and the **head** is where it comes in at the hedge. `course` is the centre line, `stations()` lays it out at
+  about 0.9 m to a station, `streamReach` is how far the works spread from the line (where the grass apron ends)
+  and `streamKeepOff` is how far the walk is kept from it — the water and a hand's width of bank, which is how
+  a visitor may stand on the bank and still not wade. Ordinary watercourse English, written down because the
+  mesh names (`streamWallSouth`, `streamBankNorth`, `streamBed`) and the exports (`streamMouth`, `mouthGap`)
+  depend on which side of the water is meant: `south` and `north` here are the two sides of the channel, named
+  for the way the water runs, and the south wall is the one on the left hand going downstream.
+- **the bare band, the grass apron and the lip** (of the watercourse): the three parts of a dirt bank, from the
+  water outward (`src/stream.js`). The **lip** is the bank's inner edge, standing 12 to 23 centimetres over the
+  water and uneven along the course on purpose; the **bare band** is the damp soil between the lip and the
+  grass, 25 to 65 centimetres wide, which is the same trick the pond's `MARGIN` plays — the cut edge of a lawn
+  must never meet the water; the **grass apron** is the short slope from the bare band down to the level lawn,
+  and its foot is tucked 6 centimetres under the lawn plane so the joint cannot show sky. `berm` is the word
+  used in the code for the bare band's width, and it is not used in prose here because this folder already uses
+  **apron** for the free stone round the pool deck — the grass apron is always named in full.
+- **settle** (a stone): to sink a worked stone into the ground it stands on until its crown is the height asked
+  for (`settle` in `src/stream.js`). It has to happen after the stone is tilted and crumpled, because both move
+  the crown: setting the middle first left eight of thirty-one edging stones under their own bank.
 - **the veil** (of the fall): the sheet of water going over the lip into the pond — `streamFall`, wearing
   `mats.streamFall`, whose pattern `animate` slides downwards. Called a veil and not a sheet because it is
   water you can see through in one place and not in another, which is what `streakCanvas` in `src/textures.js`

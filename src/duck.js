@@ -20,8 +20,20 @@
 // The water's own surface here is a shader (a moving bump and a mirror, `src/water.js`) and not a sheet
 // that goes up and down, so there is nothing for the duck to sit ON; the bob is its own small sine, of the
 // same order as the chop the bump paints.
+//
+// THE BILL. It used to be a cone, which is the shape of a party hat and not of a duck's mouth: a cone is
+// round in section, it is widest where it joins the face, and it dies in a point. Every bath toy knows
+// better than that — a moulded bill is broad, flat, and the same girth nearly all the way along, with a
+// moulded mouth line on each cheek and a rounded end. So the bill is drawn station by station rather than
+// extruded: see `BILL` and `billPiece` at the foot of this file.
+//
+// Two faults were found by looking and are now written into the numbers, so nobody has to find them twice.
+// A deep mouth line does not read as a mouth line: cut at 1.4 mm it goes dark and wide and the duck has a
+// gap instead of a bill. And a bill tilted down over much shows the visitor its underside from the coping,
+// which is the same gap in another form.
 
-import { sphere, cylinder } from "./mesh.js";
+import { sphere, poly } from "./mesh.js";
+import { along } from "./loft.js";
 
 const { TransformNode } = BABYLON;
 
@@ -54,19 +66,29 @@ export function buildDuck(scene, mats, pool, { x = -1.9, z = 4.6, seed = 7, shad
 		pz: -0.078, py: 0.03, mat: mats.duck, parent: root,
 	});
 	tail.rotation.x = 0.38;
-	// The head, and the beak: a toy duck's head is a ball on the neck's place and its beak a short cone.
-	// Both are big for the body because a toy is drawn, not modelled, and a drawn duck has a big head.
-	// The head is lifted clear of the back so there is a neck between them: sunk into the shoulder it read
-	// as one continuous loaf from the start camera.
+	// The head: a ball at the neck's place, with the bill drawn out of its front below. Both are big for the
+	// body because a toy is drawn, not modelled, and a drawn duck has a big head. The head is lifted clear of
+	// the back so there is a neck between them: sunk into the shoulder it read as one continuous loaf from
+	// the start camera.
 	sphere(scene, "duckHead", {
 		diameter: 0.082, segments: 10,
 		pz: 0.066, py: 0.09, mat: mats.duck, parent: root,
 	});
-	const beak = cylinder(scene, "duckBeak", {
-		diameter: 0.042, diameterTop: 0.008, height: 0.05, tessellation: 8,
-		pz: 0.115, py: 0.086, rx: Math.PI / 2, mat: mats.duckBeak, parent: root,
+	// The bill: one moulded piece, no separate parts. Where it comes out of the face: level with the eyes,
+	// and sunk into the head by a centimetre so there is no seam when a visitor leans over the coping.
+	const bill = billPiece(scene, "duckBeak", mats.duckBeak, {
+		...BILL, stations: 20, girth: 32,
+		// The moulding line along the top: a toy's bill is not a dome, it is flatter than that, and the flat
+		// comes from the two halves of the mould meeting along the middle.
+		ridge: [[0, 0.0012], [0.3, 0.0016], [0.7, 0.0011], [1, 0.0003]],
+		// The mouth: a shallow line drawn in on each cheek, because the moulding has one and a toy bill
+		// without it is a traffic cone. Shallow is the whole lesson here: cut at 1.4 mm the line went dark and
+		// wide, and from the front the duck had a gap mouth with a pink tongue in it, which is a worse thing
+		// than the cone (`pictures/duck-bill-gap-mouth.png`).
+		furrow: [[0, 0.0002], [0.45, 0.00035], [0.8, 0.0002], [1, 0]],
+		py: 0.089, pz: 0.086, parent: root,
 	});
-	beak.receiveShadows = false;
+	bill.receiveShadows = false;
 	// The eyes: two beads. At the distance the pool is looked at from these are a fraction of a pixel, and
 	// they stay because a duck with no eyes is a chess piece the moment anybody walks up to the coping.
 	for (const side of [1, -1]) {
@@ -116,4 +138,130 @@ export function buildDuck(scene, mats, pool, { x = -1.9, z = 4.6, seed = 7, shad
 			root.rotation.y = Math.sin(t * turn * 6.283) * 0.7 + Math.sin(t * 0.021) * 0.5;
 		},
 	};
+}
+
+// How the bill is drawn, in metres and measured from its own middle line where it leaves the face.
+//
+// `t` runs its length: 0 at the face, 1 at the tip. Each of `wide`, `high`, `low` and `at` is a table of
+// [t, metres] pairs read with `along` (`src/loft.js`), so the whole shape is a set of measurements and not
+// a formula: `wide` how far each cheek stands out, `high` how far the top rises over the middle line,
+// `low` how far the underside hangs below it, and `at` where that middle line itself goes.
+//
+// The numbers are those of a bath toy and not of a mallard. A moulded bill is broad — near as wide as the
+// face it comes out of — thin end to end, and much the same girth nearly all the way along, so it reads as
+// one flat cheerful blade to a rounded end: 45 mm across and 15 mm thick, 68 mm of it drawn of which some
+// 50 mm shows clear of the face. A cone is the opposite of that in every one of those, and a cone is what
+// used to be there.
+const BILL = {
+	length: 0.068,
+	// Broad at the front and narrow where it joins the face: the widest thing about a toy's bill is in front
+	// of the cheek it grows out of, not behind it, which is the number that separates a bill from a funnel.
+	wide: [[0, 0.0105], [0.2, 0.0205], [0.5, 0.023], [0.72, 0.0228], [0.88, 0.019], [1, 0.0092]],
+	high: [[0, 0.0058], [0.3, 0.0066], [0.66, 0.0058], [0.9, 0.004], [1, 0.0022]],
+	low: [[0, 0.006], [0.34, 0.007], [0.66, 0.0058], [0.9, 0.0038], [1, 0.002]],
+	// Level. A toy's bill points where the face points and does not sag: a drooping bill is a sick duck, and
+	// a sagging underside is what shows a visitor the underside of it from the coping.
+	at: [[0, 0.0005], [0.6, 0.0002], [1, 0.0002]],
+};
+
+/**
+ * The bill, lofted: a section drawn at each station along the length, and the skin stretched between the
+ * neighbouring sections. This is how the koi and the shark are made (`src/loft.js`), and for the same
+ * reason — only a drawing that changes station by station makes a shape that is flat one way, rounded the
+ * other and rounded off at the end, which is what a moulded bill is.
+ *
+ * The section is a squashed oval — `wide` across, `high` above the middle line and `low` below it — and
+ * `square` says how squared off it is: 2 is a plain ellipse, and a toy's bill wants about 3, because a
+ * moulded bill has flat sides and a flattish top with a firm rounded corner where the two meet, and an
+ * ellipse has none of those. `girth` is the points in each section and must divide by four, so one point
+ * falls at the top, one at the bottom and one on each cheek: the cheek points are where the mouth line is
+ * cut.
+ *
+ * Two things are then carved out of the section as it is drawn: `ridge` lifts the middle of the top, which
+ * is where the two halves of the mould meet; and `furrow` nicks each cheek in along a soft line, which is
+ * the mouth. The furrow is a GROOVE and not a notch — a nick that reaches only the one point of the section
+ * cuts a V, and a V at each cheek reads from the front as a pair of hooks.
+ *
+ * Both ends are closed with a fan; the front one is drawn out past the last section and down by `hook`, so
+ * the end of the bill is a moulded round end and not a cut tube.
+ */
+function billPiece(scene, name, mat, {
+	length, stations = 18, girth = 24, square = 3.1,
+	wide, high, low, at, ridge = 0, furrow = 0, hook = 0.0002,
+	px = 0, py = 0, pz = 0, parent = null,
+}) {
+	const read = (v, t) => (typeof v === "number" ? v : along(v, t));
+	const e = 2 / square;
+	const rows = Math.max(2, Math.round(stations));
+	const positions = [];
+	const uvs = [];
+	const indices = [];
+	const ring = (t) => {
+		const w = read(wide, t);
+		const up = read(high, t);
+		const dn = read(low, t);
+		const y0 = read(at, t);
+		const out = [];
+		for (let j = 0; j < girth; j++) {
+			// Under the bill first, then round: belly, right cheek, top, left cheek.
+			const th = (j / girth) * Math.PI * 2 - Math.PI / 2;
+			const cx = Math.cos(th);
+			const sy = Math.sin(th);
+			let x = Math.sign(cx) * Math.pow(Math.abs(cx), e) * w;
+			let y = Math.sign(sy) * Math.pow(Math.abs(sy), e) * (sy > 0 ? up : dn);
+			// The moulding line along the top, and nowhere else.
+			if (sy > 0) y += read(ridge, t) * Math.pow(Math.max(0, 1 - (x / w) * (x / w)), 1.6);
+			out.push([x, y0 + y]);
+		}
+		// The mouth line, taken off each cheek and faded out along the cheek either side of it, so it is a
+		// groove and not a notch: a nick that reaches only the one point of the section cuts a V, and a V at
+		// each cheek reads from the front of the duck as a pair of hooks.
+		const nick = read(furrow, t);
+		if (nick) {
+			for (const cheek of [girth / 4, girth * 0.75]) {
+				for (let d = -3; d <= 3; d++) {
+					const p = out[(cheek + d + girth) % girth];
+					const bell = 0.5 * (1 + Math.cos((d / 3.5) * Math.PI));
+					p[0] -= Math.sign(p[0]) * nick * bell;
+				}
+			}
+		}
+		return out;
+	};
+	for (let i = 0; i <= rows; i++) {
+		const t = i / rows;
+		const r = ring(t);
+		const z = t * length;
+		for (let j = 0; j < girth; j++) {
+			positions.push(r[j][0], r[j][1], z);
+			uvs.push(t, j / girth);
+		}
+	}
+	for (let i = 0; i < rows; i++) {
+		for (let j = 0; j < girth; j++) {
+			const a = i * girth + j;
+			const b = i * girth + ((j + 1) % girth);
+			const c = (i + 1) * girth + j;
+			const d = (i + 1) * girth + ((j + 1) % girth);
+			indices.push(a, b, c, b, d, c);
+		}
+	}
+	// The back end is inside the head and is closed anyway; the front one is drawn out past the last
+	// section, and a little below it, so the end of the bill is a moulded round end and not a cut tube.
+	for (const forward of [false, true]) {
+		const i = forward ? rows : 0;
+		const t = i / rows;
+		const centre = positions.length / 3;
+		positions.push(0, read(at, t) - (forward ? hook : 0), t * length + (forward ? read(wide, t) * 0.55 : 0));
+		uvs.push(t, 0.5);
+		for (let j = 0; j < girth; j++) {
+			const a = i * girth + j;
+			const b = i * girth + ((j + 1) % girth);
+			if (forward) indices.push(a, b, centre);
+			else indices.push(a, centre, b);
+		}
+	}
+	const mesh = poly(scene, name, { positions, indices, uvs, mat, parent });
+	mesh.position.set(px, py, pz);
+	return mesh;
 }

@@ -9397,3 +9397,99 @@ underneath it).
 its word and was told by the master that it was a waterfall, and who has now written the test that would have
 caught it. A rat who cannot hear the difference between a cricket and a falling stream has no business in a
 garden at night; a rat who can measure the difference and did not is worse, and has said so. 🐎
+
+---
+
+## Session seventy-six: the stream re-laid straight to the back, and then made of dirt (蝉 aside)
+
+**What the master asked for, in order.** (1) "the stream goes in the opposite direction I intended… I want the
+stream to go straight towards the back of the property." (2) "It should have no major bends, but it's fine to
+look organic and curve a bit." (3) "the stream should be organic, and dirt-based. The pond itself already serves
+as inspiration for how to sculpt the stream."
+
+**The route.** The old course started at the north-east hedge, ran the length of the east side, turned the
+corner and followed the whole south boundary west to the pond: 62 metres going round the entire yard. The new
+course is 33.7 metres from the back (north) hedge at (-19.5, -20.4) to the pond's north edge at (-19.5, 12.9),
+and it never strays more than a metre either side of x = -20.4. The sway is two waves of unequal length (0.29
+and 0.71 radians to the metre on the width, 0.23 on the bank, 0.41 on the lip) so it is not a drawn arc. The
+phases are FIXED numbers in the file, not drawn with the random generator, because the garden has to be able to
+ask how wide the water is at a place before it sows a tuft there.
+
+**The plank bridge is gone**, and with it the six planks and two stringers: the bridge stood where the garden
+path crosses at (0.6, 18.8), and the path only crosses the water if the water goes round the south of the yard.
+Straight to the back, it never meets the path. The bridge is in the git history at v0.95.0 and v0.96.0.
+
+**What stood in the way.** `tools/streamroute.js` is new: it boots the Villa with the stream off, walks a
+proposed centre line at 20 cm and names every mesh standing inside a clearance, plus whether the bank is
+walkable. It named all six lawn boulders (they were sown at x -19 to -22.5, exactly on the new line) — they now
+sit at x -24.5 to -28. The palms at x -17 keep their trunks out and their fronds over the water, which is a
+gain. `westlawn` in `tools/cameras.txt` stood at (-20, 10), which is now the middle of the channel; it moved to
+the bank, and `streamup`/`streamdown` were added at the ends of the camera list to look along the water.
+
+**Dirt, not dressing.** The lining is out: no coping course, no stone walls, no pale stone bed. From the water
+outward it is now the bank's face (earth), a bare damp band 25-65 cm wide, and a grass apron down to the lawn —
+the pond's own `MARGIN` trick over again, because the cut edge of a lawn must never meet water. One material
+runs bed-to-lip-to-band so there is no line in it. `mats.streamEarth` is new: the pond's silt was tried first
+and came out the same olive as the grass it sits in (bank (43,50,15) against lawn (62,84,19)) — right
+difference in brightness, no difference in colour. The earth is now paint [158,130,94] over `soilCanvas` and
+paints (47,35,15): brown ✓.
+
+**The water's colour went with the bed.** The film used to be blue because the bed used to be pale stone. Over
+dirt it is the pond's tannin, lighter: emissive (0.055,0.075,0.045), mirror [112,130,106], alpha 0.5. Measured
+across the bank view: water (43,45,23), earth (47,35,15), stones (37,30,18), lawn (63,84,20) — four different
+things, and the eye can tell which is which.
+
+**Stones at the edge, the pond's way.** 31 edging stones and 5 boulders (three at the head, two pinching the
+mouth), each sunk into the bank and turned, wearing `mats.pondStone`, with their feet recorded in
+`inStreamStone` so no tuft grows out of one. The head's dressed slab is gone: a low mound of earth and three
+stones, because water comes in under a hedge and not through a sluice. The veil is now eight tenths of the
+water's width, not bank to bank — a fall across the whole channel is a weir.
+
+**Three faults the pictures caught, all of them mine:**
+
+1. **The stones were buried.** They measured 0.1% of a frame. Cause: the crown was set before the stone was
+   tilted and crumpled, and both drop it — a 0.5 m stone tipped 14° falls 4 cm, a 30% crumple 3 more. Fixed by
+   `settle(mesh, surfaceY, show)`, which reads the worked stone's own top and puts the crown 3-15 cm over the
+   bank. Verified: 36 stones, 0 showing less than 2 cm. (A probe of my own misled me for a while here:
+   `getBoundingInfo(true)` in this library still answers in LOCAL space, so "world crown" was the crown above
+   the stone's own middle. Add the mesh's own y and the number is real.)
+2. **The south bank was lit from below.** A strip's section must run from the negative offset to the positive
+   one; the south bare band and apron were written the other way, `poly` computed a normal pointing into the
+   earth, and the bank was painted by the ground's own green light — (47,51,14), more green than red. Reversed
+   the two sections: (47,35,15). Invisible in the geometry, plain in the picture.
+3. **The station lookup drifted.** `atRun` divided by `STATION`, but the resampling rounds the station COUNT, so
+   the true spacing is length/count and the drift reaches a whole station over 34 m — which is a decimetre out
+   on the water's width and a stone sunk at the wrong height. It searches the stations by their own `run` now.
+
+**Grass now comes to the water.** `inStream` used to keep everything out to 1.7 m and bought a bald ring down
+both banks. It measures from the water's own edge at that place along the course, with the pond's 6 cm margin,
+and `inStreamStone` keeps the tufts off the stones. The walk is kept off by `streamKeepOff` = 1.27 m instead of
+1.82 m, so a visitor can stand on the bank and crouch at the lip — the pond's rule, "standing on a rim stone is
+what a pond rim is for".
+
+Look at: `s107-dirt-up.png`, `s107-dirt-down.png`, `s107-head.png`, `s107-bank-across.png`, `s108-mouth.png`.
+Measured: 33.7 m, 47 meshes, 9 blockers, 60 fps, 1475 meshes in the scene.
+
+**The master's picture.** `tmp_new_stream_location.png` (3361x1783) arrived TRUNCATED — no IEND, the IDAT stream
+ends early; 88% of its rows inflate. Read numerically (this model cannot see images): a red stroke from
+(804,679) to (2246,998), one line, 12° off horizontal, ending at the edge of a blue patch. It agrees with the
+words, and the words led anyway. The file is left in the folder uncommitted.
+
+**Raven.** The master sent freesound.org/s/512780 — "CrowOrRaven2.wav" by iwanPlays, CC0, 1.328 s. Weighed
+before it was let in (loudest band 2600 Hz, a call that fills its own 1.26 s): `sounds/raven-croak.mp3`, and
+`RECORDINGS.raven` now voices the bird instead of the synthesised croak. Measured through the mixer at
+`LEVEL.raven`: peak 0.218, rms 0.0166 — the loudest call in the garden, above the frog's 0.153 ✓. A trap found
+on the way: `clip`'s `slice` is a range of LENGTHS, not a start and an end, so `slice: [0, 1.26]` played a
+random fraction of the croak; and its guard bailed out to 0.1 s when a slice left less than 5 cm of slack, which
+would have played a whole call as a click. A one-call file is now `slice: [1.26, 1.26]` and starts at the top.
+
+**Uncommitted on purpose:** `src/materials.js` carries my `streamEarth` and the stream water's retune AND
+another hand's staged duck work; `src/textures.js`, `src/koi.js`, `src/loft.js`, `src/duck.js`,
+`tools/duckbill.js`, `tools/koishot.js` are that hand's. `src/stream.js` falls back to `mats.pondSilt` if
+`streamEarth` is not in the build, so no checkout is broken by this. **Do not `git add -A` in this folder.**
+
+Next: the stream still has no reflection of its own (the pool and the pond each have a mirror); the veil has
+none either. And the trickle's recording is a test the master has not yet passed or failed.
+
+— Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who laid a canal, was told it
+ran the wrong way, and has now dug 34 metres of mud with stones in it. The horse kneighs; the anvil stays. 🐎
