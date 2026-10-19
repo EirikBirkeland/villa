@@ -237,7 +237,19 @@ const character = await page.evaluate(async () => {
 			loudestBand: loudest,
 			loudOverQuiet: Number((loud / Math.max(quiet, 1e-7)).toFixed(2)),
 			// The rule, said as a number rather than as a sentence, so a file can be refused by a tool.
-			readsAs: loudest === "low" || loud / Math.max(quiet, 1e-7) < 4 ? "WEATHER, not a creature" : "a creature",
+			//
+			// Two tests, not one, and the second was wrong until a real frog was put through it. A file whose loudest
+			// band is the low one used to be refused outright, which is how the borrowed "crickets" — a wind, whose
+			// loud quarter-second was only twice its quiet one — came to be thrown out. But a bullfrog's croak is
+			// LOW by its nature: this file reads loudest at 220 Hz and would have been refused, wrongly, on the first
+			// clause alone. What parts a wash from an animal is not the pitch but the PUNCTUATION: `loudOverQuiet`
+			// compares the loudest windows of the file with its quietest, and it measured about 2 for the wind in a
+			// file, 64 for a frog calling between silences, and 7635 for a whole pond with gaps in it. So a low file
+			// is only refused when it is also a steady one.
+			readsAs:
+				loud / Math.max(quiet, 1e-7) < 4 || (loudest === "low" && loud / Math.max(quiet, 1e-7) < 12)
+					? "WEATHER, not a creature"
+					: "a creature",
 		};
 	}
 	return out;

@@ -4,7 +4,7 @@
 
 import { texture, grassCanvas, paverCanvas, poolTileCanvas, plasterCanvas, teakCanvas, roofTileCanvas, palmBarkCanvas, palmBladeCanvas, bananaBladeCanvas, stalkCanvas, bushCanvas, bushEdgeCanvas, bushClusterCanvas, tuftAtlasCanvas, clothCanvas, cushionCanvas, copingCanvas, poolWaterCanvas, causticsCanvas, rippleCanvas, hedgeCanvas, canopyClusterCanvas, canopyAtlas, farCanopyCanvas, distanceCanvas, greyNoiseCanvas, bumpFromCanvas, timberCanvas, terracottaCanvas, rockCanvas, soilCanvas, rugCanvas, butterflyWingCanvas, cockroachCanvas, frogSkinCanvas, lilyPadCanvas, rippleRingCanvas, koiCanvas, sharkSkinCanvas, bloodCanvas, geckoSkinCanvas, royalCoinCanvas, puffCanvas, flashCanvas, smokeCanvas, ringCanvas, streakCanvas } from "./textures.js";
 
-const { PBRMaterial, Color3, Color4, Texture, ImageProcessingConfiguration } = BABYLON;
+const { PBRMaterial, StandardMaterial, Color3, Color4, Constants, Texture, ImageProcessingConfiguration } = BABYLON;
 
 function pbr(scene, name, { color = [255, 255, 255], roughness = 0.8, metalness = 0, alpha = 1, environmentalIntensity = 1, pattern = 0 } = {}) {
 	const mat = new PBRMaterial(name, scene);
@@ -1821,6 +1821,21 @@ export function createMaterials(scene) {
 	mats.muzzleFlash.transparencyMode = 3; // add
 	mats.muzzleFlash.backFaceCulling = false;
 	mats.muzzleFlash.disableDepthWrite = true;
+	// The cone of the flashlight's beam. Not a surface and not lit: it is what the light in the air looks like
+	// from the side, so it ADDS a little warmth to everything behind it and writes no depth, which is why it can
+	// stand in front of the whole Villa without hiding any of it. Note that this is a plain material, not a PBR
+	// one: `transparencyMode` on a PBR material means something else entirely (3 there is a decal, and a decal of
+	// a black cone is a black cone), and what a beam needs is an ordinary additive blend. The brightness is the
+	// alpha, and `src/flashlight.js` writes it every frame; it starts dark.
+	mats.flashlightBeam = new StandardMaterial("flashlightBeamMat", scene);
+	mats.flashlightBeam.disableLighting = true;
+	mats.flashlightBeam.diffuseColor = new Color3(0, 0, 0);
+	mats.flashlightBeam.specularColor = new Color3(0, 0, 0);
+	mats.flashlightBeam.emissiveColor = new Color3(1, 0.93, 0.79);
+	mats.flashlightBeam.alpha = 0;
+	mats.flashlightBeam.alphaMode = Constants.ALPHA_ADD;
+	mats.flashlightBeam.backFaceCulling = false;
+	mats.flashlightBeam.disableDepthWrite = true;
 	// Where a round lands: three puffs out of one painted cloud, differing only in their colour, because a
 	// spurt the wrong colour is the fastest way to make a hit look pasted onto the picture. All three are
 	// self-lit and added or blended the same way the pond's ripples are: the mark has to be visible against a

@@ -3231,10 +3231,14 @@ export function koiCanvas(size = 256, { style = "kohaku", seed = 61 } = {}) {
 	const ctx = context2d(canvas);
 	const rand = randomGenerator(seed);
 	const styleOf = {
-		kohaku: { base: [220, 206, 178], belly: [236, 228, 204], patch: [206, 56, 24], spot: null },
-		gold: { base: [222, 132, 30], belly: [240, 190, 92], patch: null, spot: null },
-		lacery: { base: [217, 204, 176], belly: [234, 226, 202], patch: [204, 60, 26], spot: [42, 38, 44] },
-	}[style] || { base: [220, 206, 178], belly: [236, 228, 204], patch: [206, 56, 24], spot: null };
+		// The white of a kohaku is the whitest thing on a show fish, and it is the first thing the tannin
+		// water takes away: painted at the old [220,206,178] the flanks came back the colour of pond scum at
+		// three metres and the red saddles floated on nothing. So the ground is near-white and the red is
+		// hotter, and it is the water that makes the bargain afterwards.
+		kohaku: { base: [238, 233, 217], belly: [247, 243, 230], patch: [212, 46, 18], spot: null },
+		gold: { base: [228, 128, 24], belly: [244, 188, 84], patch: null, spot: null },
+		lacery: { base: [234, 229, 213], belly: [245, 241, 228], patch: [208, 48, 20], spot: [40, 36, 42] },
+	}[style] || { base: [238, 233, 217], belly: [247, 243, 230], patch: [212, 46, 18], spot: null };
 
 	ctx.fillStyle = `rgb(${styleOf.base[0]},${styleOf.base[1]},${styleOf.base[2]})`;
 	ctx.fillRect(0, 0, size, size);
@@ -3259,18 +3263,20 @@ export function koiCanvas(size = 256, { style = "kohaku", seed = 61 } = {}) {
 	// red mask with two black eye holes in it, which is a ghost and not a carp (`pictures/tmp-wedge.png`).
 	const saddles = styleOf.patch ? (style === "gold" ? 0 : 3) : 0;
 	const p = styleOf.patch || styleOf.base;
-	const HEAD = 0.8; // where the plain head begins, as a fraction of the fish's length
+	const HEAD = 0.78; // where the plain head begins, as a fraction of the fish's length
 	for (let i = 0; i < saddles; i++) {
 		const cx = size * (0.14 + (i + 0.2 + rand() * 0.42) * ((HEAD - 0.22) / saddles));
 		const cy = size * (0.5 + (rand() - 0.5) * 0.1);
-		const rx = size * (0.082 + rand() * 0.045);
+		const rx = size * (0.095 + rand() * 0.05);
 		// Taller than wide: v here is the girth, so a saddle needs to reach from the back (0.5) down the two
 		// flanks (0.25 and 0.75) and stop short of the belly (0 and 1). Painted flat along the middle it reads,
 		// from the bank, as a red coin on a grey fish; made any bigger it is not a kohaku but a tomato.
 		const ry = rx * (1.15 + rand() * 0.35);
-		const grad = ctx.createRadialGradient(cx, cy, rx * 0.3, cx, cy, rx * 1.18);
+		// And a crisp edge, not a fade: a soft-edged blotch at three metres is a rash, and a show kohaku's
+		// markings have a line round them where the red simply stops.
+		const grad = ctx.createRadialGradient(cx, cy, rx * 0.42, cx, cy, rx * 1.1);
 		grad.addColorStop(0, `rgb(${p[0]},${p[1]},${p[2]})`);
-		grad.addColorStop(0.8, `rgb(${p[0]},${p[1]},${p[2]})`);
+		grad.addColorStop(0.88, `rgb(${p[0]},${p[1]},${p[2]})`);
 		grad.addColorStop(1, `rgba(${p[0]},${p[1]},${p[2]},0)`);
 		ctx.save();
 		ctx.translate(cx, cy);
@@ -3279,7 +3285,7 @@ export function koiCanvas(size = 256, { style = "kohaku", seed = 61 } = {}) {
 		ctx.translate(-cx, -cy);
 		ctx.fillStyle = grad;
 		ctx.beginPath();
-		ctx.arc(cx, cy, rx * 1.18, 0, Math.PI * 2);
+		ctx.arc(cx, cy, rx * 1.1, 0, Math.PI * 2);
 		ctx.fill();
 		ctx.restore();
 	}

@@ -21,6 +21,7 @@ import { buildKoi } from "./koi.js";
 import { buildShark } from "./shark.js";
 import { buildWeapon } from "./weapon.js";
 import { buildRocket } from "./rocket.js";
+import { buildFlashlight } from "./flashlight.js";
 import { installWaterAlpha } from "./water.js";
 import { patchToneCurve } from "./tone.js";
 
@@ -473,13 +474,44 @@ function boot() {
 			// master's words, the worst sound imaginable — rightly: a noise you cannot locate and cannot walk away
 			// from is a fault, not an atmosphere. So the water is recorded droplets, and it is only there when you
 			// are standing at the bank, and it is gone when you take three steps back.
+				sound.startMurmur({
+					name: "trickle",
+					file: "trickle",
+					loud: LEVEL.trickle,
+					near: (p) => stream.distanceTo(p.x, p.z),
+					bank: 0.7,
+					span: 4.5,
+				});
+		}
+		// THE POND'S FROGS, ON THEIR OWN AND NOT ON A KEY — the master's words: take the frog off the
+		// keyboard, I want it in the garden on its own. The four animals on the stones have always croaked by
+		// themselves (`src/creatures.js`), but the plate used to read `M — the frogs and the geckos, off and on`,
+		// which told a visitor that the pond was something you had to remember to switch on. What was missing
+		// behind the four is the pond itself talking, and that is a held sound and not a call: a borrowed chorus
+		// of tropical frogs at night, looped at the water, coming up when the day goes out and stopping when it
+		// comes back — `scale` is asked every frame, and a frog at noon is a frog in the wrong place. It is
+		// anchored to the water and not spread over the garden: loudest on the bank, thin over the lawn, gone at
+		// the hedge. `M` takes it with everything else, as it takes the trickle.
+		if (pond && pond.plan && dial("frog", 1) > 0) {
 			sound.startMurmur({
-				name: "trickle",
-				file: "trickle",
-				loud: LEVEL.trickle,
-				near: (p) => stream.distanceTo(p.x, p.z),
-				bank: 0.7,
-				span: 4.5,
+				// The pond's own frogs: a chorus at the water's edge, which is what a Thai pond actually sounds
+				// like at night, and which is NOT the single croak of the frog that sits on the rim four metres
+				// from where the visitor starts — one is an animal, the other is the place. It is scaled by the day
+				// cycle and so is silent at noon. What used to hang here was a bed of crickets, which the master
+				// sent back for sounding like weather; these are frogs, and they are recorded as frogs.
+				name: "frogChorus",
+				file: "frogChorus",
+				loud: LEVEL.frogChorus,
+				// Measured from the water's edge and not from its middle: the pond is some metres across, and a
+				// bed that is only full at the middle of the water would begin to fade before a frog on the near
+				// stone was left behind.
+				near: (p) => Math.max(0, Math.hypot(p.x - pond.plan.cx, p.z - pond.plan.cz) - 4),
+				bank: 1.5,
+				span: 16,
+				// A fade and not a switch: the day cycle already carries a `night` number that runs from nothing at
+				// noon to one at midnight, so the pond comes up through the dusk and stops at the dawn instead of
+				// being cut over at one hour like a lamp on a timer.
+				scale: () => (day ? day.night : 0),
 			});
 		}
 		// No cricket bed. One was tried, and the master asked what the waterfall was. There is no waterfall in
@@ -627,6 +659,22 @@ function boot() {
 			});
 		}
 	}
+	// The flashlight (`src/flashlight.js`): `F`, and the night becomes a place you can walk in. It is built
+	// whether or not there is a gun, because the garden at midnight is the reason to be out in it.
+	let flashlight = null;
+	if (dial("flash", 1) > 0) {
+		flashlight = buildFlashlight(scene, mats, { camera, shadows });
+		const flashHeld = new Set();
+		window.addEventListener("keydown", (event) => {
+			if (event.code !== "KeyF") return;
+			// One tap, one change of mind: a held `F` would stutter the beam forty times a second, which is a
+			// seizure and not a signal.
+			if (!flashHeld.has("KeyF")) flashlight.toggle();
+			flashHeld.add("KeyF");
+		});
+		window.addEventListener("keyup", (event) => flashHeld.delete("KeyF"));
+		window.addEventListener("blur", () => flashHeld.clear());
+	}
 	// The day has to be counted and not merely told, because "every few days" is the whole of the raven's bill and
 	// the day clock only knows the hour. It ticks when the hour goes past midnight, and so a page left open
 	// overnight gets its coin overnight, which is what a bird would have done.
@@ -741,6 +789,7 @@ function boot() {
 		// the day happens to be running would be a mark nobody could aim at.
 		if (gun) gun.animate(delta);
 		if (launcher) launcher.animate(time, delta);
+		if (flashlight) flashlight.step();
 		// A cloud twenty-six metres over the garden shades the garden, and the day knows nothing about it: the
 		// sun, the sky's fill and the bounce are all written from the hour alone. So the shade is multiplied in
 		// here — after the day has written its numbers and after the cloud has measured itself, and before the
@@ -802,7 +851,7 @@ function boot() {
 		}
 	});
 	document.body.classList.add("ready");
-	window.__villa = { engine, scene, camera, mats, sun, sunLight: light, hemi, bounce, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, stream, duck, fireflies, day, sound, geckos, raven, gun, launcher };
+	window.__villa = { engine, scene, camera, mats, sun, sunLight: light, hemi, bounce, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, stream, duck, fireflies, day, sound, geckos, raven, gun, launcher, flashlight };
 	// The two numbers a bite leaves, for the tools. Read them to see what the animal left behind; write them to
 	// pose a flinch, because a jolt that lasts a third of a second is not something a picture can wait for.
 	window.__villa.bite = {
