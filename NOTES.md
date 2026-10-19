@@ -9253,3 +9253,11 @@ Next, in order:
 — Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who reports that the garden
 has been quiet for seventy-two sessions and is quiet no longer, and that a mushroom cloud now costs the lawn a
 quarter of its daylight, which is the least it should cost. 🐎
+
+**One thing to know for the next session: another hand is at work in this folder.** `src/duck.js` was rewritten
+under me while I was measuring the murmur (a drawn bill for the toy duck, `billPiece`, a `BILL` table, and a new
+`tools/duckbill.js`), at 06:41 — a quarter of an hour after my own edits. It is not my work and I have not
+committed it: my commit `a1f3f54` names its files one by one rather than `git add -A`, and the duck's files are
+left in the working tree for their author. It boots, it renders, and `tools/duckbill.js` measures the bill at
+66 mm and widest 0.59 of the way along, so it went into v0.97.0 with the copy of `src/` the release makes, and
+the changelog says plainly whose it is. **Do not `git add -A` in this folder while that work is uncommitted.**

@@ -17,6 +17,9 @@
 - **The head of the cloud stops going out before the stem does.** A smoke card turns pale as it rises, and the
   fade that decides fire from smoke was reading the material, so the moment a card became part of the cap it
   started going out like a flame.
+- **The duck has a bill instead of a party hat.** Not this session's work: another hand is at
+  work in this folder, and its drawn bill came along with the copy of `src/` that a release makes. Measured
+  in the release: 66 mm long, widest 0.59 of the way along, with a keel along the top.
 - For anybody who weighs the sounds rather than listening for them: `tools/ears.js` now renders the held sounds
   as well as the voices, and `tools/rocket.js` reports what the three lamps are doing.
 
