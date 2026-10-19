@@ -476,22 +476,46 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	// ---- the head: where the water comes in --------------------------------------
 	//
 	// The first version put a dressed slab across the channel there, which is a sluice. Water in a garden comes
-	// in under a hedge, out of a lump of gravel, between two stones. So: a low mound of the same damp earth the
-	// banks are made of, laid behind the channel's start, and three stones about the opening.
+	// in under a hedge, out of a lump of gravel, between two stones. So: a hummock of the same damp earth the
+	// banks are made of, laid across the channel's start, and three stones about the opening.
+	//
+	// The first hummock was a pancake: 0.4 m of sphere sunk 0.14, so its crown stood twelve centimetres over the
+	// lawn while the water's surface stood at fifteen — a flat dirt disc lying BEHIND the end of the channel,
+	// which is a lid on a table and not a spring. A hummock has to be taller than the water it gives birth to,
+	// and its foot has to run into the channel, so that the water is buried for its first three quarters of a
+	// metre and comes out at the place where the mound's surface meets the water's. That is what a spring looks
+	// like: not an edge, a coming-out.
 	const head = line[0];
 	const headNext = line[1];
 	const inX = (headNext.x - head.x) / Math.hypot(headNext.x - head.x, headNext.z - head.z);
 	const inZ = (headNext.z - head.z) / Math.hypot(headNext.x - head.x, headNext.z - head.z);
+	const moundRX = 1.7;
+	const moundRY = 0.56;
+	const moundRZ = 1.1;
+	const moundX = head.x - inX * 0.35;
+	const moundZ = head.z - inZ * 0.35;
+	const moundY = -0.06;
+	/**
+	 * The hummock's own surface height at a place, from the ellipsoid it is. The stones that sit on it have to be
+	 * settled on THIS and not on the lawn: a stone settled to 0.02 on a mound standing half a metre over the
+	 * lawn is a stone buried in a hill.
+	 */
+	const moundAt = (x, z) => {
+		const ux = (x - moundX) / moundRX;
+		const uz = (z - moundZ) / moundRZ;
+		const inside = 1 - ux * ux - uz * uz;
+		return inside <= 0 ? 0 : moundY + moundRY * Math.sqrt(inside);
+	};
 	const mound = sphere(scene, "streamHeadMound", {
-		diameterX: 3.4,
-		diameterY: 0.4,
-		diameterZ: 2.2,
+		diameterX: moundRX * 2,
+		diameterY: moundRY * 2,
+		diameterZ: moundRZ * 2,
 		segments: 9,
-		// Behind the head and a little under the lawn, so the channel looks cut INTO the mound rather than a
-		// strip of earth laid up against a dome.
-		px: head.x - inX * 0.9,
-		py: -0.14,
-		pz: head.z - inZ * 0.9,
+		// Across the channel's start and a little under the lawn, so the channel looks cut INTO the mound rather
+		// than a strip of earth laid up against a dome.
+		px: moundX,
+		py: moundY,
+		pz: moundZ,
 		mat: earth,
 	});
 	const moundWorked = crumple(mound, { at: 0.16, seed: 5111, lobes: 5 });
@@ -500,13 +524,24 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	mound.receiveShadows = true;
 	if (shadows) shadows.addShadowCaster(mound);
 	built.push(mound);
+	// No sedge on the hummock: it is bare, damp, newly-washed ground, and the garden is told so through the
+	// same list it reads for the stones.
+	feet.push({ x: moundX, z: moundZ, r: moundRX * 0.8 });
 	for (let i = 0; i < 3; i++) {
-		// Two on the banks where the water comes through, and one behind on the mound: three stones at an
-		// opening are the smallest number that reads as a place rather than an accident.
+		// Two on the banks where the water comes through, and one on the hummock behind: three stones at an
+		// opening are the smallest number that reads as a place rather than an accident. The pair stand a little
+		// downstream of the channel's start, because that is where the water reappears from under the mound —
+		// put them at the start itself and they stand inside the hill.
 		const where =
 			i === 2
-				? { x: head.x - inX * 1.15, z: head.z - inZ * 1.15, off: 0 }
-				: { x: head.x + head.nx * (i === 0 ? 1 : -1) * (head.hw + 0.3), z: head.z + head.nz * (i === 0 ? 1 : -1) * (head.hw + 0.3), off: head.hw + 0.3 };
+				? { x: head.x - inX * 0.55 + head.nx * 0.75, z: head.z - inZ * 0.55 + head.nz * 0.75, off: null }
+				: {
+						x: head.x + head.nx * (i === 0 ? 1 : -1) * (head.hw + 0.3) + inX * 0.7,
+						z: head.z + head.nz * (i === 0 ? 1 : -1) * (head.hw + 0.3) + inZ * 0.7,
+						off: head.hw + 0.3,
+					};
+		const onTop = where.off === null;
+		const ground = onTop ? moundAt(where.x, where.z) : bankAt(head, where.off);
 		const across = 0.5 + rand() * 0.4;
 		const tall = 0.24 + rand() * 0.22;
 		const boulder = sphere(scene, `streamHeadBoulder${i}`, {
@@ -515,7 +550,7 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 			diameterZ: across * (0.8 + rand() * 0.3),
 			segments: 6,
 			px: where.x,
-			py: (i === 2 ? 0.02 : bankAt(head, where.off)) - tall * (0.05 + rand() * 0.2),
+			py: ground - tall * (0.05 + rand() * 0.2),
 			pz: where.z,
 			mat: mats.pondStone,
 		});
@@ -524,7 +559,7 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 		boulder.rotation.z = (rand() - 0.5) * 0.5;
 		const workedBig = crumple(boulder, { at: 0.34, seed: 6100 + i * 17, lobes: 5 });
 		skinTint(boulder, workedBig, { at: 0.3, low: 0.55 });
-		settle(boulder, i === 2 ? 0.02 : bankAt(head, where.off), 0.1 + rand() * 0.14);
+		settle(boulder, ground, 0.1 + rand() * 0.14);
 		boulder.refreshBoundingInfo();
 		boulder.receiveShadows = true;
 		if (shadows) shadows.addShadowCaster(boulder);
@@ -668,6 +703,10 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 		blockers.push([x0, x1, z0, z1]);
 	};
 	for (let i = 0; i < course.length - 1; i++) pieceSeg(course[i], course[i + 1]);
+	// The hummock the water comes out of is half a metre of earth that `makeGround` knows nothing about, and a
+	// visitor walking into it at lawn height would walk through a hill. The channel's own blocks stop short of
+	// it — they run to `streamKeepOff` either side of the water, and the hummock is wider than that.
+	blockers.push([moundX - moundRX, moundX + moundRX, moundZ - moundRZ, moundZ + moundRZ * 0.75]);
 
 	// ---- the flow ---------------------------------------------------------------
 	//
