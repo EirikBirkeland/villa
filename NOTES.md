@@ -10480,3 +10480,19 @@ apart. v0.100.0: grain enabled, intensity 3.5, animated, and the panel moves a m
 worst pixel moving 6 — the complaint, alive in the previous release. v0.100.1, the released one: intensity 1.1,
 not animated, panel **0.00, worst 0**. The working tree: the same 0.00. No page errors in any of the three. So the
 cure is in the version the master can walk into from the menu, and not only in my folder.
+
+## Session eighty-four, sixteenth stretch: `?still=1` now means still — the water never stopped
+
+Sweeping for any other sign of the flicker, I compared two frames in a frozen scene from four stands. Two were
+perfectly still — the rear at dusk and the room at night, 0.000 mean change, nothing moved. **The pool view moved
+4.24% of its pixels and the pond view 29.59%.** `still` froze creatures, lamps, the raven and the day, and the
+water was still handed the live clock, because `pool.animate`, `pond.animate` and `stream.animate` were passed
+`time` and `delta` whatever the switch said.
+
+They are passed `still ? 0 : time` and `still ? 0 : delta` now, and both halves were measured. With `?still=1` all
+four stands read **0.000 mean change, worst pixel 0, nothing moved at all**. Without the switch the Villa is as
+alive as it was — 36.46% of the pool view moving, 45.73% of the pond view, 1.20% inside at night. Nothing is
+frozen by default and the postcard is a postcard when asked.
+
+Worth keeping in mind for every measurement made in this folder: until now, any frame mean taken across the water
+was moving under the hand that held it.

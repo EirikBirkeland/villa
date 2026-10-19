@@ -756,11 +756,16 @@ function boot() {
 		const delta = engine.getDeltaTime() / 1000;
 		time += delta;
 		if (!pinned) walk.step(delta);
-		pool.animate(time, delta);
+		// Under `?still=1` the water is frozen too, as everything else is. Measured with the scene otherwise dead
+		// still: the pond view moved 29.59% of its pixels between frames and the pool view 4.24%, because the
+		// water animates on its own clock and used to be handed the live one whatever the switch said. That is
+		// why every frame mean ever taken across the water was noisier than it looked, and why a still postcard
+		// from the pond was not quite a postcard.
+		pool.animate(still ? 0 : time, still ? 0 : delta);
 		// The pond wants the delta as well as the clock: its ripple rings are spent over a span of seconds,
 		// and a ring that is never given a delta is a ring that sits on the water for the rest of the day.
-		pond.animate(time, delta);
-		if (stream) stream.animate(time, delta);
+		pond.animate(still ? 0 : time, still ? 0 : delta);
+		if (stream) stream.animate(still ? 0 : time, still ? 0 : delta);
 		if (creatures) creatures.animate(still ? 0 : time, still ? 0 : delta);
 		// The ear goes where the eye goes, and the geckos are told where the boots are so they can be shy of
 		// them. Both are cheap and both are wrong without the frame they live in.
