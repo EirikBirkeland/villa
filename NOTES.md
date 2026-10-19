@@ -10395,3 +10395,31 @@ Honest about the risk: this is a global light change and it moves the midday bri
 is the kind of thing I have been leaving for the master's eye. It goes in because the fault is measured, the
 direction is the edict's own — fidelity across the board — and the whole thing is four numbers in one file with
 the address-bar dials still on top of it: anyone who disagrees says so and the factors go back to one. `pictures/s84-fill-noon.png`.
+
+## Session eighty-four, twelfth stretch: what the halved fill did to the flickering panel, the room, and the night
+
+The master's first complaint — the dark panel in the grey frame at the side of the house — was measured again at
+the same stand and the same hour as its reference numbers, and it is largely gone. Inside `storeWallNorthPart1`,
+as it was released against as it now stands: mean 81.5 → **49.4**, shades 76 → 48, row-to-row swing 50.5 → **29.4**,
+biggest single step 14.6 → **7.9**, and the hard steps that were the complaint **3.13% → 0.57%**. That is better
+than every lever I tried against the panel on its own, and it came free: the marks were the sky cube being read
+into a rough shaded face, and halving the environment halved the marks. What zeroing the material's environment
+used to buy by killing the light (0.47% at mean 30.7) now arrives with the light still on at mean 49.4. The proper
+cure — a convolved HDRI — is still the right thing and still written up above; this is not a substitute for it,
+it is the same disease with the volume turned down.
+
+The price, measured rather than guessed:
+
+* The **room in daylight**, same stand and hour: mean 99.8 → **89.2**, pure black 0.33% → 1.03%. Still mid-grey,
+  still reads as a lit room, no mud. A shade wall like the store's gives up more (it was fed by the sky), which is
+  the honest cost of taking the fill out.
+* The **front of the house at noon**: 138.2 → 131.7, five per cent.
+* **The night, untouched, and proved rather than assumed.** The same rear view at ten o'clock was run against the
+  released build in `releases/v0.99.3/` at the same picture size: released 25.2 mean and 4.19% black, working
+  tree 25.2 and 4.18%, both reporting `night 1.00, sun 1.56, hemi 1.13, env 0.062`. Byte for byte the night it
+  always was, which is what the easing was for. The earlier figure of "about 29" that sat in my notes for that view
+  came from a different framing and should not be trusted; use these.
+
+If the master prefers a gentler cut, it is one number: `fillNow = 1 - 0.5 * w` in `src/daylight.js`. At `0.35` the
+room keeps more of its light and the panel keeps more of its marks; the two move together and there is no way to
+have one without the other until the sky itself is convolved properly.
