@@ -459,37 +459,46 @@ function boot() {
 	// wakes the ear up. `M` turns it off and on again, which is the only new key any of this costs.
 	const sound = dial("sound", 1) > 0 ? buildSound(camera) : null;
 	let nightHeld = false;
-	// The stream's murmur is a held sound, not a call: it is going all the time and the visitor's distance from
-	// the water is what turns it up and down. It cannot start where the water is built, because the ear does not
-	// exist until a person has touched the page, so it starts with the first touch and only once.
-	let waterHeard = false;
-	const startWater = () => {
-		if (waterHeard || !stream || !sound.context) return;
-		waterHeard = true;
+	// The held sounds: the channel's trickle and the cricket bed under the whole night. Neither is a call — each
+	// is going all the time, and what changes is how loud the visitor is standing to it. They cannot start where
+	// the garden is built, because the ear does not exist until a person has touched the page, so they start with
+	// the first touch and only once. `M` takes both away, as it takes away every other sound in this garden.
+	let bedsHeard = false;
+	const startBeds = () => {
+		if (bedsHeard || !sound.context) return;
+		bedsHeard = true;
+		if (stream) {
+			// A TRICKLE, and a short-armed one. The first attempt at voicing sixty-two metres of water was a
+			// synthesised wash heard from twelve metres away in every part of the garden, and it was, in the
+			// master's words, the worst sound imaginable — rightly: a noise you cannot locate and cannot walk away
+			// from is a fault, not an atmosphere. So the water is recorded droplets, and it is only there when you
+			// are standing at the bank, and it is gone when you take three steps back.
+			sound.startMurmur({
+				name: "trickle",
+				file: "trickle",
+				loud: LEVEL.trickle,
+				near: (p) => stream.distanceTo(p.x, p.z),
+				bank: 0.7,
+				span: 4.5,
+			});
+		}
+		// Crickets are everywhere or nowhere, so there is no distance to them — the whole garden is their bank.
+		// What holds the bed back is the hour: the day already answers how dark it is, and a cricket at ten in
+		// the morning is a mistake. The borrowed chorus is three minutes forty-two and loops, so the night has a
+		// floor under it that never repeats itself within a visitor's stay.
 		sound.startMurmur({
-			name: "stream",
-			near: (p) => stream.distanceTo(p.x, p.z),
-			loud: LEVEL.stream,
-			bank: 1.1,
-			span: 12,
-		});
-		// The one place the water drops is the lip at the mouth, and it hisses there: a higher band, a shorter
-		// reach, and a gain that comes up only when the visitor stands over the landing stone.
-		sound.startMurmur({
-			name: "fall",
-			near: (p) => Math.hypot(p.x - stream.mouth.x, p.z - stream.mouth.z),
-			loud: LEVEL.fall,
-			bank: 0.8,
-			span: 7,
-			band: 1500,
-			hiss: 3000,
-			wobble: 1.3,
+			name: "crickets",
+			file: "crickets",
+			loud: LEVEL.crickets,
+			bank: 0,
+			span: 1,
+			scale: () => day.night,
 		});
 	};
 	if (sound) {
 		const arm = (how) => {
 			if (!sound.ready) sound.arm(how);
-			startWater();
+			startBeds();
 		};
 		const keyHeld = new Set();
 		window.addEventListener("pointerdown", () => arm("click"), { passive: true });

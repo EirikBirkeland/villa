@@ -9299,3 +9299,56 @@ Look at: `s103-pots-before.png`, `s103-pots-after.png`, `s103-kumquat-close.png`
 — Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who will say once and not
 twice that a pot with its widest girth at its middle is a bulb, and that a garden full of bulbs planted in bulbs
 is a fault no amount of good terracotta can paint over. 🏺
+
+---
+
+## Session seventy-four: the stream's synthesised water is thrown out; the channel gets a trickle
+
+**The master heard it and said it was the worst sound imaginable. He was right, and nothing I had measured said
+otherwise.** That is the lesson of this session and it goes at the top.
+
+The channel's murmur was band-passed noise: two seconds of the Villa's own random numbers, a bandpass at 700 Hz,
+a band at 1600, an oscillator under one hertz wobbling the centre. `tools/ears.js` reported it at rms 0.018 and
+pitch 2178 Hz and it all looked respectable on the page. It was a hiss. It had been a hiss at 4342 Hz, and I had
+"fixed" it by moving the filters to where the numbers looked better. A steady noise with no beginning and no end
+and no object to locate is not water; it is what a machine does when it is bored, and it was wearing the garden
+from twelve metres away in every part of it.
+
+**What is there now.** A **trickle**, borrowed like the frogs and the gecko: `sounds/stream-trickle.mp3`,
+"Close-Up Stream Droplets — Flowing Water Details" by NikoletB, **CC0**, 12.5 seconds. It is small on purpose —
+peak 0.051, rms 0.0035, a third of the borrowed frog chorus — and it is short-armed: full within 0.7 m of the
+bank and gone at 5.2 m. Measured in the running garden: 0.086 at 1.4 m from the water, 0.053 on the bridge,
+**0** by the house. Three steps away and it is not there. The old wash was audible from 12 m and beyond.
+
+**No new key and no new switch.** The master asked for it attached to `M` like everything else, and that is what
+it is: the trickle is part of the garden's sound and `M` takes it away with the frogs, the gecko, the raven and
+the crickets, because the mute sits on the master gain and every held sound hangs off that.
+
+**The crickets came in the same session and stay.** `sounds/crickets-night.mp3`, "Crickets At Night — Raw sound"
+by Defelozedd94, **CC0**, 3:42. A bed under the whole night, gated by the hour (`scale: () => day.night`):
+measured 0.1 at night, **0** at ten in the morning, 0.1 again at ten at night. peak 0.033, rms 0.0074 — under the
+frogs, which is where a chorus belongs.
+
+**Two bugs the numbers did catch.**
+1. The recording's own gain was applied **twice** — once on `loopVoice`'s file and again on the bed's level — and
+   the cricket bed stood at 1.1 against a master of 0.9: a clipped wash. `loopVoice` owns the file's gain; the
+   level carries `LEVEL` and nothing else.
+2. A twelve-second loop run end to end clicks at the turn. `loopVoice` now cuts its loop at the quietest sample
+   of the first third and the quietest of the last: the trickle runs 3.81 s → 12.38 s and the join lands where
+   almost nothing is being said. Long files (the crickets) loop whole, because nobody has ever heard the turn of
+   a chorus.
+
+**Also this session, before the ear was judged:** the pots stopped being onions and the potted kumquat got a
+trunk — see session seventy-three, released as v0.97.1.
+
+Look at: `s104-night-trickle.png` (the bank at half past nine at night, where the trickle is). The picture is
+not the point of this session. The ear is, and the ear belongs to the master.
+
+**For the next session, and write it where you will read it:** this folder can weigh a sound — peak, rms, pitch,
+seconds — and those numbers said a hiss was a stream. **Do not ship a sound on numbers alone.** If a voice or a
+bed is new, say so plainly in the notes and ask; and when the master says a thing sounds wrong, believe him at
+once and take the thing out rather than tune it.
+
+— Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who built a stream out of a
+hiss and was told the truth, and who will say that a rat with a small hole to escape through should know better
+than to fill a garden with a noise he cannot walk away from. The crickets stay. The hiss is gone. 🐎

@@ -567,12 +567,17 @@ sense, so they are set down here:
   (plaster, roof, timber), cut out of the bounding box of the wall or roof it came from, and each carries a
   velocity that gravity and the lawn bring to an end. Not "debris", which is a mass noun: `chunks.length` counts
   things, not a substance.
-- **a held sound**, and **the murmur**: a noise in `src/sound.js` that is going all the time rather than one
-  that is called, played and thrown away. `startMurmur` builds one (`murmurVoice` makes the noise: a looped
-  buffer of it through two bands with a slow wobble on the low band) and the ear rides its gain with the
-  listener's distance from a line, because a panner would put a point source in the middle of sixty-two metres
-  of watercourse and go quiet at both ends of it. The stream's murmur and the hiss at its fall are the two held
-  sounds in the Villa; every animal is a voice, which is a different thing and is counted against `MAX_VOICES`.
+- **a held sound**: a noise in `src/sound.js` that is going all the time rather than one that is called,
+  played and thrown away. `startMurmur` hangs one on the mixer and the ear rides its gain inside `listen()`,
+  which already runs every frame: `near` answers metres from the listener to the thing making the sound, and the
+  gain is full within `bank` metres and gone at `bank + span`; `scale` is asked every frame for a further
+  multiplier, which is how the cricket bed is held back in daylight. A held sound is a RECORDING, looped by
+  `loopVoice` — there is no synthesised bed in this Villa, and the one that was (a band-passed noise written for
+  the watercourse) was thrown out after the master heard it and called it what it is: a hiss. The two held
+  sounds are the channel's **trickle** and the night's **cricket bed**; every animal is a voice, which is a
+  different thing and is counted against `MAX_VOICES`. A **seam** is where a short loop is cut, and `loopVoice`
+  cuts at the quietest samples of the first and last thirds of its file, so the join lands where almost nothing
+  is being said.
 - **the shade** (of a blast's cloud): how much daylight the smoke column is holding off the garden, from nought
   to one — `launcher.shade` in `src/rocket.js`, computed each frame from how far the smoke cards have grown.
   `src/main.js` multiplies it into the day's three lamps, and it multiplies `day.state.lamps` (the numbers the

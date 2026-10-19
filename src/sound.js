@@ -54,6 +54,14 @@ const RECORDINGS = {
 	// drawn-out squeak. Short slices, because the animal says three or four syllables and no more, and trimmed
 	// hard, because a tokay recorded at the microphone is a scream and a gecko two metres up a wall is not.
 	gecko: { file: "sounds/gecko-tokay.mp3", slice: [0.55, 1.5], trim: 1.3 },
+	// The cricket bed. This one is not a call but a held sound — a loop worn under everything else at night —
+	// so the slice is only there in case anybody wants a single two-second piece of it; the bed plays the whole
+	// three minutes and forty-two round. CC0, so it costs no credit beyond the thanks in `sounds/CREDITS.md`.
+	crickets: { file: "sounds/crickets-night.mp3", slice: [10, 12], trim: 1 },
+	// The trickle: droplets over stone, recorded close up. Twelve and a half seconds, which is short enough
+	// that where the loop is cut matters — so `loopVoice` looks for quiet places to cut at instead of running
+	// the file end to end.
+	trickle: { file: "sounds/stream-trickle.mp3", slice: [1.0, 3.0], trim: 1 },
 };
 
 /** The file behind each recording, for a tool that wants to weigh it without waking the ear. */
@@ -101,12 +109,16 @@ export const LEVEL = {
 	// Measured: at 0.95 the blast came out at 1.01 of full scale — past the top of the numbers, which
 	// is a click and not a boom. Half that is the loudest thing in the garden by a distance and still fits.
 	boom: 0.5,
-	// Held sounds, which are heard at the ear's own distance rather than at a place in the garden. The stream is
-	// deliberately low: it is sixty-two metres of shallow water and not a waterfall, and a visitor standing on
-	// the plank bridge should hear it under the frogs rather than over them.
-	stream: 0.15,
-	// The fall at the mouth, which is the one place the water drops, and so the one place it hisses.
-	fall: 0.08,
+	// Held sounds: a bed that is going all the time rather than a call, heard at the ear's own distance.
+	// The crickets sit under the whole night. `loopVoice` hands the file to `recordingGain`, which brings a
+	// recording's steady loudness to 0.12, so a level of 0.1 leaves the bed at about 0.012 — a hair above the
+	// borrowed frogs (0.0102), which is where a chorus belongs: under a frog ten metres away, not over it.
+	crickets: 0.1,
+	// The channel's trickle. Sixty-two metres of water were silent for a session; this folder then tried to
+	// voice them out of filtered noise and the master's word for the result was unprintable and fair — a
+	// band-passed hiss is a hiss and never was water. So the water has a TRICKLE, small and borrowed, heard only
+	// from the bank, and `M` takes it away with the frogs and the crickets as it takes away everything else.
+	trickle: 0.12,
 };
 
 /** No more of these at once. A pond full of frogs all starting together is a wall of buzz. */
@@ -219,7 +231,9 @@ export function buildSound(camera) {
 			// distance to the nearest point of the watercourse instead, which is what `near` answers.
 			for (const m of murmurs) {
 				const over = Math.max(0, 1 - (m.near(p) - m.bank) / m.span);
-				const want = m.loud * over * over;
+				// `scale` is the other thing that can hold a bed back: the crickets are not in the garden at ten in
+				// the morning, and the day already knows how dark it is.
+				const want = m.loud * over * over * (m.scale ? m.scale() : 1);
 				if (Math.abs(want - m.level) > 0.0005) {
 					m.level = want;
 					// Ridden with a time constant rather than set flat: a visitor walking along the bank should
@@ -230,26 +244,44 @@ export function buildSound(camera) {
 		},
 
 		/**
-		 * Start a sound that holds. `near` is given the listener's place and answers metres to the water; the
-		 * gain is full within `bank` metres and gone at `bank + span`. Returns the handle, or nothing if the ear
-		 * has not been woken — and the ear is woken by the first click, which is the only reason this is not
-		 * called where the water itself is built.
+		 * Start a sound that holds. `near` is given the listener's place and answers metres to the thing making
+		 * the sound; the gain is full within `bank` metres and gone at `bank + span`. `scale` is asked every frame
+		 * for a further multiplier — the hour, for the crickets. `file` names a recording to wear; there is no
+		 * synthesised bed any more, because the one this folder wrote for the channel sounded like a hiss and was
+		 * thrown out. Returns the handle, or nothing if the ear has not been woken — and the ear is woken by the
+		 * first click, which is the only reason this is not called where the water itself is built.
 		 */
 		startMurmur({
 			name = "murmur",
 			near = () => 0,
-			loud = LEVEL.stream,
+			loud = LEVEL.trickle,
 			bank = 1.2,
 			span = 11,
-			band = 700,
-			hiss = 1600,
-			wobble = 0.7,
+			file = null,
+			scale = null,
 		} = {}) {
 			if (!ctx) return null;
-			const voice = murmurVoice(ctx, master, rand, { band, hiss, wobble });
-			const entry = { name, near, loud, bank, span, voice, level: -1 };
-			murmurs.push(entry);
-			return entry;
+			const attach = (voice) => {
+				const entry = { name, near, loud, bank, span, scale, voice, level: -1 };
+				murmurs.push(entry);
+				return entry;
+			};
+			if (!file) return null;
+			const rec = recordings[file];
+			// `loopVoice` puts the recording's own gain on the file, so the level here is `loud` and nothing more.
+			// Multiplying by the recording's gain a second time — which is what this line used to do — left the bed
+			// standing at 1.1 against a master of 0.9: a clipped wash over the garden.
+			if (rec) return attach(loopVoice(ctx, master, rec));
+			// The recording has not finished arriving: the ear is woken by the first touch and the file is asked
+			// for at the same moment. So the bed joins when its samples do, and the garden is not silent while it
+			// waits — the frogs and the crickets are already there.
+			Promise.resolve(loading)
+				.then(() => {
+					const late = recordings[file];
+					if (late) attach(loopVoice(ctx, master, late));
+				})
+				.catch(() => {});
+			return null;
 		},
 
 		/** What the held sounds are doing right now, for `tools/ears.js` and for anybody checking the mix. */
@@ -345,71 +377,53 @@ export function clip(rec, { slice, trim = 1 }, out, rand) {
 }
 
 /**
- * The held noise of moving water: not a call with a beginning and an end, but a sound that is simply going.
+ * A recording worn as a held sound: the whole of it, looped, at the gain `recordingGain` worked out for it.
  *
- * A looped buffer of noise, two bands taken off it, and a slow wobble on the centre of the low band so the
- * burble is never twice the same. The buffer is two seconds and the Villa's own random source fills it, so the
- * water in this garden is the same water every time the page is opened; the swell written into it has a whole
- * number of turns in those two seconds, which is what keeps the loop from thumping.
- *
- * Returns the nodes, of which `level` is the one the ear rides up and down with the visitor's distance. The
- * chain is left connected to `out` and is never taken apart, because this sound does not stop.
+ * The loop is CUT, not smoothed. A seam in the middle of a cricket chorus is a chirp landing on a chirp and is
+ * lost; a seam in twelve seconds of droplets is a click you can chase round the garden. So `loopVoice` looks for
+ * the quietest sample in the first third of the file and the quietest in the last third, and loops between them:
+ * the join happens where almost nothing is being said. `seam` reports where it was cut, in seconds, because a
+ * loop point you cannot see is a loop point you cannot defend.
  */
-export function murmurVoice(ctx, out, rand, { band = 700, hiss = 1600, wobble = 0.7 } = {}) {
-	const seconds = 2;
-	const frames = Math.floor(ctx.sampleRate * seconds);
-	const buffer = ctx.createBuffer(1, frames, ctx.sampleRate);
-	const data = buffer.getChannelData(0);
-	// Plain white noise through a bandpass is a television, not a stream. Two things fix it: a swell that comes
-	// and goes over the two seconds, which is water finding stones and going over them, and a slow drift under
-	// it, which is the deeper note of a channel with a lip in it.
-	let drift = 0;
-	for (let i = 0; i < frames; i++) {
-		const at = i / frames;
-		drift += ((rand() * 2 - 1) - drift) * 0.004;
-		const swell = 0.66 + 0.34 * Math.sin(at * Math.PI * 2 * 3);
-		data[i] = Math.max(-1, Math.min(1, (rand() * 2 - 1) * swell + drift * 1.6));
-	}
+export function loopVoice(ctx, out, rec) {
 	const source = ctx.createBufferSource();
-	source.buffer = buffer;
+	source.buffer = rec.buffer;
 	source.loop = true;
-
-	const low = ctx.createBiquadFilter();
-	low.type = "bandpass";
-	low.frequency.value = band;
-	low.Q.value = 0.9;
-	const bright = ctx.createBiquadFilter();
-	bright.type = "bandpass";
-	bright.frequency.value = hiss;
-	bright.Q.value = 0.7;
-	const lowGain = ctx.createGain();
-	lowGain.gain.value = 0.8;
-	const brightGain = ctx.createGain();
-	brightGain.gain.value = 0.16;
+	const seconds = rec.buffer.duration;
+	const rate = rec.buffer.sampleRate;
+	const data = rec.buffer.getChannelData(0);
+	// The quietest sample in a band of the file. Sampling every eleventh frame is plenty: what is being looked
+	// for is a place where the water is between words, and a tenth of a millisecond either way is nothing.
+	const quietest = (from, to) => {
+		let best = Math.floor(from * rate);
+		let low = Infinity;
+		for (let i = Math.floor(from * rate); i < Math.min(data.length, Math.floor(to * rate)); i += 11) {
+			const v = Math.abs(data[i]);
+			if (v < low) {
+				low = v;
+				best = i;
+			}
+		}
+		return best;
+	};
+	let seam = null;
+	// Only worth cutting when the file is short enough to hear round. Three minutes and forty-two seconds of
+	// crickets loop at their ends and nobody has ever heard the turn of a chorus.
+	if (seconds < 40) {
+		source.loopStart = quietest(0, seconds / 3) / rate;
+		source.loopEnd = quietest((2 * seconds) / 3, seconds) / rate;
+		seam = { from: source.loopStart, to: source.loopEnd };
+	}
+	const own = ctx.createGain();
+	own.gain.value = rec.gain;
 	const level = ctx.createGain();
 	level.gain.value = 0;
-
-	source.connect(low);
-	low.connect(lowGain);
-	lowGain.connect(level);
-	source.connect(bright);
-	bright.connect(brightGain);
-	brightGain.connect(level);
+	source.connect(own);
+	own.connect(level);
 	level.connect(out);
-
-	// The wobble. An oscillator a little under one hertz on the low band's centre frequency: it is the whole of
-	// why the sound reads as water and not as a hiss from a tap.
-	const lfo = ctx.createOscillator();
-	lfo.type = "sine";
-	lfo.frequency.value = wobble;
-	const depth = ctx.createGain();
-	depth.gain.value = band * 0.34;
-	lfo.connect(depth);
-	depth.connect(low.frequency);
-
-	source.start();
-	lfo.start();
-	return { level, low, bright, lowGain, brightGain, source, lfo };
+	// Start inside the loop, or the first pass would play the part of the file the loop excludes.
+	source.start(0, source.loopStart || 0);
+	return { level, source, own, seam };
 }
 
 /**
