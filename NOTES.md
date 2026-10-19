@@ -9352,3 +9352,48 @@ once and take the thing out rather than tune it.
 — Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who built a stream out of a
 hiss and was told the truth, and who will say that a rat with a small hole to escape through should know better
 than to fill a garden with a noise he cannot walk away from. The crickets stay. The hiss is gone. 🐎
+
+---
+
+## Session seventy-five: the "crickets" were a waterfall, and they are out (蝉 ignored for now)
+
+**The master asked what the waterfall was, because there is no waterfall in this garden.** There isn't, and the
+thing he was hearing was the cricket bed I had put in the session before. He had said before that crickets are
+"almost never heard" in his experience and that no sound is probably better; he has now said to take them out,
+and they are out.
+
+**What the file actually is.** `tools/ears.js` now weighs every borrowed recording four bands wide (220, 800,
+2600, 6500 Hz) and asks whether it is pulsed or smooth — the loud 25 ms window over the quiet one. The removed
+"Crickets At Night — Raw sound" (Defelozedd94, CC0, 3:42) came out:
+
+| file | loudest band | loud over quiet | reads as |
+|---|---|---|---|
+| crickets (removed) | **low, 220 Hz** | **2.11** | weather, not a creature |
+| frog | high, 2600 Hz | 17.7 | a creature |
+| gecko | mid, 800 Hz | 25.3 | a creature |
+| trickle | high, 2600 Hz | 6.92 | a creature |
+
+A chorus of insects is a train of chirps up at four or five kilohertz over a quiet floor: high band first, and
+loud many times quiet. That file was loudest at 220 Hz with a loud part only twice its quiet part — a wind, or a
+stream, baked into the recording. **A continuous low-mid wash with no transients on it is exactly what an ear
+calls a waterfall.** So the master's ear and the band table said the same thing, which is the first time in two
+sessions this folder's numbers and the master's ear have agreed about a sound.
+
+**The rule, written where a tool can apply it:** a recording of a creature is refused if its loudest band is the
+220 Hz one, or if its loud-over-quiet is under four. `tools/ears.js` prints `readsAs` for every file in
+`RECORDING_FILES`, so the next borrowed animal is weighed before it is walked into the garden.
+
+**What went with them:** `sounds/crickets-night.mp3` (5 MB) and its line in `sounds/CREDITS.md`, so no release
+carries a sound it does not play. The garden's ear is now: frogs, gecko, raven, coin, the shot and the blast, and
+the channel's trickle — all of it under `M`.
+
+**Crickets (蝉) are left out for now, by the master's order.** If they come back it will be a file that measures
+as a chirp train, and it will be quiet, and it will be at the grass and not everywhere.
+
+Look at: `s105-night-no-crickets.png` (the bank at half past nine; the trickle at 0.086, and nothing else
+underneath it).
+
+— Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who took a field recording at
+its word and was told by the master that it was a waterfall, and who has now written the test that would have
+caught it. A rat who cannot hear the difference between a cricket and a falling stream has no business in a
+garden at night; a rat who can measure the difference and did not is worse, and has said so. 🐎

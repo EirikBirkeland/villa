@@ -482,18 +482,11 @@ function boot() {
 				span: 4.5,
 			});
 		}
-		// Crickets are everywhere or nowhere, so there is no distance to them — the whole garden is their bank.
-		// What holds the bed back is the hour: the day already answers how dark it is, and a cricket at ten in
-		// the morning is a mistake. The borrowed chorus is three minutes forty-two and loops, so the night has a
-		// floor under it that never repeats itself within a visitor's stay.
-		sound.startMurmur({
-			name: "crickets",
-			file: "crickets",
-			loud: LEVEL.crickets,
-			bank: 0,
-			span: 1,
-			scale: () => day.night,
-		});
+		// No cricket bed. One was tried, and the master asked what the waterfall was. There is no waterfall in
+		// this garden: the answer was the borrowed "crickets" — three and a half minutes whose loudest band is
+		// 220 Hz, and whose loudest quarter-second is only twice its quietest. That is a wind, or a stream, baked
+		// into a file; it is not a chorus of insects. Crickets are left out of the Villa for now, and a recording
+		// that does not measure as chirps (see `tools/ears.js`) does not get in.
 	};
 	if (sound) {
 		const arm = (how) => {

@@ -125,7 +125,7 @@ const held = await page.evaluate(async () => {
 	const mod = await import("./src/sound.js");
 	const rate = 22050;
 	const out = {};
-	for (const name of ["crickets", "trickle"]) {
+	for (const name of ["trickle"]) {
 		const res = await fetch(mod.RECORDING_FILES[name]);
 		if (!res.ok) {
 			out[name] = { error: `${mod.RECORDING_FILES[name]} -> ${res.status}` };
@@ -168,6 +168,81 @@ const held = await page.evaluate(async () => {
 	return out;
 });
 console.log("held:", JSON.stringify(held, null, 1));
+
+/**
+ * Is the file the animal, or is it the weather?
+ *
+ * A borrowed recording can be honest about its title and still be wrong for the garden: the "Crickets At Night"
+ * that this folder took and then removed turned out to be loudest at 220 Hz and to have a loudest quarter-second
+ * only twice its quietest — a wind, or a stream, baked in, which is what the master heard and called a
+ * waterfall. An insect is the other way about: energy up in the chirp's own band, and a loud part many times the
+ * quiet part, because a chirp is a spike over a floor and a wash is a floor with nothing on it.
+ *
+ * So every recording is weighed four bands wide (220, 800, 2600, 6500 Hz) and pulsed-or-smooth, and the rule for
+ * letting a creature in is written down: an animal's file should be strongest above 800 Hz and should measure
+ * `loudOverQuiet` of four or better. A bed that fails both is weather, and weather in a file is a fault.
+ */
+const character = await page.evaluate(async () => {
+	const mod = await import("./src/sound.js");
+	const rate = 22050;
+	const out = {};
+	for (const [name, file] of Object.entries(mod.RECORDING_FILES)) {
+		const res = await fetch(file);
+		if (!res.ok) {
+			out[name] = { error: `${file} -> ${res.status}` };
+			continue;
+		}
+		const probe = new OfflineAudioContext(2, 1, rate);
+		const buffer = await probe.decodeAudioData(await res.arrayBuffer());
+		const bands = {};
+		for (const [label, hz] of [["low", 220], ["mid", 800], ["high", 2600], ["top", 6500]]) {
+			const ctx = new OfflineAudioContext(1, Math.round(rate * Math.min(12, buffer.duration)), rate);
+			const src = ctx.createBufferSource();
+			src.buffer = buffer;
+			const f = ctx.createBiquadFilter();
+			f.type = "bandpass";
+			f.frequency.value = hz;
+			f.Q.value = 0.8;
+			src.connect(f);
+			f.connect(ctx.destination);
+			src.start(0, 0);
+			const data = (await ctx.startRendering()).getChannelData(0);
+			let sum = 0;
+			for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
+			bands[label] = Number(Math.sqrt(sum / data.length).toFixed(5));
+		}
+		// Twenty-five millisecond windows over half a minute: the spread between the loud windows and the quiet
+		// ones is the difference between a creature that says things and a hiss that says none.
+		const win = Math.floor(rate * 0.025);
+		const frames = Math.floor(rate * Math.min(30, buffer.duration));
+		const ctx2 = new OfflineAudioContext(1, frames, rate);
+		const src2 = ctx2.createBufferSource();
+		src2.buffer = buffer;
+		src2.connect(ctx2.destination);
+		src2.start(0);
+		const full = (await ctx2.startRendering()).getChannelData(0);
+		const wins = [];
+		for (let i = 0; i + win < full.length; i += win) {
+			let s = 0;
+			for (let j = 0; j < win; j++) s += full[i + j] * full[i + j];
+			wins.push(Math.sqrt(s / win));
+		}
+		wins.sort((a, c) => a - c);
+		const loud = wins[Math.floor(wins.length * 0.95)];
+		const quiet = wins[Math.floor(wins.length * 0.05)];
+		const loudest = Object.entries(bands).sort((a, c) => c[1] - a[1])[0][0];
+		out[name] = {
+			seconds: Math.round(buffer.duration * 10) / 10,
+			bands,
+			loudestBand: loudest,
+			loudOverQuiet: Number((loud / Math.max(quiet, 1e-7)).toFixed(2)),
+			// The rule, said as a number rather than as a sentence, so a file can be refused by a tool.
+			readsAs: loudest === "low" || loud / Math.max(quiet, 1e-7) < 4 ? "WEATHER, not a creature" : "a creature",
+		};
+	}
+	return out;
+});
+console.log("character:", JSON.stringify(character, null, 1));
 
 /**
  * The borrowed recording, weighed the same way as the shapes.

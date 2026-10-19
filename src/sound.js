@@ -54,10 +54,6 @@ const RECORDINGS = {
 	// drawn-out squeak. Short slices, because the animal says three or four syllables and no more, and trimmed
 	// hard, because a tokay recorded at the microphone is a scream and a gecko two metres up a wall is not.
 	gecko: { file: "sounds/gecko-tokay.mp3", slice: [0.55, 1.5], trim: 1.3 },
-	// The cricket bed. This one is not a call but a held sound — a loop worn under everything else at night —
-	// so the slice is only there in case anybody wants a single two-second piece of it; the bed plays the whole
-	// three minutes and forty-two round. CC0, so it costs no credit beyond the thanks in `sounds/CREDITS.md`.
-	crickets: { file: "sounds/crickets-night.mp3", slice: [10, 12], trim: 1 },
 	// The trickle: droplets over stone, recorded close up. Twelve and a half seconds, which is short enough
 	// that where the loop is cut matters — so `loopVoice` looks for quiet places to cut at instead of running
 	// the file end to end.
@@ -110,14 +106,14 @@ export const LEVEL = {
 	// is a click and not a boom. Half that is the loudest thing in the garden by a distance and still fits.
 	boom: 0.5,
 	// Held sounds: a bed that is going all the time rather than a call, heard at the ear's own distance.
-	// The crickets sit under the whole night. `loopVoice` hands the file to `recordingGain`, which brings a
-	// recording's steady loudness to 0.12, so a level of 0.1 leaves the bed at about 0.012 — a hair above the
-	// borrowed frogs (0.0102), which is where a chorus belongs: under a frog ten metres away, not over it.
-	crickets: 0.1,
+	// `loopVoice` hands the file to `recordingGain`, which brings a recording's steady loudness to a known level,
+	// so the number below balances against the calls the bed sits under instead of guessing at somebody else's
+	// microphone. There is no cricket bed: the one that was tried turned out to be a wind in a file, and the
+	// master asked what the waterfall was. See `src/main.js`.
 	// The channel's trickle. Sixty-two metres of water were silent for a session; this folder then tried to
 	// voice them out of filtered noise and the master's word for the result was unprintable and fair — a
 	// band-passed hiss is a hiss and never was water. So the water has a TRICKLE, small and borrowed, heard only
-	// from the bank, and `M` takes it away with the frogs and the crickets as it takes away everything else.
+	// from the bank, and `M` takes it away with the frogs and the gecko as it takes away everything else.
 	trickle: 0.12,
 };
 
@@ -231,8 +227,8 @@ export function buildSound(camera) {
 			// distance to the nearest point of the watercourse instead, which is what `near` answers.
 			for (const m of murmurs) {
 				const over = Math.max(0, 1 - (m.near(p) - m.bank) / m.span);
-				// `scale` is the other thing that can hold a bed back: the crickets are not in the garden at ten in
-				// the morning, and the day already knows how dark it is.
+				// `scale` is the other thing that can hold a bed back: an insect is not out at ten in the morning,
+				// and the day already knows how dark it is.
 				const want = m.loud * over * over * (m.scale ? m.scale() : 1);
 				if (Math.abs(want - m.level) > 0.0005) {
 					m.level = want;
@@ -246,7 +242,7 @@ export function buildSound(camera) {
 		/**
 		 * Start a sound that holds. `near` is given the listener's place and answers metres to the thing making
 		 * the sound; the gain is full within `bank` metres and gone at `bank + span`. `scale` is asked every frame
-		 * for a further multiplier — the hour, for the crickets. `file` names a recording to wear; there is no
+		 * for a further multiplier — the hour, for an insect that sleeps. `file` names a recording to wear; there is no
 		 * synthesised bed any more, because the one this folder wrote for the channel sounded like a hiss and was
 		 * thrown out. Returns the handle, or nothing if the ear has not been woken — and the ear is woken by the
 		 * first click, which is the only reason this is not called where the water itself is built.
@@ -274,7 +270,7 @@ export function buildSound(camera) {
 			if (rec) return attach(loopVoice(ctx, master, rec));
 			// The recording has not finished arriving: the ear is woken by the first touch and the file is asked
 			// for at the same moment. So the bed joins when its samples do, and the garden is not silent while it
-			// waits — the frogs and the crickets are already there.
+			// waits — the frogs and the gecko are already there.
 			Promise.resolve(loading)
 				.then(() => {
 					const late = recordings[file];
@@ -407,8 +403,8 @@ export function loopVoice(ctx, out, rec) {
 		return best;
 	};
 	let seam = null;
-	// Only worth cutting when the file is short enough to hear round. Three minutes and forty-two seconds of
-	// crickets loop at their ends and nobody has ever heard the turn of a chorus.
+	// Only worth cutting when the file is short enough to hear round. Minutes of anything loop at their ends and
+	// nobody has ever heard the turn of a long field recording.
 	if (seconds < 40) {
 		source.loopStart = quietest(0, seconds / 3) / rate;
 		source.loopEnd = quietest((2 * seconds) / 3, seconds) / rate;
