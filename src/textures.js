@@ -977,7 +977,7 @@ export function paverCanvas(size = 1024, { joint = "#8c8069", relief = false } =
  *
  * `grout` is the joint's bytes and `patch` the half-spread of that field, as a fraction.
  */
-export function poolTileCanvas(size = 512, cells = 12, { grout = [172, 190, 186], patch = 0.16 } = {}) {
+export function poolTileCanvas(size = 512, cells = 12, { grout = [162, 174, 180], patch = 0.16 } = {}) {
 	const canvas = canvasOfSize(size);
 	const ctx = context2d(canvas);
 	const rand = randomGenerator(29);
@@ -1003,9 +1003,17 @@ export function poolTileCanvas(size = 512, cells = 12, { grout = [172, 190, 186]
 			// one, and not a villa's swimming pool at half past five. Same ladder as the paving one: the
 			// brightness has to come out of the surface, because a multiplier on the water above it is the
 			// milk again. These bytes come out (76,150,168) at the dark end and (120,196,206) at the pale.
-			const r = shed(76 + t * 44, f);
-			const g = shed(150 + t * 46, f);
-			const b = shed(168 + t * 38, f);
+			//
+			// THE GREEN OUT OF IT, measured. With those bytes the water over the floor came out (97,146,149)
+			// at the start camera — green and blue level, which is printer's mint and not a pool. The film
+			// above already carries the turquoise (`wem` in src/main.js costs 13 to 16 points of that), so the
+			// flatness was the floor's doing and not the water's: a floor whose glass sits level between its
+			// green and its blue hands that levelness straight through a half-transparent film. The glass is
+			// therefore moved eighteen points of blue clear of its green, and the joint with it, so the depth
+			// reads as depth and the turquoise is left to the one thing that can shimmer.
+			const r = shed(74 + t * 42, f);
+			const g = shed(136 + t * 44, f);
+			const b = shed(186 + t * 40, f);
 			ctx.fillStyle = `rgb(${r},${g},${b})`;
 			const gap = 1.2 + rand() * 1.1;
 			ctx.fillRect(gx * step + gap, gy * step + gap, step - gap * 2, step - gap * 2);

@@ -241,7 +241,7 @@ export function createMaterials(scene) {
 	// pool casts into it), and a glossy tile (at roughness 0.12 the pit goes DOWN to L87, because a smooth
 	// surface in this library returns the sky mirror only where the mirror line runs, and the floor of a
 	// pit has none; 0.32 is what keeps the sky's flat light on it).
-	mats.poolTile.emissiveColor = new Color3(0.07, 0.14, 0.15);
+	mats.poolTile.emissiveColor = new Color3(0.06, 0.12, 0.16);
 
 	// The tile the water touches, and the strip of coping it is splashed on.
 	//

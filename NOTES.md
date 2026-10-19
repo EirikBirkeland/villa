@@ -8982,6 +8982,23 @@ mosaic is off-white and cream with a few blue glass tiles and grey grout, and th
 water's film, which already owns it. Weigh it with `?wem=` and these same 2602 points, and do not touch
 `?wsky=` first: the mirror is what makes the far half a mirror.
 
+**The tile was done in the same session, and it is the floor that was mint, not the water.** The glass moved
+from (76..120, 150..196, 168..206) to (74..116, 136..180, 186..226) — eighteen points of blue clear of its
+green — the joint from (172,190,186) to (162,174,180), and the tile's pit-glow from (0.07,0.14,0.15) to
+(0.06,0.12,0.16). Same camera, same 2602 points:
+
+```
+before   near (97,146,149) L136   far (102,151,154) L141   over L200: 3.1%
+after    near (94,140,153) L131   far  (99,145,158) L136   over L200: 1.1%
+```
+
+Blue now stands thirteen points above green where the two were level, and the share of the water burning over
+L200 fell by two thirds — the "one blown band of glare" going with it. The tile wall itself reads (130,174,191)
+where it read (122,172,168), and down the pool's own axis (102,139,149) over a floor at (82,139,170): a pool,
+not a drained one — the old lesson that a dark teal floor reads as a green empty pit at L78 was kept in view,
+and the floor sits at L130. The joint was NOT lightened or evened: the sixty-ninth session's graph-paper
+finding stands.
+
 **Also measured and found already fixed**, so nobody chases them again: the lounger cushions in the west view
 are `cushion` at mean (97,86,65) L88 running from (55,50,33) to (211,168,126) — a lit mattress, not a board
 of bitumen. The garden lamps at hour 21 paint `lampGlow` at (234,202,140): warm gold, not a white hole.
@@ -8994,8 +9011,10 @@ Look at: `s98-gun-armed.png`, `s98-gun-water.png`, `s98-gun-shark.png`, `s98-cov
 
 Next after this, in order:
 
-1. **The pool's tile, as measured above.** The biggest single colour in the frame's middle and the one thing
-   the numbers say is wrong.
+1. **Look at the pool with eyes.** `s98-tile-after.png` and `s98-pool-tile.png` are the two views; the numbers
+   say the water went from mint to blue and the glare band down by two thirds, but only a pair of eyes can say
+   whether the mosaic now reads as glass and grout or as a blue-painted tank. If it is too blue, take eight
+   points back off the glass's blue and four off the joint's.
 2. **The pots are onions with moss balls on them** — six in the start view. Still owed, and it wants eyes or
    the `clip`/size treatment the shrub beds got in v0.83.4.
 3. **The raven still has no coin photographed on the ground.** `tools/perch.js` puts the bird up and opens its
