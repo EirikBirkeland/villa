@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.100.0 — 2026-10-19
+- The daylight rebalance: four fifths of the Villa's daylight was ambient fill, so the hemisphere, bounce and
+  sky fill are halved in daylight and the sun lifted to pay part of it back. Sunlit timber has shadow under it,
+  the roof has relief, and a pot is round. The night is byte for byte what it was, proved against v0.99.3.
+- The dark panel in the grey frame at the side of the house — the flickering one — is largely cured: the hard
+  steps inside that one face go from 3.13% of the face to 0.57%, and the row-to-row swing from 50.5 to 29.4.
+  It came from the same fill: the marks were the sky cube read into a rough shaded face.
+- Dusk and dawn stop arguing with the sun. At half past six the terrace used to be twice as bright as the whole
+  sky over it (ratio 0.49); the sun now falls near the horizon as it does in the air, and the sky is lifted to
+  match. Dawn likewise, 0.68 to 0.84.
+- The potted kumquat by the pool fruits like one: nineteen small round fruit set in among the leaves instead of
+  seven big faceted balls parked on top of the crown.
+- The koi are in the pond and they show: four fish under the lily pads, eleven to seventeen centimetres under
+  the surface, their whites coming back grey-green through the water.
+
 ## 0.99.3 — 2026-07-28
 
 - Textures are filtered at sixteen times anisotropy instead of eight, which is what the master asked for. At a
