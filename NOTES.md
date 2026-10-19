@@ -10002,3 +10002,42 @@ lanterns are on the back face and the west wall has no lamp of its own, so that 
 looked at — and the same `whowlights.js` question asked of it: what is Babylon lighting, and what is
 only painted. The flickering panel from `owner-flickering-wall.png` still wants the hour and the
 standing place from the master, and nothing has been guessed at in its name.
+
+## Session eighty-four, second half (twenty-nine bulbs that cast nothing, and the hunt that ended in a revert)
+
+`tools/lamplight.js` now walks every mesh wearing `lampGlow` or `poolLamp` and measures the distance to the
+nearest burning light. At hour 22 it found the festoon wire over the terrace (21 bulbs) and eight garden
+bollards answering eight metres and more — the back-door lantern fault, nineteen more times over, waiting for
+a camera. That is a real fault and it is still there.
+
+I hung four point lights along the wire to answer it and then took them out again (`git checkout -- src/garden.js`).
+Nothing I gave them could be measured: at the terrace stand the frame mean sat at 21.5 with the lamps at 0, 9,
+60, 150 and 200 units, and the only pixels that ever brightened were inside the moving-water noise. Four
+invisible lights in a scene is worse than a fault honestly reported, so the wire is as it was.
+
+Four things the hunt settled, and these are the reason the hour was worth spending:
+
+1. **`Light.setEnabled(false)` does not put a light out** in this vendored Babylon 9.30 — the picture is
+   identical with the light disabled and burning. Writing `0` to `intensity` is what works: the rear view at
+   midnight falls from mean 22.9 to 7.9 when the back-door lanterns are zeroed and does not move a pixel when
+   they are disabled. `src/daylight.js` sets both; the intensity is what is doing the work.
+2. **Any in-page light write must be done under `?still=1`.** Without it the day cycle rewrites every lamp from
+   the hour on the next frame, and the measurement reads as nothing. This trap made the working lanterns look
+   dead for a whole detour.
+3. **Babylon fades a point light by distance squared and then by a further 1/81.** A 9-unit lamp 2.8 m above a
+   board is worth about a hundredth of what a visitor would call light; the lanterns earn their keep because
+   they sit within an arm's length of the plaster. A festoon needs tens of units, and no amount of tuning at 9
+   was ever going to show.
+4. **A frame mean is a bad instrument for one lamp.** The pond shimmers, the pool ripples and the fireflies
+   drift: two pictures taken four seconds apart in the identical state differ in 18.5% of the frame, worst
+   pixel 33. `tools/lamplight.js` and `tools/lampgain.js` exist for this — the second measures its own noise
+   floor first and demands that a lamp beat it.
+
+What is still true about the night, measured today with the standard five views at hour 22: front 21, rear 29
+(was 12 before the lanterns), westwall 23, grass 21, room 68; pure black 0.2%, 2.55%, 7.9%, 0.5%, 0.4%.
+
+**Next**, in order: (a) the festoon and the bollards want one more try at tens of units — intensity 40 and up,
+range about 9 — measured with `tools/lampgain.js` under `still=1` on a stand where the deck is provably in
+frame, which means finding the stand by taking a picture and reading it and not by arithmetic; (b) the west
+wall at midnight, still 7.9% pure black and the darkest of the five views; (c) the flickering panel from
+`owner-flickering-wall.png`, still waiting on the hour and the standing place from the master.
