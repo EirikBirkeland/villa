@@ -1,0 +1,45 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "The far distance, before and after the tone curve. The standing fault out there is aerial perspective: the further a thing is, the more the haze should have taken its colour and lifted it towards the sky. The fifteenth session set that ladder under ACES; this asks what the same pixels are under the Villa's new curve. `aces as it was` reproduces the released v0.10.1 — its curve and its exposure together, since the two are paid for one another. The `float=1` on both cases lifts the eye 90 m for the two high views, where the hills show; it also leaves the standing view 4 cm off the ground it would settle to, which is why its picks are named by mesh and not by distance. From the ground the hills mostly hide: their tops are lower than the tree line's tops, so they show only where the tree line has a gap.",
+	"views": [
+		{
+			"name": "path",
+			"view": "-3,1.7,19,2.9,0.02",
+			"fov": "0.85",
+			"picks": [
+				{ "name": "jungle, near rank, deep in it", "x": 0.1, "y": 0.45 },
+				{ "name": "jungle, near rank, crown", "x": 0.1, "y": 0.4 },
+				{ "name": "jungle, sunlit side", "x": 0.25, "y": 0.45 },
+				{ "name": "hedge", "x": 0.1, "y": 0.5 },
+				{ "name": "lounger cloth, sun", "x": 0.2, "y": 0.55 }
+			]
+		},
+		{
+			"name": "high-nw",
+			"view": "0,90,0,3.7,0.4",
+			"fov": "0.85",
+			"picks": [
+				{ "name": "sky", "x": 0.5, "y": 0.2 },
+				{ "name": "hill", "x": 0.5, "y": 0.4 },
+				{ "name": "tree line", "x": 0.5, "y": 0.5 },
+				{ "name": "far tree line", "x": 0.5, "y": 0.6 }
+			]
+		},
+		{
+			"name": "high-sse",
+			"view": "0,90,0,0.5,0.4",
+			"fov": "0.85",
+			"picks": [
+				{ "name": "sky", "x": 0.5, "y": 0.2 },
+				{ "name": "band a", "x": 0.5, "y": 0.4 },
+				{ "name": "band b", "x": 0.5, "y": 0.5 },
+				{ "name": "band c", "x": 0.25, "y": 0.4 },
+				{ "name": "below", "x": 0.5, "y": 0.6 }
+			]
+		}
+	],
+	"cases": [
+		{ "name": "as it is", "query": "float=1", "js": "" },
+		{ "name": "aces as it was", "query": "float=1&tonemap=aces&exposure=0.88", "js": "" }
+	]
+}

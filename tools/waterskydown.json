@@ -1,0 +1,14 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"note": "The same sky as `tools/watersky.json`, weighed where the eye looks DOWN into the pit instead of along it, because that is where a hand-paid mirror could go wrong: too loud and the whole basin turns into a pale plate and the net of light on the floor is gone. Read with `node tools/bands.js --labels near,middle,far <the court pictures> 200,470,1180,560 200,560,1180,650 200,350,1180,470`. From the court the control reads L112, L132 with black troughs of the chop down at L24; strength 1 reads L129, L147 with the darkest water in the band at L53 — a trough, not a hole — and the sunlit far wall under the far coping does not move at all (L170 in every case, because the sky is paid on the surface and the wall is seen THROUGH it). Strength 1.6 lifts the near water to L138 and starts eating the pattern on the floor. Shipped: strength 1.",
+	"views": [
+		{ "name": "the pool from the court", "view": "0,2.1,-1.5,0,0.1" },
+		{ "name": "standing on the coping", "view": "0,1.62,4.6,0,-0.5" },
+		{ "name": "the pool from the west", "view": "-11,1.7,6.8,1.57,-0.02" }
+	],
+	"cases": [
+		{ "name": "no sky in the mirror (the control)", "query": "wsky=0" },
+		{ "name": "SHIPPED: strength 1", "query": "wsky=1" },
+		{ "name": "strength 1.6, which starts eating the floor", "query": "wsky=1.6" }
+	]
+}

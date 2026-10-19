@@ -1,0 +1,41 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "rear",
+      "view": "0,1.6,-19,0,0.06",
+      "picks": [
+        { "name": "plinth back", "place": [-5.0, 0.3, -12.11] },
+        { "name": "back wall", "place": [-4.0, 2.0, -11.96] },
+        { "name": "earth bed", "place": [1.5, 0.06, -13.4] }
+      ]
+    },
+    {
+      "name": "westwall",
+      "view": "-13,1.6,-8,1.57,0",
+      "picks": [
+        { "name": "band west", "place": [-8.29, 0.3, -8.0] },
+        { "name": "west wall", "place": [-6.99, 2.0, -8.0] }
+      ]
+    },
+    {
+      "name": "blockface",
+      "view": "5.6,1.8,-17.2,0,0",
+      "picks": [
+        { "name": "service block", "place": [5.6, 2.0, -13.84] }
+      ]
+    },
+    {
+      "name": "home",
+      "view": "2.4,1.74,10.5,3.2,0.06",
+      "picks": [
+        { "name": "band sunlit", "place": [5.0, 0.25, 0.71] },
+        { "name": "coping", "place": [3.6, 0.16, 1.9] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built", "query": "" },
+    { "name": "the old soot back", "js": "mats.plasterDark.albedoColor = new BABYLON.Color3(0.32,0.32,0.32);" }
+  ]
+}

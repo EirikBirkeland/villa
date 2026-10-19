@@ -1,0 +1,25 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "note": "The wet band, measured where it is wide. Every attempt to read it from the bank is a two-pixel strip and a box average paints it back to its neighbours, so this camera is DOWN at the water — 10 cm above the surface, in the middle of the basin, looking at the north wall: a metre of tile, of which the wet band is a quarter, and nothing in front of it. `?wet=0` is the control, where the wet materials are painted back to the numbers of the dry ones they copy.",
+  "views": [
+    {
+      "name": "the north wall, from the water",
+      "view": "0,0.12,4.4,3.1416,0.02",
+      "fov": 0.65,
+      "picks": [
+        { "name": "coping, dry", "place": [0, 0.21, 2.12] },
+        { "name": "tile, dry, high", "place": [0, 0.1, 2.1] },
+        { "name": "tile, dry, at the water", "place": [0, 0.0, 2.1] },
+        { "name": "the band, at its top", "place": [0, -0.06, 2.1] },
+        { "name": "the band, at its foot", "place": [0, -0.17, 2.1] },
+        { "name": "tile below the band, through the water", "place": [0, -0.6, 2.1] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built", "query": "float=1" },
+    { "name": "waterline off", "query": "float=1&wet=0" },
+    { "name": "a shade lighter", "query": "float=1&wet=1.35" },
+    { "name": "lighter again", "query": "float=1&wet=1.7" }
+  ]
+}

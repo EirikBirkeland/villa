@@ -1,0 +1,23 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"views": [
+		{
+			"name": "eastdeck",
+			"view": "5.4,1.7,-1.0,3.1416,0.06",
+			"fov": "0.7",
+			"float": 1,
+			"picks": [
+				{ "name": "store wall high", "place": [5.6, 2.9, -13.6] },
+				{ "name": "store wall mid", "place": [5.6, 2.0, -13.6] },
+				{ "name": "lantern", "place": [5.6, 2.05, -12.87] },
+				{ "name": "store floor", "place": [5.6, 0.62, -12.8] },
+				{ "name": "store pot", "place": [5.6, 1.75, -13.4] },
+				{ "name": "store jar", "place": [4.98, 0.95, -13.2] },
+				{ "name": "room plaster west of door", "place": [4.2, 1.5, -11.9] },
+				{ "name": "room floor by door", "place": [5.6, 0.55, -11.0] },
+				{ "name": "lintel", "place": [5.6, 3.2, -11.9] }
+			]
+		}
+	],
+	"cases": [{ "name": "as it is" }]
+}

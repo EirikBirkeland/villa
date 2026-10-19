@@ -1,0 +1,43 @@
+{
+	"_": [
+		"The tone curve ladder. Each case is one curve, put into the shader by src/tone.js and chosen",
+		"from the address bar; the control is `khronos`, which is the library's own numbers and is what",
+		"the Villa ran before src/tone.js existed. Read the columns stats.js prints: `>230` and",
+		"`ceiling` say how much of the frame is pressed against the top of the picture, `lit ... sNN`",
+		"is the channel spread the sunlit band keeps, and `cNN%` is how much of the frame is in colour.",
+		"The picks follow one surface across all six curves.",
+		"",
+		"Run: node tools/lights.js --plan tools/toneprobe.json --size 1280x720",
+		"      node tools/lights.js --plan tools/toneprobe.json --save pictures/tmp/tone",
+		"",
+		"knee, white and desat are the three knobs src/tone.js puts into the shader: where the bend",
+		"starts, what the very brightest light is worth on the screen, and how much white is mixed into",
+		"a colour that had to be folded a long way."
+	],
+	"url": "http://localhost:8090/villa/index.html",
+	"views": [
+		{
+			"name": "home",
+			"view": "2.4,1.74,10.5,3.2,0.06",
+			"picks": [
+				{ "name": "lit plaster", "x": 0.266, "y": 0.306 },
+				{ "name": "lit cement", "x": 0.484, "y": 0.583 },
+				{ "name": "sunlit pot", "x": 0.109, "y": 0.583 },
+				{ "name": "sunlit coping", "x": 0.55, "y": 0.6 },
+				{ "name": "sunlit deck", "x": 0.62, "y": 0.62 },
+				{ "name": "shaded wall", "x": 0.17, "y": 0.25 }
+			]
+		},
+		{ "name": "colonnade", "view": "2.2,1.6,9,3.1416,-0.14", "fov": 0.45 },
+		{ "name": "pool", "view": "0,2.1,-1.5,0,0.1" },
+		{ "name": "westwall", "view": "-13,1.6,-8,1.57,0" }
+	],
+	"cases": [
+		{ "name": "khronos (is)", "query": "tonemap=khronos" },
+		{ "name": "knee .50", "query": "tonemap=villa&knee=0.5&white=1&desat=0.15" },
+		{ "name": "knee .50 d.06", "query": "tonemap=villa&knee=0.5&white=1&desat=0.06" },
+		{ "name": "knee .50 w.96", "query": "tonemap=villa&knee=0.5&white=0.96&desat=0.06" },
+		{ "name": "knee .42", "query": "tonemap=villa&knee=0.42&white=0.98&desat=0.06" },
+		{ "name": "knee .62", "query": "tonemap=villa&knee=0.62&white=1&desat=0.06" }
+	]
+}

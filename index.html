@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Baan Kaew — a Thai pool villa</title>
+		<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%231d2b23'/%3E%3Crect x='2' y='9' width='12' height='5' fill='%232f9fb0'/%3E%3Cpath d='M8 2 14 8H2z' fill='%23b3552f'/%3E%3C/svg%3E" />
+		<link rel="stylesheet" href="src/style.css" />
+	</head>
+	<body>
+		<canvas id="view" aria-label="A three-dimensional Thai pool villa you can walk around in"></canvas>
+
+		<div id="plate">
+			<span class="name">Baan Kaew</span>
+			<span class="line"></span>
+			<span class="note">a Thai pool villa, half past five</span>
+		</div>
+
+		<div id="hint">
+			<span><b>W A S D</b> or the arrows — walk</span>
+			<span><b>drag</b> or click — look around</span>
+			<span><b>shift</b> — walk quickly</span>
+			<span><b>space</b> — off the ground, and back</span>
+			<span><b>R</b> — back to the start</span>
+		</div>
+
+		<div id="oops" hidden></div>
+
+		<script src="vendor/babylon/babylon.js"></script>
+		<script src="vendor/materials/babylonjs.materials.min.js"></script>
+		<script src="vendor/loaders/babylonjs.loaders.min.js"></script>
+		<script type="module" src="src/main.js"></script>
+	</body>
+</html>

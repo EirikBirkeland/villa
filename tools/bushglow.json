@@ -1,0 +1,24 @@
+{
+  "url": "http://localhost:8090/villa/index.html?float=1",
+  "views": [
+    {
+      "name": "the west shrub at 2.5 m",
+      "view": "-13.5,1.5,8,-1.57,0.18",
+      "picks": [
+        { "name": "crown of the shrub", "place": [-16.0, 1.05, 7.8] },
+        { "name": "lit shoulder", "place": [-16.0, 0.8, 7.2] },
+        { "name": "middle of the mass", "place": [-16.0, 0.6, 7.8] },
+        { "name": "skirt, shaded", "place": [-16.2, 0.22, 7.8] },
+        { "name": "lawn beside it", "place": [-14.6, 0.05, 8.6] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built", "query": "" },
+    { "name": "cards emissive 0.15 green", "js": "mats.bushLeaf.emissiveColor = new BABYLON.Color3(0.09,0.15,0.048);" },
+    { "name": "cards emissive like the heart", "js": "mats.bushLeaf.emissiveColor = new BABYLON.Color3(0.03,0.085,0.022);" },
+    { "name": "cards emissive off", "js": "mats.bushLeaf.emissiveColor = new BABYLON.Color3(0,0,0);" },
+    { "name": "cards emissive with red and blue", "js": "mats.bushLeaf.emissiveColor = new BABYLON.Color3(0.12,0.17,0.075);" },
+    { "name": "shell emissive off too", "js": "mats.bushLeaf.emissiveColor = new BABYLON.Color3(0.12,0.17,0.075); mats.bushEdge.emissiveColor = new BABYLON.Color3(0,0,0); mats.bush.emissiveColor = new BABYLON.Color3(0,0,0);" }
+  ]
+}

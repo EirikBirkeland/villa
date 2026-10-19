@@ -1,0 +1,16 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"note": "How loud should the sky be in the water's mirror? Weighed in the 72nd session, on the start camera, with `node tools/bands.js --labels foot,middle,far <the pictures> 350,600,900,646 350,545,900,595 350,505,900,540`. No sky at all reads L127, L146, L147 — and the foot is full of facets down at L16-31, which is the fault being chased. Strength 0.6 reads L137, L157, L160. SHIPPED strength 1 reads L142, L163, L166, with nothing in the foot below L98: that is where the water's own foot comes level with the coping's dry stone, which reads L143. Strength 1.2 reads L145, L166, L170 and strength 2 reads L153, L176, L181, past which the near half of the pool is the colour of weak tea. A steeper payment was tried first — the sky at the SQUARE of the Fresnel, on the theory that only the facets which edge the eye really mirror — and at strength 2 it bought two points over the plain law, which is nothing, so the plain law was kept and the second dial was thrown away with it. `tools/waterskydown.json` is the same dial weighed where the eye looks down into the pit instead of along it.",
+	"views": [
+		{ "name": "start view over the pool", "view": "2.4,1.74,10.5,3.2,0.06" },
+		{ "name": "the pool from the west", "view": "-11,1.7,6.8,1.57,-0.02" },
+		{ "name": "standing on the coping", "view": "0,1.62,4.6,0,-0.5" }
+	],
+	"cases": [
+		{ "name": "no sky in the mirror (the control)", "query": "wsky=0" },
+		{ "name": "strength 0.6", "query": "wsky=0.6" },
+		{ "name": "SHIPPED: strength 1", "query": "wsky=1" },
+		{ "name": "strength 1.2", "query": "wsky=1.2" },
+		{ "name": "strength 2, too loud", "query": "wsky=2" }
+	]
+}

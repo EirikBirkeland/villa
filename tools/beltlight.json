@@ -1,0 +1,29 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "How the belt's leaf cards should be lit. A card's mirror term was blowing the ones that face the sky to (142,157,87) — no leaf in it — and taking the shine off altogether left the mass at (16,50,7), too dark and with no red or blue range left in it. So this asks, on the same eight places over the near rank: no shine, a little shine, the old shine, and what the material's own colour and its leaf-glow are each worth. The `southborder` camera has the near rank over half the frame; every pick here names jungleBelt.",
+	"views": [
+		{
+			"name": "southborder",
+			"view": "6,1.6,13,0.27,0",
+			"picks": [
+				{ "name": "a", "x": 0.06, "y": 0.32 },
+				{ "name": "b", "x": 0.03, "y": 0.45 },
+				{ "name": "c", "x": 0.86, "y": 0.36 },
+				{ "name": "d", "x": 0.1, "y": 0.25 },
+				{ "name": "e", "x": 0.92, "y": 0.32 },
+				{ "name": "f", "x": 0.75, "y": 0.42 },
+				{ "name": "g", "x": 0.95, "y": 0.45 },
+				{ "name": "h", "x": 0.02, "y": 0.3 }
+			]
+		}
+	],
+	"cases": [
+		{ "name": "no shine, lift 1.7 (as built)", "js": "" },
+		{ "name": "a little shine", "js": "mats.jungle.specularIntensity = 0.1; mats.jungleFar.specularIntensity = 0.1;" },
+		{ "name": "the old shine", "js": "mats.jungle.specularIntensity = 0.25; mats.jungleFar.specularIntensity = 0.25;" },
+		{ "name": "no shine, colour x1.6", "js": "mats.jungle.albedoColor.scaleInPlace(1.6); mats.jungleFar.albedoColor.scaleInPlace(1.6);" },
+		{ "name": "no shine, colour x2.4", "js": "mats.jungle.albedoColor.scaleInPlace(2.4); mats.jungleFar.albedoColor.scaleInPlace(2.4);" },
+		{ "name": "no shine, glow x3", "js": "mats.jungle.emissiveColor.scaleInPlace(3); mats.jungleFar.emissiveColor.scaleInPlace(3);" },
+		{ "name": "no shine, colour x1.6 and glow x3", "js": "mats.jungle.albedoColor.scaleInPlace(1.6); mats.jungle.emissiveColor.scaleInPlace(3); mats.jungleFar.albedoColor.scaleInPlace(1.6); mats.jungleFar.emissiveColor.scaleInPlace(3);" }
+	]
+}

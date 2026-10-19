@@ -1,0 +1,21 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "Who owns the mint. A mown lawn seen low is a shallow mirror of the sky: `sheen` is the share of the pixel the sky owns, `albedoColor` the share the grass owns. Case B switches the mirror off and pays it back nothing, so what falls away IS the sky's own colour; C and D then pay the mirror back in the grass's warm bytes and in blue's own reduction, which is what the mint is made of. One camera, three places on it, read at the same time.",
+	"views": [
+		{
+			"name": "grazing (south border)",
+			"view": "6,1.6,13,0.27,0",
+			"picks": [
+				{ "name": "sward far left", "x": 0.16, "y": 0.7 },
+				{ "name": "sward far right", "x": 0.86, "y": 0.66 },
+				{ "name": "sward mid", "x": 0.5, "y": 0.68 }
+			]
+		}
+	],
+	"cases": [
+		{ "name": "A as built", "query": "float=1", "js": "" },
+		{ "name": "B sheen 0, no payback", "query": "float=1", "js": "mats.lawn.specularIntensity = 0;" },
+		{ "name": "C sheen .03, warm payback", "query": "float=1", "js": "mats.lawn.specularIntensity = 0.03; mats.lawn.albedoColor.r *= 1.55; mats.lawn.albedoColor.g *= 1.2; mats.lawn.albedoColor.b *= 0.92;" },
+		{ "name": "D sheen .05, mild payback", "query": "float=1", "js": "mats.lawn.specularIntensity = 0.05; mats.lawn.albedoColor.r *= 1.32; mats.lawn.albedoColor.g *= 1.12; mats.lawn.albedoColor.b *= 0.95;" }
+	]
+}

@@ -1,0 +1,21 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "note": "Straight down on the north coping: the dry capstone, its damp foot, and the water beyond. Asked from one metre up so the damp foot is thirty pixels wide and not three, and the colour of the damp stone can be measured instead of guessed.",
+  "views": [
+    {
+      "name": "the coping, straight down",
+      "view": "0,1.6,1.9,3.1416,1.5708",
+      "fov": 0.5,
+      "picks": [
+        { "name": "coping, back half", "place": [0, 0.236, 1.72] },
+        { "name": "coping, middle", "place": [0, 0.236, 1.86] },
+        { "name": "the damp foot", "place": [0, 0.236, 2.03] },
+        { "name": "water at the wall", "place": [0, -0.2, 2.3] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built", "query": "float=1" },
+    { "name": "damp dialled out (?wet=0)", "query": "float=1&wet=0" }
+  ]
+}

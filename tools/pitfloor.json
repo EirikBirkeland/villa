@@ -1,0 +1,22 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "note": "The pit with the water sheet taken out, lit three ways, to find out what makes the hard-edged bright rectangle in the middle of the pool. Bands for `tools/bands.js`: the near floor, the middle floor, the far wall.",
+  "views": [
+    {
+      "name": "start view over the pool",
+      "view": "2.4,1.74,10.5,3.2,0.06"
+    },
+    {
+      "name": "down into the pit",
+      "view": "0,2.6,7.8,3.1416,-0.62",
+      "fov": 0.9
+    }
+  ],
+  "cases": [
+    { "name": "no water, shadows on", "query": "float=1", "js": "scene.meshes.find(m => m.name === 'water').isVisible = false;" },
+    { "name": "no water, no shadow map", "query": "float=1&noshadow=1", "js": "scene.meshes.find(m => m.name === 'water').isVisible = false;" },
+    { "name": "no water, sun from overhead", "query": "float=1&sunElevation=70", "js": "scene.meshes.find(m => m.name === 'water').isVisible = false;" },
+    { "name": "as built", "query": "float=1" },
+    { "name": "as built, no shadow map", "query": "float=1&noshadow=1" }
+  ]
+}

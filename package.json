@@ -1,0 +1,24 @@
+{
+  "name": "villa",
+  "version": "1.0.0",
+  "description": "A Thai pool villa you can walk around in",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "babylonjs": "^9.30.0",
+    "babylonjs-gui": "^9.30.0",
+    "babylonjs-loaders": "^9.30.0",
+    "babylonjs-materials": "^9.30.0",
+    "pngjs": "^7.0.0"
+  },
+  "private": true,
+  "devDependencies": {
+    "playwright-core": "^1.64.1"
+  }
+}

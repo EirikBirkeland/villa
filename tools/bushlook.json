@@ -1,0 +1,12 @@
+{
+  "url": "http://localhost:8090/villa/index.html?float=1",
+  "views": [
+    { "name": "arm's length", "view": "-3.1,1.2,2.6,3.1416,0.2" },
+    { "name": "four metres", "view": "-3.1,1.5,5,3.1416,0.05" },
+    { "name": "where a visitor arrives", "view": "2.4,1.74,10.5,3.2,0.06" }
+  ],
+  "cases": [
+    { "name": "as built", "query": "&fov=0.5" },
+    { "name": "wide eye", "query": "" }
+  ]
+}

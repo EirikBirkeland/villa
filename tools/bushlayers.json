@@ -1,0 +1,21 @@
+{
+  "url": "http://localhost:8090/villa/index.html?float=1",
+  "views": [
+    {
+      "name": "bush",
+      "view": "-14.5,0.95,7.9,-1.57,-0.05&fov=0.5",
+      "picks": [
+        { "name": "middle of the mass", "x": 0.5, "y": 0.55 },
+        { "name": "a bright leaf", "x": 0.62, "y": 0.4 },
+        { "name": "the crown", "x": 0.5, "y": 0.25 },
+        { "name": "the skirt", "x": 0.45, "y": 0.8 }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built", "query": "" },
+    { "name": "cards hidden", "js": "for (const m of scene.meshes) if (m.material && m.material.name === 'bushLeaf') m.isVisible = false;" },
+    { "name": "shell hidden", "js": "for (const m of scene.meshes) if (m.material && m.material.name === 'bushEdge') m.isVisible = false;" },
+    { "name": "heart hidden", "js": "for (const m of scene.meshes) if (m.material && m.material.name === 'bush') m.isVisible = false;" }
+  ]
+}

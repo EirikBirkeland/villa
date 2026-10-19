@@ -1,0 +1,31 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "The fog's own colour, and what the far ridge and the hills come out as for each of them. Solved out of the band at 140 m with fog on (89,99,100) and off (13,42,18), the fog paints the screen at (191,189,207): pale lavender, brighter than the sky at the horizon (150,204,224) in its own blue and with no green in it at all, which is why the ridge reads as slate. The ladder these notes have always wanted is hedge, near rank, far rank, tree line, hills — each one paler, bluer and darker than the sky it stands against, and none of them blue OVER green. `band` is asked at 140 m and `hill` at 240 m, where three quarters of the pixel is fog, so this is the fog's own colour being read back.",
+	"views": [
+		{
+			"name": "over the ridge",
+			"view": "0,90,0,0.5,0.4",
+			"query": "float=1",
+			"picks": [
+				{ "name": "sky", "x": 0.5, "y": 0.25 },
+				{ "name": "hill", "x": 0.5, "y": 0.4 },
+				{ "name": "band", "x": 0.5, "y": 0.55 }
+			]
+		},
+		{
+			"name": "southborder",
+			"view": "6,1.6,13,0.27,0",
+			"picks": [
+				{ "name": "band right", "x": 0.9, "y": 0.26 },
+				{ "name": "sky low", "x": 0.32, "y": 0.14 }
+			]
+		}
+	],
+	"cases": [
+		{ "name": "as built", "query": "float=1", "js": "" },
+		{ "name": "green fog A", "query": "float=1", "js": "scene.fogColor = new BABYLON.Color3(0.52, 0.62, 0.50);" },
+		{ "name": "green fog B", "query": "float=1", "js": "scene.fogColor = new BABYLON.Color3(0.44, 0.60, 0.44);" },
+		{ "name": "green fog C", "query": "float=1", "js": "scene.fogColor = new BABYLON.Color3(0.38, 0.56, 0.40);" },
+		{ "name": "green fog D", "query": "float=1", "js": "scene.fogColor = new BABYLON.Color3(0.46, 0.60, 0.50);" }
+	]
+}

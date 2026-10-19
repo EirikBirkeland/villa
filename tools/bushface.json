@@ -1,0 +1,49 @@
+{
+  "_": [
+    "One pixel of a shrub, one layer switched off at a time. The bush's three layers — the heart, the",
+    "shell of cut-out leaf over it, and the leaf cards standing on the shell — are all the same leaf in",
+    "three states, and for five sessions the wrong one of them was the brightest: the cards, which the sun",
+    "actually reaches, painted (47,83,13) while the shell behind them painted (70,114,20). The cases below",
+    "are the ones that settled where that came from. The mirror on a smooth shell is what made it bright:",
+    "`specularIntensity` on the shell and the heart alone moved the shell thirty-nine points of light and",
+    "moved the cards not at all, while forcing every card's normal square at the sun bought six and turning",
+    "the scene's shadows off bought nothing.",
+    "",
+    "Run it with: node tools/lights.js tools/bushface.json"
+  ],
+  "url": "http://localhost:8090/villa/index.html?float=1",
+  "views": [
+    {
+      "name": "bush",
+      "view": "-13.4,0.9,7.8,-1.57,0.12&fov=0.5",
+      "picks": [
+        { "name": "the middle of the front", "x": 0.5, "y": 0.55 },
+        { "name": "the skirt", "x": 0.48, "y": 0.82 },
+        { "name": "the crown", "x": 0.5, "y": 0.34 }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built", "query": "" },
+    {
+      "name": "shell hidden — what the cards are on their own",
+      "js": "for (const m of scene.meshes) if (m.material && m.material.name === 'bushEdge') m.isVisible = false;"
+    },
+    {
+      "name": "cards hidden — the shell in their place",
+      "js": "for (const m of scene.meshes) if (m.material && m.material.name === 'bushLeaf') m.isVisible = false;"
+    },
+    {
+      "name": "the shell's mirror on (the old varnish)",
+      "js": "mats.bushEdge.specularIntensity = 0.25; mats.bush.specularIntensity = 0.25;"
+    },
+    {
+      "name": "the cards given the mirror back",
+      "js": "mats.bushLeaf.specularIntensity = 0.25;"
+    },
+    {
+      "name": "shadows off (a control: shadows are not the fault)",
+      "js": "scene.shadowsEnabled = false;"
+    }
+  ]
+}

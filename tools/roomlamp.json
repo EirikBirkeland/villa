@@ -1,0 +1,47 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "home",
+      "view": "2.4,1.74,10.5,3.2,0.06",
+      "picks": [
+        { "name": "pane low", "place": [1.2, 1.0, -3.92] },
+        { "name": "pane eye", "place": [1.2, 1.75, -3.92] },
+        { "name": "pane high", "place": [1.2, 3.0, -3.92] },
+        { "name": "pane west", "place": [-3.4, 2.2, -3.92] },
+        { "name": "control mullion", "place": [0.6, 2.0, -3.8] },
+        { "name": "control coping", "place": [0, 0.14, 1.6] }
+      ]
+    },
+    {
+      "name": "room",
+      "view": "0,2.2,-6.2,3.1416,0",
+      "picks": [
+        { "name": "back wall inside", "place": [0, 2.6, -11.6] },
+        { "name": "side wall inside", "place": [-6.6, 2.2, -8] },
+        { "name": "sofa front", "place": [-1.6, 1.0, -6.0] },
+        { "name": "floor far", "place": [0, 0.61, -9.5] },
+        { "name": "floor near", "place": [0, 0.61, -6.5] },
+        { "name": "ceiling", "place": [0, 4.15, -8] },
+        { "name": "glow strip", "place": [0.4, 3.95, -7.4] }
+      ]
+    },
+    {
+      "name": "frontclose",
+      "view": "1.2,2.1,-0.6,3.1416,0.14",
+      "fov": "0.6",
+      "picks": [
+        { "name": "pane low", "place": [1.2, 1.0, -3.92] },
+        { "name": "pane eye", "place": [1.2, 1.9, -3.92] },
+        { "name": "control mullion", "place": [0.6, 2.0, -3.8] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "no lamp", "js": "scene.roomLamps.forEach(l => l.setEnabled(false))" },
+    { "name": "lamp12", "js": "scene.roomLamps.forEach(l => l.intensity = l.name === 'floorLampLight' ? 3.9 : 12)" },
+    { "name": "lamp20 as built", "js": "scene.roomLamps.forEach(l => l.intensity = l.name === 'floorLampLight' ? 6.5 : 20)" },
+    { "name": "lamp30", "js": "scene.roomLamps.forEach(l => l.intensity = l.name === 'floorLampLight' ? 9.75 : 30)" },
+    { "name": "lamp45", "js": "scene.roomLamps.forEach(l => l.intensity = l.name === 'floorLampLight' ? 14.6 : 45)" }
+  ]
+}

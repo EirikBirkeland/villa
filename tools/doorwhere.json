@@ -1,0 +1,11 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"views": [
+		{ "name": "home", "view": "2.4,1.74,10.5,3.2,0.06" },
+		{ "name": "colonnade", "view": "2.2,1.6,9,3.1416,-0.14", "fov": "0.45" }
+	],
+	"cases": [
+		{ "name": "noglass" , "js": "scene.getMeshByName('frontGlass').setEnabled(false)" },
+		{ "name": "noglassnostore", "js": "scene.getMeshByName('frontGlass').setEnabled(false); scene.roomLamps.filter(l => l.name === 'storeLampLight').forEach(l => l.setEnabled(false)); ['storeLiningNorth','storeLiningWest','storeLiningEast','storeFloor','storeJar','storeCrate','storeShelf','storeBowl','storePot','storeLamp','storeLampRod'].forEach(n => { const m = scene.getMeshByName(n); if (m) m.setEnabled(false); });" }
+	]
+}

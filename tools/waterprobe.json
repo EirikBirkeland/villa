@@ -1,0 +1,24 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "over",
+      "view": "0,2.1,-1.5,0,0.1",
+      "picks": [
+        { "name": "mirror z3.4", "place": [0, -0.2, 3.4] },
+        { "name": "z4.6", "place": [0, -0.2, 4.6] },
+        { "name": "far z6.6", "place": [0, -0.2, 6.6] },
+        { "name": "west x-3.5", "place": [-3.5, -0.2, 4.6] },
+        { "name": "coping control", "place": [0, 0.23, 1.89] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "A v0.15 painted", "query": "", "js": "scene.meshes.forEach(m => { if (m.name.startsWith('caustics')) m.setEnabled(false); }); mats.water.disableLighting = true; mats.water.bumpTexture = null; mats.water.albedoColor = new BABYLON.Color3(1,1,1); mats.water.emissiveColor = new BABYLON.Color3(0.5,1.38,1.21);" },
+    { "name": "B paint plus sheen", "query": "", "js": "scene.meshes.forEach(m => { if (m.name.startsWith('caustics')) m.setEnabled(false); }); mats.water.albedoColor = new BABYLON.Color3(0.02,0.02,0.02); mats.water.emissiveColor = new BABYLON.Color3(0.5,1.38,1.21);" },
+    { "name": "C plus sheen flat", "query": "", "js": "scene.meshes.forEach(m => { if (m.name.startsWith('caustics')) m.setEnabled(false); }); mats.water.albedoColor = new BABYLON.Color3(0.02,0.02,0.02); mats.water.bumpTexture.level = 0; mats.water.emissiveColor = new BABYLON.Color3(0.5,1.38,1.21);" },
+    { "name": "D sheen no mirror", "query": "", "js": "scene.meshes.forEach(m => { if (m.name.startsWith('caustics')) m.setEnabled(false); }); mats.water.albedoColor = new BABYLON.Color3(0.02,0.02,0.02); mats.water.environmentIntensity = 0.02; mats.water.emissiveColor = new BABYLON.Color3(0.5,1.38,1.21);" },
+    { "name": "E sheen mirror 1.5", "query": "", "js": "scene.meshes.forEach(m => { if (m.name.startsWith('caustics')) m.setEnabled(false); }); mats.water.albedoColor = new BABYLON.Color3(0.02,0.02,0.02); mats.water.environmentIntensity = 1.5; mats.water.emissiveColor = new BABYLON.Color3(0.5,1.38,1.21);" },
+    { "name": "F sheen rough 0.2", "query": "", "js": "scene.meshes.forEach(m => { if (m.name.startsWith('caustics')) m.setEnabled(false); }); mats.water.albedoColor = new BABYLON.Color3(0.02,0.02,0.02); mats.water.roughness = 0.2; mats.water.emissiveColor = new BABYLON.Color3(0.5,1.38,1.21);" }
+  ]
+}

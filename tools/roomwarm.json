@@ -1,0 +1,41 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "room inside",
+      "view": "0,1.6,-4.6,3.1416,0.05",
+      "picks": [
+        { "name": "back wall centre", "place": [0, 2.6, -11.5] },
+        { "name": "back wall high", "place": [0, 3.6, -11.5] },
+        { "name": "back wall west", "place": [-2.6, 2.2, -11.5] },
+        { "name": "ceiling", "place": [0, 4.0, -9.5] },
+        { "name": "floor far", "place": [0, 0.62, -10.4] },
+        { "name": "alcove back", "place": [0, 2.0, -11.42] },
+        { "name": "control sofa", "place": [-1.4, 1.35, -8.3] }
+      ]
+    },
+    {
+      "name": "home",
+      "view": "2.4,1.74,10.5,3.2,0.06",
+      "picks": [
+        { "name": "glass west", "place": [-3.0, 2.4, -3.92] },
+        { "name": "glass centre", "place": [0.2, 2.4, -3.92] },
+        { "name": "glass east", "place": [4.2, 2.4, -3.92] },
+        { "name": "glass low", "place": [1.2, 1.2, -3.92] },
+        { "name": "control mullion", "place": [0.6, 2.0, -3.8] },
+        { "name": "control coping", "place": [0, 0.14, 1.6] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built (env 0.3)" },
+    { "name": "sky cube out of the room (env 0.1)" },
+    { "name": "sky cube gone (env 0)" },
+    { "name": "env 0 + lamps x1.6", "js": "scene.roomLamps.forEach(l => l.intensity *= 1.6)" },
+    { "name": "env 0 + lamps x2.4", "js": "scene.roomLamps.forEach(l => l.intensity *= 2.4)" },
+    { "name": "env 0.1 + lamps x2", "js": "scene.roomLamps.forEach(l => l.intensity *= 2)" },
+    { "name": "sun off (how much sun gets in)", "js": "light.intensity = 0" },
+    { "name": "room lamps off", "js": "scene.roomLamps.forEach(l => l.setEnabled(false))" },
+    { "name": "env 0 + sun off", "js": "mats.interiorPlaster.environmentIntensity = 0; light.intensity = 0" }
+  ]
+}

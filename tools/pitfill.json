@@ -1,0 +1,15 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"note": "Why was the near third of the pit a dark tank? Three bands are read on the start camera — the water nearest the visitor (the foot), the middle of the basin, the far water under the far coping — with `node tools/bands.js --labels foot,middle,far <saved> 350,600,900,646 350,545,900,595 350,505,900,540`. Measured in the 72nd session, in this order, and every one of these is a fact and not a guess: `noshadow=1` moves all three by ONE point (L127 to L127, L146 to L145), so the dark foot is NOT the shadow of the pool's own south wall, whatever an older note in `src/materials.js` used to say. Take the water sheet out and the same three places read L174, L203, L182 — the floor of the pit is sunlit clean across, so there was no shade on the floor to explain either. Take the angle out of the film (`nofilmangle=1`) and the foot goes DOWN to L125: the angle in the alpha is not the villain either, it is half the answer. `environmentIntensity` on the water was ladderred at 0.5, 1.0, 1.6 and 2.4 and moved the bands by a point: the mirror cannot be bought with that knob, because this renderer pays a dielectric's mirror next to nothing. What is left is the film: where the eye grazes the alpha goes to a mirror, the emissive cyan is rightly taken away, and what the surface is left standing with is an albedo of nearly black. The paid-for sky is in `src/water.js` and is weighed in `tools/watersky.json`.",
+	"views": [{ "name": "start view over the pool", "view": "2.4,1.74,10.5,3.2,0.06" }],
+	"cases": [
+		{ "name": "as built", "query": "float=1" },
+		{ "name": "no shadow map at all", "query": "float=1&noshadow=1" },
+		{ "name": "no sky in the mirror", "query": "float=1&wsky=0" },
+		{ "name": "water mirror x1", "query": "float=1", "js": "mats.water.environmentIntensity = 1.0; mats.water.markDirty(true);" },
+		{ "name": "water mirror x2.4", "query": "float=1", "js": "mats.water.environmentIntensity = 2.4; mats.water.markDirty(true);" },
+		{ "name": "the sky paid by hand, as built", "query": "float=1&wsky=1" },
+		{ "name": "no pool cube (scene sky)", "query": "float=1&noreflect=1" },
+		{ "name": "no water at all", "query": "float=1", "js": "scene.meshes.find(m => m.name === 'water').isVisible = false;" }
+	]
+}

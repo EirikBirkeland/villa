@@ -1,0 +1,23 @@
+{
+  "url": "http://localhost:8090/villa/index.html?float=1&fov=0.5",
+  "views": [
+    {
+      "name": "the big pot bush, arm's length",
+      "view": "-3.1,1.2,2.6,3.1416,0.2",
+      "picks": [
+        { "name": "the pink card at the crown", "x": 0.492, "y": 0.035 },
+        { "name": "a sunlit card", "x": 0.45, "y": 0.13 },
+        { "name": "the leafy middle", "x": 0.5, "y": 0.3 },
+        { "name": "the dark rim, left", "x": 0.33, "y": 0.42 }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built", "query": "" },
+    { "name": "no shine on the cards", "js": "mats.bushLeaf.specularIntensity = 0;" },
+    { "name": "no bloom", "js": "pipeline.bloomEnabled = false;" },
+    { "name": "no grain", "js": "pipeline.filmGrainEnabled = false;" },
+    { "name": "cards no emissive", "js": "mats.bushLeaf.emissiveTexture = null; mats.bushLeaf.emissiveColor = new BABYLON.Color3(0,0,0);" },
+    { "name": "no sky sheen anywhere", "js": "hemi.specular = new BABYLON.Color3(0,0,0);" }
+  ]
+}

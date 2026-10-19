@@ -1,0 +1,16 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "note": "A one-pixel green pinstripe runs the whole length of the pool's east edge, and nothing else: seen from straight above at `0,14,4.6,3.1416,1.5708` with a 0.5 eye, pixels down x=1143 of a 1280-wide picture come out near (97,162,25) — grass green — while the west, north and south edges come out teal. The camera is 14 m up over the pool's centre, so the ray to that edge is tilted 20 degrees off vertical and sees a sliver of the east wall's INNER face (a pick there names poolEast at y -0.03, just above the water) and the 2 cm top ledge of the wet band, where the other three walls show nothing of themselves. Which of those is painting the line is what this asks: each case switches one suspect out and `tools/scanline.js` reads the same row of the same camera in every picture it saves.",
+  "views": [
+    { "name": "over", "view": "0,14,4.6,3.1416,1.5708", "fov": 0.5 }
+  ],
+  "cases": [
+    { "name": "as-built", "query": "float=1" },
+    { "name": "tile-env-off", "query": "float=1", "js": "mats.poolTile.environmentIntensity = 0" },
+    { "name": "tile-specular-off", "query": "float=1", "js": "mats.poolTile.specularColor.set(0,0,0)" },
+    { "name": "water-off", "query": "float=1", "js": "scene.getMeshByName('water').setEnabled(false)" },
+    { "name": "caustics-off", "query": "float=1", "js": "scene.getMeshByName('causticsA').setEnabled(false); scene.getMeshByName('causticsB').setEnabled(false)" },
+    { "name": "wet-band-off", "query": "float=1", "js": "for (const m of ['wetEast','wetWest','wetNorth','wetSouth']) scene.getMeshByName(m).setEnabled(false)" },
+    { "name": "tile-rough-1", "query": "float=1", "js": "mats.poolTile.roughness = 1" }
+  ]
+}

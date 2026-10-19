@@ -1,0 +1,42 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "note": "What the ground is doing on the landward side of the pool's capstone, asked straight down in two-centimetre steps on two sides. The coping stands 0.42 m proud of the water's edge; the question is whether the cut stone of the deck comes all the way to it, or stops short and leaves the grass showing in the gap.",
+  "views": [
+    {
+      "name": "the north coping",
+      "view": "0,1.6,1.9,3.1416,1.5708",
+      "fov": 0.5,
+      "picks": [
+        { "name": "z 1.58", "place": [0, 0.26, 1.58] },
+        { "name": "z 1.62", "place": [0, 0.26, 1.62] },
+        { "name": "z 1.66", "place": [0, 0.26, 1.66] },
+        { "name": "z 1.70", "place": [0, 0.26, 1.70] }
+      ]
+    },
+    {
+      "name": "the south coping",
+      "view": "0,1.6,7.3,3.1416,1.5708",
+      "fov": 0.5,
+      "picks": [
+        { "name": "z 7.50", "place": [0, 0.26, 7.5] },
+        { "name": "z 7.54", "place": [0, 0.26, 7.54] },
+        { "name": "z 7.58", "place": [0, 0.26, 7.58] },
+        { "name": "z 7.62", "place": [0, 0.26, 7.62] }
+      ]
+    },
+    {
+      "name": "the west coping",
+      "view": "-5.2,1.6,4.6,3.1416,1.5708",
+      "fov": 0.5,
+      "picks": [
+        { "name": "x -5.38", "place": [-5.38, 0.26, 4.6] },
+        { "name": "x -5.44", "place": [-5.44, 0.26, 4.6] },
+        { "name": "x -5.48", "place": [-5.48, 0.26, 4.6] },
+        { "name": "x -5.52", "place": [-5.52, 0.26, 4.6] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built", "query": "float=1" }
+  ]
+}

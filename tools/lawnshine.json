@@ -1,0 +1,23 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "lawn twenty metres off",
+      "view": "-13.5,1.5,8,-1.57,0.18",
+      "picks": [
+        { "name": "far sward", "place": [-19, 0, 8] },
+        { "name": "near sward", "place": [-16.5, 0, 7.6] },
+        { "name": "sward in shade", "place": [-18, 0, 9.6] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built", "query": "" },
+    { "name": "bump off", "js": "mats.lawn.bumpTexture.level = 0;" },
+    { "name": "bump a quarter", "js": "mats.lawn.bumpTexture.level = 0.25;" },
+    { "name": "no roughness map", "js": "mats.lawn.roughnessTexture = null; mats.lawn.roughness = 0.95;" },
+    { "name": "roughness floor lifted", "js": "mats.lawn.roughness = 1;" },
+    { "name": "no sun specular", "js": "sun.specular = new BABYLON.Color3(0, 0, 0);" },
+    { "name": "no sky sheen", "js": "hemi.specular = new BABYLON.Color3(0, 0, 0);" }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"views": [
+		{
+			"name": "home",
+			"view": "2.4,1.74,10.5,3.2,0.06",
+			"picks": [
+				{ "name": "doorway lit wall low", "place": [5.6, 1.4, -13.6] },
+				{ "name": "doorway lit wall high", "place": [5.6, 2.6, -13.6] },
+				{ "name": "doorway wall left", "place": [4.7, 1.6, -13.6] },
+				{ "name": "doorway wall right", "place": [6.5, 1.6, -13.6] },
+				{ "name": "doorway lamp", "place": [5.6, 2.46, -13.55] },
+				{ "name": "doorway jar", "place": [4.42, 1.0, -13.2] },
+				{ "name": "doorway crate", "place": [6.26, 0.9, -13.25] },
+				{ "name": "doorway floor", "place": [5.6, 0.62, -12.6] },
+				{ "name": "reveal west", "place": [4.9, 1.4, -11.8] },
+				{ "name": "room wall west of door", "place": [4.0, 1.6, -11.55] },
+				{ "name": "alcove lit back", "place": [0, 1.35, -11.45] },
+				{ "name": "control mullion", "place": [0.6, 2.0, -3.8] },
+				{ "name": "control coping", "place": [0, 0.14, 1.6] }
+			]
+		},
+		{
+			"name": "colonnade",
+			"view": "2.2,1.6,9,3.1416,-0.14",
+			"fov": "0.45",
+			"picks": [
+				{ "name": "doorway lit wall low", "place": [5.6, 1.4, -13.6] },
+				{ "name": "doorway lit wall high", "place": [5.6, 2.6, -13.6] },
+				{ "name": "doorway lamp", "place": [5.6, 2.46, -13.55] },
+				{ "name": "alcove lit back", "place": [0, 1.35, -11.45] },
+				{ "name": "control coping", "place": [0, 0.14, 1.6] }
+			]
+		},
+		{
+			"name": "rear",
+			"view": "0,1.6,-19,0,0.06",
+			"picks": [
+				{ "name": "store north face", "place": [5.6, 2.2, -13.85] },
+				{ "name": "store plinth face", "place": [5.6, 0.3, -13.85] },
+				{ "name": "wall beside store", "place": [0, 2.2, -11.975] },
+				{ "name": "control roof", "place": [0.5, 5.6, -8.0] }
+			]
+		}
+	],
+	"cases": [
+		{ "name": "as built" },
+		{ "name": "store lamp off", "js": "scene.roomLamps.filter(l => l.name === 'storeLampLight').forEach(l => l.setEnabled(false))" },
+		{ "name": "store lamp doubled", "js": "scene.roomLamps.filter(l => l.name === 'storeLampLight').forEach(l => l.intensity *= 2)" }
+	]
+}

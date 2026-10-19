@@ -1,0 +1,50 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "The belt is leaf cards now. Three layers are asked about: `jungleBelt` (the near rank, 4-13 m beyond the hedge), `jungleHighBelt` (the far rank, 26-52 m beyond) and `farBelt` (the band on the far ridge, 100-135 m). Two faults are being chased. One: a card that turns its face square at the sun comes out of the curve pale mauve, not leaf — the pick on the olive card at (0.273,0.417) of the southborder view, `the pale card`. Two: the mass between those cards is too dark, mean (23,56,12) against the hedge's (31,60,12) next to it. The `grass` camera has the near rank big in the frame; the band picks are the grey ridge at 110 m.",
+	"views": [
+		{
+			"name": "southborder",
+			"view": "6,1.6,13,0.27,0",
+			"picks": [
+				{ "name": "the pale card", "x": 0.273, "y": 0.417 },
+				{ "name": "near rank, lit", "x": 0.06, "y": 0.32 },
+				{ "name": "near rank, dark", "x": 0.03, "y": 0.45 },
+				{ "name": "near rank, middle", "x": 0.86, "y": 0.36 },
+				{ "name": "far rank", "x": 0.5, "y": 0.35 },
+				{ "name": "band", "x": 0.65, "y": 0.3 }
+			]
+		},
+		{
+			"name": "grass",
+			"view": "-13.5,1.5,8,-1.57,0.18",
+			"picks": [
+				{ "name": "near rank left", "x": 0.2, "y": 0.25 },
+				{ "name": "near rank right", "x": 0.75, "y": 0.28 },
+				{ "name": "far rank", "x": 0.45, "y": 0.18 }
+			]
+		}
+	],
+	"cases": [
+		{ "name": "as built", "js": "" },
+		{
+			"name": "no shine on the cards",
+			"js": "mats.jungle.specularIntensity = 0; mats.jungleFar.specularIntensity = 0;"
+		},
+		{
+			"name": "sun off the two ranks",
+			"js": "light.excludedMeshes.push(scene.getMeshByName('jungleBelt'), scene.getMeshByName('jungleHighBelt'));"
+		},
+		{
+			"name": "cards at half the light",
+			"js": "mats.jungle.albedoColor.scaleInPlace(0.5); mats.jungleFar.albedoColor.scaleInPlace(0.5);"
+		},
+		{
+			"name": "cards at double the light",
+			"js": "mats.jungle.albedoColor.scaleInPlace(2); mats.jungleFar.albedoColor.scaleInPlace(2);"
+		},
+		{
+			"name": "leaf glow doubled",
+			"js": "mats.jungle.emissiveColor.scaleInPlace(2); mats.jungleFar.emissiveColor.scaleInPlace(2);"
+		}
+	]
+}

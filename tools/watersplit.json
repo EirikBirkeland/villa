@@ -1,0 +1,22 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "glint",
+      "view": "0,1.7,0.4,0,0.02",
+      "picks": [
+        { "name": "mirror z4.6", "place": [0, -0.2, 4.6] },
+        { "name": "z3.6", "place": [0, -0.2, 3.6] },
+        { "name": "z6.0", "place": [0, -0.2, 6.0] },
+        { "name": "west x-3.5", "place": [-3.5, -0.2, 4.6] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "no waves", "query": "", "js": "mats.water.bumpTexture.level = 0;" },
+    { "name": "level 1", "query": "" },
+    { "name": "level 2.5", "query": "", "js": "mats.water.bumpTexture.level = 2.5;" },
+    { "name": "level 1, glow off", "query": "", "js": "mats.water.emissiveColor = new BABYLON.Color3(0,0,0);" },
+    { "name": "level 1, glow off, sun out", "query": "sun=0", "js": "mats.water.emissiveColor = new BABYLON.Color3(0,0,0);" }
+  ]
+}

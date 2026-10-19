@@ -1,0 +1,17 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "How bright the sward should be. Ten metres off on this camera the lawn was the brightest thing in the frame under the sky (L161 against a hedge at L56), and a bright pale green is what reads as neon however warm its hue. Each case dims the grass's own bytes by one step and pays nothing back, so the mirror is left where it is and only the grass goes down.",
+	"views": [
+		{
+			"name": "grazing (south border)",
+			"view": "6,1.6,13,0.27,0",
+			"picks": []
+		}
+	],
+	"cases": [
+		{ "name": "A as built", "query": "float=1", "js": "" },
+		{ "name": "B nine tenths", "query": "float=1", "js": "mats.lawn.albedoColor.scaleToRef(0.9, mats.lawn.albedoColor); mats.tuft.albedoColor.scaleToRef(0.9, mats.tuft.albedoColor);" },
+		{ "name": "C eight two", "query": "float=1", "js": "mats.lawn.albedoColor.scaleToRef(0.82, mats.lawn.albedoColor); mats.tuft.albedoColor.scaleToRef(0.82, mats.tuft.albedoColor);" },
+		{ "name": "D seven five", "query": "float=1", "js": "mats.lawn.albedoColor.scaleToRef(0.75, mats.lawn.albedoColor); mats.tuft.albedoColor.scaleToRef(0.75, mats.tuft.albedoColor);" }
+	]
+}

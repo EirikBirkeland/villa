@@ -1,0 +1,36 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "The lawn's glare, weighed at three angles at once (fault 29). The grazing view is where the mint veil lies thickest, because a flat lawn seen low mirrors the sky; the overhead is where a lift paid for that glare would over-brighten, because there the sky is behind you and the reflection is weakest. Same camera as the standing views where one exists.",
+	"views": [
+		{
+			"name": "grazing (south border)",
+			"view": "6,1.6,13,0.27,0",
+			"picks": [
+				{ "name": "lit sward", "place": [7.5, 0, 16] },
+				{ "name": "sward far right", "place": [11, 0, 17] }
+			]
+		},
+		{
+			"name": "west lawn, raked",
+			"view": "-20,1.6,10,1.57,-0.02",
+			"picks": [
+				{ "name": "lit sward", "place": [-22, 0, 12] },
+				{ "name": "sward ahead", "place": [-24, 0, 10] }
+			]
+		},
+		{
+			"name": "overhead",
+			"view": "-16,20,8,3.1416,1.5708",
+			"picks": [
+				{ "name": "lawn under the camera", "place": [-16, 0, 12] },
+				{ "name": "lawn west", "place": [-21, 0, 6] }
+			]
+		}
+	],
+	"cases": [
+		{ "name": "as built: sheen 0.25, lift 1.8", "query": "float=1", "js": "" },
+		{ "name": "sheen 0.08, total lift 3.6", "query": "float=1", "js": "mats.lawn.specularIntensity = 0.08; mats.lawn.albedoColor.scaleToRef(2.0, mats.lawn.albedoColor); mats.tuft.specularIntensity = 0.08; mats.tuft.albedoColor.scaleToRef(2.0, mats.tuft.albedoColor);" },
+		{ "name": "sheen 0.08, total lift 2.6", "query": "float=1", "js": "mats.lawn.specularIntensity = 0.08; mats.lawn.albedoColor.scaleToRef(1.45, mats.lawn.albedoColor); mats.tuft.specularIntensity = 0.08; mats.tuft.albedoColor.scaleToRef(1.45, mats.tuft.albedoColor);" },
+		{ "name": "sheen 0, total lift 3.6", "query": "float=1", "js": "mats.lawn.specularIntensity = 0; mats.lawn.albedoColor.scaleToRef(2.0, mats.lawn.albedoColor); mats.tuft.specularIntensity = 0; mats.tuft.albedoColor.scaleToRef(2.0, mats.tuft.albedoColor);" }
+	]
+}

@@ -1,0 +1,20 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "lawn",
+      "view": "-13.5,1.5,8,-1.57,0.18"
+    },
+    {
+      "name": "home",
+      "view": "2.4,1.74,10.5,3.2,0.06"
+    }
+  ],
+  "cases": [
+    { "name": "bump-0.25", "js": "mats.lawn.bumpTexture.level = 0.25;" },
+    { "name": "bump-0.18", "js": "mats.lawn.bumpTexture.level = 0.18;" },
+    { "name": "bump-0.12", "js": "mats.lawn.bumpTexture.level = 0.12;" },
+    { "name": "bump-0.07", "js": "mats.lawn.bumpTexture.level = 0.07;" },
+    { "name": "bump-off", "js": "mats.lawn.bumpTexture.level = 0;" }
+  ]
+}

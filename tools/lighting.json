@@ -1,0 +1,50 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "The standing light question, as the fourteenth session left it. `as it is` should match pictures/070-home and friends. The other cases are the cures that were measured and refused, kept here so the next session can re-refuse them in one run instead of rediscovering them: the bloom as it was (which fogged the frame), a weaker sun with the fills up to hold the shade (which greys the picture), and sky fill alone without the bounce with it.",
+	"views": [
+		{
+			"name": "home",
+			"view": "2.4,1.74,10.5,3.2,0.06",
+			"picks": [
+				{ "name": "teak post, sun", "x": 0.273, "y": 0.292 },
+				{ "name": "roof tile", "x": 0.5, "y": 0.15 },
+				{ "name": "coping, sun", "x": 0.367, "y": 0.653 },
+				{ "name": "fascia", "x": 0.305, "y": 0.208 },
+				{ "name": "teak deck", "x": 0.352, "y": 0.569 },
+				{ "name": "pot by steps", "x": 0.414, "y": 0.542 },
+				{ "name": "water", "x": 0.68, "y": 0.68 }
+			]
+		},
+		{
+			"name": "colonnade",
+			"view": "2.2,1.6,9,3.1416,-0.14",
+			"fov": "0.45",
+			"picks": [
+				{ "name": "post", "x": 0.5, "y": 0.5 }
+			]
+		},
+		{
+			"name": "rear",
+			"view": "0,1.6,-19,0,0.06",
+			"picks": [
+				{ "name": "back wall", "x": 0.5, "y": 0.5 },
+				{ "name": "back door", "x": 0.25, "y": 0.45 }
+			]
+		},
+		{
+			"name": "pool",
+			"view": "0,2.1,-1.5,0,0.1",
+			"picks": [
+				{ "name": "water", "x": 0.5, "y": 0.78 },
+				{ "name": "coping", "x": 0.5, "y": 0.62 }
+			]
+		}
+	],
+	"cases": [
+		{ "name": "as it is", "js": "" },
+		{ "name": "bloom as it was", "js": "pipeline.bloomThreshold=1.0;pipeline.bloomWeight=0.2;pipeline.bloomKernel=96;" },
+		{ "name": "sun 44 fills up", "query": "sun=44&hemi=8.5&env=0.5&exposure=0.8&sky=0.26" },
+		{ "name": "hemi 7.2 alone", "query": "hemi=7.2" },
+		{ "name": "teak glossy again", "js": "mats.teak.roughness=0.42;mats.teakWall.roughness=0.5;" }
+	]
+}

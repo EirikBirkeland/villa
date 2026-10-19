@@ -1,0 +1,40 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "decklong",
+      "view": "-10,1.7,14,3.05,0.02",
+      "picks": [
+        { "name": "outer far", "x": 0.156, "y": 0.903 },
+        { "name": "outer mid", "x": 0.313, "y": 0.861 },
+        { "name": "outer near", "x": 0.5, "y": 0.833 },
+        { "name": "west edge", "x": 0.898, "y": 0.778 },
+        { "name": "mid far", "x": 0.352, "y": 0.694 },
+        { "name": "mid near", "x": 0.547, "y": 0.681 },
+        { "name": "by the coping", "x": 0.06, "y": 0.93 },
+        { "name": "control hedge", "x": 0.5, "y": 0.472 },
+        { "name": "control sky", "x": 0.5, "y": 0.2 }
+      ]
+    },
+    {
+      "name": "west",
+      "view": "-11,1.7,6.8,1.57,-0.02",
+      "picks": [
+        { "name": "east deck far", "x": 0.3, "y": 0.62 },
+        { "name": "east deck mid", "x": 0.5, "y": 0.62 },
+        { "name": "south strip", "x": 0.3, "y": 0.74 },
+        { "name": "walkway", "x": 0.45, "y": 0.88 },
+        { "name": "control coping", "x": 0.9, "y": 0.62 },
+        { "name": "control water", "x": 0.5, "y": 0.74 }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as it is", "query": "" },
+    {
+      "name": "paving tone off",
+      "query": "",
+      "js": "for (const m of scene.meshes) { if (m.name.startsWith('deck') || m.name === 'path') { const n = m.getTotalVertices(); const c = []; for (let i = 0; i < n; i++) c.push(1, 1, 1, 1); m.setVerticesData(BABYLON.VertexBuffer.ColorKind, c, true); } }"
+    }
+  ]
+}

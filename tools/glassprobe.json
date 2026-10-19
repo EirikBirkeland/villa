@@ -1,0 +1,60 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "home",
+      "view": "2.4,1.74,10.5,3.2,0.06",
+      "picks": [
+        { "name": "glass upper east", "place": [4.77, 2.31, -3.92] },
+        { "name": "glass upper mid", "place": [1.19, 2.4, -3.92] },
+        { "name": "glass mid west", "place": [-2.5, 1.6, -3.92] },
+        { "name": "glass low middle", "place": [1.19, 0.9, -3.92] },
+        { "name": "glass low west", "place": [-2.5, 0.9, -3.92] },
+        { "name": "sunlit teak floor", "place": [0.13, 0.54, -0.23] },
+        { "name": "sunlit coping", "place": [0, 0.14, 1.6] },
+        { "name": "teak pier", "place": [6.4, 1.6, -3.8] }
+      ]
+    },
+    {
+      "name": "rake",
+      "view": "-13,1.6,9,2.33,0.0",
+      "picks": [
+        { "name": "glass far end", "place": [-4.0, 1.9, -3.92] },
+        { "name": "glass low mid", "place": [1.19, 1.0, -3.92] }
+      ]
+    },
+    {
+      "name": "colonnade",
+      "view": "2.2,1.6,9,3.1416,-0.14",
+      "fov": "0.45",
+      "picks": [
+        { "name": "glass upper", "place": [1.19, 2.6, -3.92] },
+        { "name": "glass middle", "place": [1.19, 1.6, -3.92] },
+        { "name": "glass low", "place": [1.19, 0.9, -3.92] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built" },
+    {
+      "name": "fix+lamp60",
+      "js": "const room=['interiorFloor','interiorCeiling','sofa','lowTable'].map(n=>scene.getMeshByName(n)).filter(Boolean); hemi.excludedMeshes=room; bounce.excludedMeshes=room; const lamp=new BABYLON.PointLight('interiorLight', new BABYLON.Vector3(0,3.2,-7.6), scene); lamp.intensity=60; lamp.diffuse=new BABYLON.Color3(1,0.72,0.42); lamp.range=15; lamp.includedOnlyMeshes=room;"
+    },
+    {
+      "name": "a0.24",
+      "js": "const room=['interiorFloor','interiorCeiling','sofa','lowTable'].map(n=>scene.getMeshByName(n)).filter(Boolean); hemi.excludedMeshes=room; bounce.excludedMeshes=room; const lamp=new BABYLON.PointLight('interiorLight', new BABYLON.Vector3(0,3.2,-7.6), scene); lamp.intensity=60; lamp.diffuse=new BABYLON.Color3(1,0.72,0.42); lamp.range=15; lamp.includedOnlyMeshes=room; mats.glass.alpha=0.24;"
+    },
+    {
+      "name": "a0.15",
+      "js": "const room=['interiorFloor','interiorCeiling','sofa','lowTable'].map(n=>scene.getMeshByName(n)).filter(Boolean); hemi.excludedMeshes=room; bounce.excludedMeshes=room; const lamp=new BABYLON.PointLight('interiorLight', new BABYLON.Vector3(0,3.2,-7.6), scene); lamp.intensity=60; lamp.diffuse=new BABYLON.Color3(1,0.72,0.42); lamp.range=15; lamp.includedOnlyMeshes=room; mats.glass.alpha=0.15;"
+    },
+    {
+      "name": "a0.15+env0.9",
+      "js": "const room=['interiorFloor','interiorCeiling','sofa','lowTable'].map(n=>scene.getMeshByName(n)).filter(Boolean); hemi.excludedMeshes=room; bounce.excludedMeshes=room; const lamp=new BABYLON.PointLight('interiorLight', new BABYLON.Vector3(0,3.2,-7.6), scene); lamp.intensity=60; lamp.diffuse=new BABYLON.Color3(1,0.72,0.42); lamp.range=15; lamp.includedOnlyMeshes=room; mats.glass.alpha=0.15; mats.glass.environmentIntensity=0.9;"
+    },
+    {
+      "name": "a0.15+env0.9+tint",
+      "js": "const room=['interiorFloor','interiorCeiling','sofa','lowTable'].map(n=>scene.getMeshByName(n)).filter(Boolean); hemi.excludedMeshes=room; bounce.excludedMeshes=room; const lamp=new BABYLON.PointLight('interiorLight', new BABYLON.Vector3(0,3.2,-7.6), scene); lamp.intensity=60; lamp.diffuse=new BABYLON.Color3(1,0.72,0.42); lamp.range=15; lamp.includedOnlyMeshes=room; mats.glass.alpha=0.15; mats.glass.environmentIntensity=0.9; mats.glass.albedoColor=new BABYLON.Color3(0.62,0.72,0.7);"
+    }
+  ]
+}

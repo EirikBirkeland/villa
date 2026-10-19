@@ -1,0 +1,758 @@
+[
+  {
+    "version": "0.92.4",
+    "date": "2026-10-19",
+    "released": "2026-10-19T02:31:08.530Z",
+    "summary": "The shark's mouth is a cavity and not a red ball"
+  },
+  {
+    "version": "0.92.3",
+    "date": "2026-10-19",
+    "released": "2026-10-19T02:24:39.708Z",
+    "summary": "The shark is broader and its lunge can be looked at"
+  },
+  {
+    "version": "0.92.2",
+    "date": "2026-10-19",
+    "released": "2026-10-19T02:02:42.873Z",
+    "summary": "The shark's throat is red and its teeth show"
+  },
+  {
+    "version": "0.92.1",
+    "date": "2026-10-19",
+    "released": "2026-10-19T01:55:27.222Z",
+    "summary": "A bite reddens the edges of the sight"
+  },
+  {
+    "version": "0.92.0",
+    "date": "2026-10-19",
+    "released": "2026-10-19T01:50:29.839Z",
+    "summary": "A shark in the pool that bites, and blood that clears"
+  },
+  {
+    "version": "0.91.3",
+    "date": "2026-10-18",
+    "released": "2026-10-18T23:52:08.101Z",
+    "summary": "dawn and sunrise were under-lit and the dawn sky was mud: turbidity down, dome up, sunrise sun 28 to 40, and the rake came back"
+  },
+  {
+    "version": "0.91.2",
+    "date": "2026-10-18",
+    "released": "2026-10-18T23:40:28.960Z",
+    "summary": "noon brought down off the tone curve's ceiling, and the address-bar light dials work again under the day"
+  },
+  {
+    "version": "0.91.1",
+    "date": "2026-10-18",
+    "released": "2026-10-18T23:30:55.939Z",
+    "summary": "the sunbed's back rest is built like a sunbed's — teak stiles, a slat, a thinner cushion — and the towel is pale cotton with bands, not a terracotta tile"
+  },
+  {
+    "version": "0.91.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T23:15:01.693Z",
+    "summary": "the Villa keeps a day: eleven hours of light, lamps that come on at dusk, two fireflies and night-bound cockroaches, and a yellow duck in the pool"
+  },
+  {
+    "version": "0.90.2",
+    "date": "2026-10-18",
+    "released": "2026-10-18T22:20:44.554Z",
+    "summary": "the thrown pots are wound the right way round now: solid clay, wheel rings and weathering back, and the marigolds sit in the crown"
+  },
+  {
+    "version": "0.90.1",
+    "date": "2026-10-18",
+    "released": "2026-10-18T22:09:01.498Z",
+    "summary": "the lemongrass is no longer blown to a white starburst, the pot's weathering is the right way up, and the four pots stop lining up into one"
+  },
+  {
+    "version": "0.90.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T21:57:45.922Z",
+    "summary": "pots thrown with foot, belly and lip, planted with lemongrass, chilli, kumquat, marigold and basil; and the lounger's pad is pale canvas again, not bitumen"
+  },
+  {
+    "version": "0.89.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T21:31:25.380Z",
+    "summary": "four koi in the pond: bright backs through the surface film, swells on the water, and a fish that swims up to the boot"
+  },
+  {
+    "version": "0.88.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T20:19:07.950Z",
+    "summary": "the court is laid in stone: courses of sawn pavers, every slab its own stone, sand joints that are not black"
+  },
+  {
+    "version": "0.87.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T17:24:41.773Z",
+    "summary": "The side beds against the house are planted instead of dug"
+  },
+  {
+    "version": "0.86.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T17:11:31.228Z",
+    "summary": "The lily pads read as leaves and the pond is in flower"
+  },
+  {
+    "version": "0.85.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T16:59:24.106Z",
+    "summary": "Every frog now sits on a stone a visitor at the bank can see, and no rim stone floats"
+  },
+  {
+    "version": "0.84.1",
+    "date": "2026-10-18",
+    "released": "2026-10-18T16:43:48.677Z",
+    "summary": "The pond mirrors the sky at a shallow angle, so it reads as water from the lawn"
+  },
+  {
+    "version": "0.84.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T16:35:56.274Z",
+    "summary": "The pond's rim is a barrow of mixed rock, and struck stone faces are lit again"
+  },
+  {
+    "version": "0.83.4",
+    "date": "2026-10-18",
+    "released": "2026-10-18T16:17:59.179Z",
+    "summary": "The bed plants have their own size and their own clipping: a plan, not a queue"
+  },
+  {
+    "version": "0.83.3",
+    "date": "2026-10-18",
+    "released": "2026-10-18T16:15:15.555Z",
+    "summary": "The sunbeds stand on legs now, with one thick pad and a propped back"
+  },
+  {
+    "version": "0.83.2",
+    "date": "2026-10-18",
+    "released": "2026-10-18T15:34:58.427Z",
+    "summary": "Lamps are glass in metal cases, and the sunbed pads are linen instead of a plank of light"
+  },
+  {
+    "version": "0.83.1",
+    "date": "2026-10-18",
+    "released": "2026-10-18T15:18:35.736Z",
+    "summary": "The back door sits in a reveal with a shadow gap and a stone threshold"
+  },
+  {
+    "version": "0.83.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T15:04:00.975Z",
+    "summary": "The plastered walls are dirty at the foot now: weather, not fresh paint"
+  },
+  {
+    "version": "0.82.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T14:47:22.676Z",
+    "summary": "The lawn's boulders are struck, tipped and grey now: no more loaves of bread on the grass"
+  },
+  {
+    "version": "0.81.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T14:29:45.070Z",
+    "summary": "The pond's stones are broken stone now: struck faces and flat lighting, not rolled loaves"
+  },
+  {
+    "version": "0.80.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T14:08:55.277Z",
+    "summary": "The frogs dive for the water when you come near, and the pond rings where they went in"
+  },
+  {
+    "version": "0.79.2",
+    "date": "2026-10-18",
+    "released": "2026-10-18T13:19:16.485Z",
+    "summary": "The lily pads have their notch and their tilt: leaves, not coins"
+  },
+  {
+    "version": "0.79.1",
+    "date": "2026-10-18",
+    "released": "2026-10-18T13:11:45.294Z",
+    "summary": "Notes only: why the pond has no mirror of its own"
+  },
+  {
+    "version": "0.79.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T13:03:52.841Z",
+    "summary": "Sedges grow up to the pond's edge, and the pond gets two standing cameras of its own"
+  },
+  {
+    "version": "0.78.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T12:44:44.188Z",
+    "summary": "The pond's rim is chinked shut, its gravel has a colour, and a fifth frog waits at the corner a walker rounds"
+  },
+  {
+    "version": "0.77.1",
+    "date": "2026-10-18",
+    "released": "2026-10-18T12:27:40.822Z",
+    "summary": "The pond's corner boulders are squatter, and no longer coconuts"
+  },
+  {
+    "version": "0.77.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T12:24:56.010Z",
+    "summary": "A pond in the west lawn, and four frogs on its rim"
+  },
+  {
+    "version": "0.76.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T08:52:29.358Z",
+    "summary": "three cockroaches, and one of them is under your feet"
+  },
+  {
+    "version": "0.75.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T08:15:45.719Z",
+    "summary": "the butterflies and the cockroach can now be found"
+  },
+  {
+    "version": "0.74.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T06:18:16.104Z",
+    "summary": "three butterflies over the garden and a cockroach on the stone"
+  },
+  {
+    "version": "0.73.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T05:29:41.382Z",
+    "summary": "grass leaves that bend, a clump that is a mound, and no more green bar along the borders"
+  },
+  {
+    "version": "0.72.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T04:10:39.029Z",
+    "summary": "the shrubs are clipped now: a plateau where the board went across"
+  },
+  {
+    "version": "0.71.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T03:36:59.899Z",
+    "summary": "the pool's dark foot was the water's own film, so the mirror is paid by hand"
+  },
+  {
+    "version": "0.70.0",
+    "date": "2026-10-18",
+    "released": "2026-10-18T00:19:33.732Z",
+    "summary": "shrubs that are not clones, quilted sunbed pads, and a soffit boarded along the house"
+  },
+  {
+    "version": "0.69.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T23:36:18.266Z",
+    "summary": "the room's ceiling beams are timbers, not shingles"
+  },
+  {
+    "version": "0.68.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T23:24:23.938Z",
+    "summary": "the pool under the water stopped being graph paper"
+  },
+  {
+    "version": "0.67.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T22:47:32.756Z",
+    "summary": "the room behind the glass is a lime-washed room now, and the water's colour comes off where the surface mirrors"
+  },
+  {
+    "version": "0.66.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T21:53:32.933Z",
+    "summary": "every lamp in the Villa was burning at half past five, so it puts them out — and the front glass stops showing two lamps that are not there"
+  },
+  {
+    "version": "0.65.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T20:55:46.082Z",
+    "summary": "the pool's edge had teeth, the court's joints were soot, and the jungle was a mountain range"
+  },
+  {
+    "version": "0.64.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T20:10:16.896Z",
+    "summary": "the pool wore a wire frame; fifteen bump maps now have their mip chain, and the caustic net is a honeycomb"
+  },
+  {
+    "version": "0.63.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T19:15:27.844Z",
+    "summary": "the dark inside a shrub was wearing a mirror, and the atlas's air was black"
+  },
+  {
+    "version": "0.62.1",
+    "date": "2026-10-17",
+    "released": "2026-10-17T18:19:04.852Z",
+    "summary": "the bud hangs beyond its own leaves: a longer rachis, forty-eight degrees out, and two maroon flecks show in the standing frame"
+  },
+  {
+    "version": "0.62.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T17:54:22.097Z",
+    "summary": "the banana plant: a green sheaf pseudostem with leaf-scars, a maroon bud in five shingled courses, and blades that are paddles"
+  },
+  {
+    "version": "0.61.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T16:29:14.177Z",
+    "summary": "the clipped bushes stop being a crowd of green compasses: no star sprays, no black holes, no lime flare"
+  },
+  {
+    "version": "0.60.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T15:47:29.161Z",
+    "summary": "three woods: a pale deck, dark brown timber, golden furniture"
+  },
+  {
+    "version": "0.59.1",
+    "date": "2026-10-17",
+    "released": "2026-10-17T14:06:22.758Z",
+    "summary": "comments only: the atlas note now states the spray's own numbers"
+  },
+  {
+    "version": "0.59.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T14:03:52.260Z",
+    "summary": "a shrub was a dark green dumpling of ten paddles; it is a bush of small leaves now"
+  },
+  {
+    "version": "0.58.1",
+    "date": "2026-10-17",
+    "released": "2026-10-17T13:12:38.325Z",
+    "summary": "the strays the mower missed in the mown lawn came down to the size of grass"
+  },
+  {
+    "version": "0.58.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T13:02:45.361Z",
+    "summary": "the grass that stands up out of the lawn was a row of green crowns; it is grass now"
+  },
+  {
+    "version": "0.57.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T12:23:40.570Z",
+    "summary": "the ridge was a salmon plank laid on top of the roof; it is a roll of tiles now"
+  },
+  {
+    "version": "0.56.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T12:05:46.031Z",
+    "summary": "a palm trunk was a stack of brown coins; it is bark now"
+  },
+  {
+    "version": "0.55.1",
+    "date": "2026-10-17",
+    "released": "2026-10-17T09:51:50.509Z",
+    "summary": "no pixel moved: three notes in the released copy pointed at deleted pictures"
+  },
+  {
+    "version": "0.55.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T09:48:05.889Z",
+    "summary": "a clump of grass was a maize plant and a cabbage; it is grass now"
+  },
+  {
+    "version": "0.54.1",
+    "date": "2026-10-17",
+    "released": "2026-10-17T08:55:06.550Z",
+    "summary": "A clump of grass is grass now; this copy only corrects a comment and a long line"
+  },
+  {
+    "version": "0.54.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T08:50:07.279Z",
+    "summary": "A tuft was a little maize plant; it is grass now"
+  },
+  {
+    "version": "0.53.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T07:29:39.912Z",
+    "summary": "A lawn of separate blades, the mower's stripes, and no more mint"
+  },
+  {
+    "version": "0.52.1",
+    "date": "2026-10-17",
+    "released": "2026-10-17T05:11:21.554Z",
+    "summary": "comments in the released copy described three bands and the wrong vein spacing; nothing on screen moved"
+  },
+  {
+    "version": "0.52.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T05:05:16.141Z",
+    "summary": "a banana was a handful of flat green plates; it is a plant now"
+  },
+  {
+    "version": "0.51.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T04:15:54.432Z",
+    "summary": "a coconut leaf is a stalk with three hundred leaflets now, and the palms are trees"
+  },
+  {
+    "version": "0.50.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T03:34:28.950Z",
+    "summary": "the clipped bushes are leaf cards now, not painted balls"
+  },
+  {
+    "version": "0.49.1",
+    "date": "2026-10-17",
+    "released": "2026-10-17T01:58:49.286Z",
+    "summary": "comments only: the released notes named the canvas the near rank no longer wears"
+  },
+  {
+    "version": "0.49.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T01:54:35.279Z",
+    "summary": "the near rank is cut from leaf clusters now, and the hedge has a crest, a leaf face and a wandering top"
+  },
+  {
+    "version": "0.48.0",
+    "date": "2026-10-17",
+    "released": "2026-10-17T00:38:19.327Z",
+    "summary": "the lawn was a printed sheet; it is a sward now"
+  },
+  {
+    "version": "0.47.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T23:27:27.940Z",
+    "summary": "the near rank of the jungle was confetti; it is a wood of branch-ends now"
+  },
+  {
+    "version": "0.46.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T22:48:47.935Z",
+    "summary": "the far rank of the jungle was a wall of stamped leaves; it is a wood now"
+  },
+  {
+    "version": "0.45.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T21:53:38.925Z",
+    "summary": "the lawn was the colour of pond scum; it is grass now"
+  },
+  {
+    "version": "0.44.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T21:36:03.161Z",
+    "summary": "the far rank of the jungle was torn green sails; it is a wood now"
+  },
+  {
+    "version": "0.43.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T20:32:07.157Z",
+    "summary": "The grass stopped growing at the water's edge, and the capstone now stands on stone"
+  },
+  {
+    "version": "0.42.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T19:13:21.751Z",
+    "summary": "the pool has a waterline: wet tile at the surface, a damp foot on the capstone"
+  },
+  {
+    "version": "0.41.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T17:01:25.221Z",
+    "summary": "the pool has water in it now: the floor and steps show through it, and the house mirrors in it at a graze"
+  },
+  {
+    "version": "0.40.1",
+    "date": "2026-10-16",
+    "released": "2026-10-16T14:44:04.040Z",
+    "summary": "comments fixed: two notes pointed at pictures that were pruned"
+  },
+  {
+    "version": "0.40.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T14:23:47.385Z",
+    "summary": "the pool deck was grey asphalt; it is cut sandstone now"
+  },
+  {
+    "version": "0.39.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T13:40:21.645Z",
+    "summary": "the two great pots at the terrace steps are planted"
+  },
+  {
+    "version": "0.38.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T13:32:41.473Z",
+    "summary": "the lawn was a mirror aimed at the sky, and it is grass again"
+  },
+  {
+    "version": "0.37.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T12:51:56.715Z",
+    "summary": "space to fly, and what the air showed about the palms and the lawn"
+  },
+  {
+    "version": "0.36.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T04:04:02.067Z",
+    "summary": "the horizon is a ridge of jungle now"
+  },
+  {
+    "version": "0.35.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T02:55:45.964Z",
+    "summary": "the grass was hanging from its tips, and the lawn was sown with black commas"
+  },
+  {
+    "version": "0.34.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T02:13:43.442Z",
+    "summary": "the house took off its varnish: a clay roof, teak walls and stone paving"
+  },
+  {
+    "version": "0.33.1",
+    "date": "2026-10-16",
+    "released": "2026-10-16T01:15:26.279Z",
+    "summary": "the shrubs came off the varnish as soot; they are paid back a little more"
+  },
+  {
+    "version": "0.33.0",
+    "date": "2026-10-16",
+    "released": "2026-10-16T01:09:33.724Z",
+    "summary": "the garden was wearing a varnish, and it was called grass"
+  },
+  {
+    "version": "0.32.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T23:53:19.381Z",
+    "summary": "the shrubs were striped green loaves and the bananas were little tables; they are a bush and a banana now"
+  },
+  {
+    "version": "0.31.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T22:44:00.274Z",
+    "summary": "the jungle behind the hedge was a row of green eggs; it is a canopy of crowns now"
+  },
+  {
+    "version": "0.30.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T21:37:01.133Z",
+    "summary": "the store room's own face has a band of lit glass in it"
+  },
+  {
+    "version": "0.29.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T20:26:31.771Z",
+    "summary": "a doorway cut through the back wall, and a lit store room behind it"
+  },
+  {
+    "version": "0.28.1",
+    "date": "2026-10-15",
+    "released": "2026-10-15T19:31:21.616Z",
+    "summary": "three comments in the released copy still described the old court; the Villa is the same picture"
+  },
+  {
+    "version": "0.28.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T19:29:45.371Z",
+    "summary": "the court gave 111 m² of its cut stone back to the lawn"
+  },
+  {
+    "version": "0.27.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T18:52:11.176Z",
+    "summary": "the pool court was 440 m2 of stone; two borders of dirt and planting are cut into it"
+  },
+  {
+    "version": "0.26.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T18:04:09.468Z",
+    "summary": "Back-lit foliage has its colour back"
+  },
+  {
+    "version": "0.25.1",
+    "date": "2026-10-15",
+    "released": "2026-10-15T16:55:47.110Z",
+    "summary": "the grass was growing out of the paving; now it asks the ground first"
+  },
+  {
+    "version": "0.25.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T16:46:28.248Z",
+    "summary": "grass that stands up where the garden meets the stone"
+  },
+  {
+    "version": "0.24.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T16:00:36.344Z",
+    "summary": "the sunlit half was living in the last six bytes of the picture; the Villa runs its own tone curve now"
+  },
+  {
+    "version": "0.23.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T14:59:26.491Z",
+    "summary": "The room has a lit alcove to look into"
+  },
+  {
+    "version": "0.22.1",
+    "date": "2026-10-15",
+    "released": "2026-10-15T14:45:30.551Z",
+    "summary": "The panels on the room's back wall now read from the start"
+  },
+  {
+    "version": "0.22.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T14:41:01.266Z",
+    "summary": "The room behind the front glass is a room now"
+  },
+  {
+    "version": "0.21.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T13:39:13.676Z",
+    "summary": "the shrubs along the south hedge stand in a bed of laterite now"
+  },
+  {
+    "version": "0.20.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T13:23:12.814Z",
+    "summary": "the foot of the house was soot; the base course is a weathered grey cement now"
+  },
+  {
+    "version": "0.19.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T12:41:55.038Z",
+    "summary": "the lawn is grass again: the bump stopped stealing its light, clumps at half a metre, and dirt at the foot of the wall"
+  },
+  {
+    "version": "0.18.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T11:55:43.353Z",
+    "summary": "Every pattern is measured in metres of surface: walls, coping, tiles, timber, hedges and palm bark at real size"
+  },
+  {
+    "version": "0.17.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T10:53:31.110Z",
+    "summary": "the front of glass is a window now: the room behind it is lit, roofed and its own, and the glass is thin"
+  },
+  {
+    "version": "0.16.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T06:20:42.563Z",
+    "summary": "the sala floor got a weather of its own; the pool's lit surface was measured and refused"
+  },
+  {
+    "version": "0.15.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T04:50:41.118Z",
+    "summary": "the furniture, the pots and the boulders are painted now: silvered timber, kiln-patched terracotta, granite with lichen on it"
+  },
+  {
+    "version": "0.14.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T04:05:02.718Z",
+    "summary": "teak floors that have lived outdoors: silvered in the sun, honey under the roof, damp where the roof drips"
+  },
+  {
+    "version": "0.13.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T02:47:33.870Z",
+    "summary": "the pool deck is a deck now: dust drifts, a damp band at the coping, and wear, all measured on the screen"
+  },
+  {
+    "version": "0.12.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T02:04:29.508Z",
+    "summary": "the garden is a garden now: the lawn has parched and lush patches, and the mown bands wander"
+  },
+  {
+    "version": "0.11.0",
+    "date": "2026-10-15",
+    "released": "2026-10-15T01:01:30.417Z",
+    "summary": "The tone curve was the fault, not the sun: the Villa is in colour and the shade came up with it"
+  },
+  {
+    "version": "0.10.1",
+    "date": "2026-10-15",
+    "released": "2026-10-15T00:20:43.708Z",
+    "summary": "The far tree line comes off the sky: it was a white board, now it is a hazy wood"
+  },
+  {
+    "version": "0.10.0",
+    "date": "2026-10-14",
+    "released": "2026-10-14T23:51:17.270Z",
+    "summary": "The bloom fog comes off the sunlit Villa, the teak turns brown, and every plain-coloured thing gets the colour it was meant to have"
+  },
+  {
+    "version": "0.9.0",
+    "date": "2026-10-14",
+    "released": "2026-10-14T23:00:36.410Z",
+    "summary": "The shaded side of the house has light in it, and the reflections stop moving when you turn"
+  },
+  {
+    "version": "0.8.0",
+    "date": "2026-10-14",
+    "released": "2026-10-14T21:21:09.831Z",
+    "summary": "The garden faces up and is grass and dirt, and a browser has looked at it"
+  },
+  {
+    "version": "0.7.3",
+    "date": "2026-10-14",
+    "released": "2026-10-14T09:25:21.958Z",
+    "summary": "The Villa stands up in a browser again, and the drawing keeps the shadows it really casts"
+  },
+  {
+    "version": "0.7.2",
+    "date": "2026-10-14",
+    "released": "2026-10-14T09:09:32.553Z",
+    "summary": "The drawing's teak is measured, not guessed: the sunlit deck reads (158,100,66) against the browser's (158,106,69)"
+  },
+  {
+    "version": "0.7.1",
+    "date": "2026-10-14",
+    "released": "2026-10-14T09:06:16.833Z",
+    "summary": "The sunbeds spread out, and the note beside them is made true"
+  },
+  {
+    "version": "0.7.0",
+    "date": "2026-10-14",
+    "released": "2026-10-14T09:03:04.069Z",
+    "summary": "The string lights hang from timber, the pool is a sunlit pool, and the terrace has chairs on it"
+  },
+  {
+    "version": "0.6.0",
+    "date": "2026-10-14",
+    "released": "2026-10-14T08:32:09.967Z",
+    "summary": "The roof shows from the back, the posts hold something up, and the windows are real holes"
+  },
+  {
+    "version": "0.5.0",
+    "date": "2026-10-14",
+    "released": "2026-10-14T07:59:54.090Z",
+    "summary": "The jungle behind the hedge grew up, and learned to grow in clumps"
+  },
+  {
+    "version": "0.4.0",
+    "date": "2026-10-14",
+    "released": "2026-10-14T07:32:20.654Z",
+    "summary": "The horizon fills in: jungle behind the hedge, a tree line on the sky, and the glass stops glowing"
+  },
+  {
+    "version": "0.3.1",
+    "date": "2026-10-14",
+    "released": "2026-10-14T06:49:24.616Z",
+    "summary": "The sunlit walls keep their colour"
+  },
+  {
+    "version": "0.3.0",
+    "date": "2026-10-14",
+    "released": "2026-10-14T06:00:59.253Z",
+    "summary": "A way down to the water, and a back to the house"
+  },
+  {
+    "version": "0.2.0",
+    "date": "2026-10-14",
+    "released": "2026-10-14T03:43:59.208Z",
+    "summary": "You can walk it, and the dark side of the day is lit"
+  },
+  {
+    "version": "0.1.0",
+    "date": "2026-10-14",
+    "released": "2026-10-14T01:42:33.003Z",
+    "summary": "A house, a pool and a late-afternoon sun"
+  }
+]

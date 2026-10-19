@@ -1,0 +1,37 @@
+{
+	"_": [
+		"The second rung of the tone ladder: where the knee landed (about 0.5) this asks how much white",
+		"to mix into a folded colour (desat), how high the ceiling should stand (white), and whether the",
+		"light the sunlit half loses should be paid back with the exposure.",
+		"",
+		"Run it with the pictures kept, then ask the pictures how much a sunlit surface varies inside",
+		"itself, which is the whole point of taking the top of the picture off the ceiling:",
+		"  node tools/lights.js --plan tools/tonefine.json --size 1280x720 --save pictures/tmp/tonefine",
+		"  for f in pictures/tmp/tonefine/*.png; do node tools/pixels.js $f --patch 300,180,460,260 --block 8; done",
+		"--patch over a strip of sunlit plaster, in blocks of 8 px: a wall whose trowel sweeps are being",
+		"flattened out has a small spread there, and one that is holding its pattern has a bigger one."
+	],
+	"url": "http://localhost:8090/villa/index.html",
+	"views": [
+		{
+			"name": "home",
+			"view": "2.4,1.74,10.5,3.2,0.06",
+			"picks": [
+				{ "name": "lit plaster", "x": 0.266, "y": 0.306 },
+				{ "name": "sunlit pot", "x": 0.109, "y": 0.583 },
+				{ "name": "sunlit coping", "x": 0.55, "y": 0.6 },
+				{ "name": "shaded wall", "x": 0.17, "y": 0.25 }
+			]
+		},
+		{ "name": "colonnade", "view": "2.2,1.6,9,3.1416,-0.14", "fov": 0.45 },
+		{ "name": "pool", "view": "0,2.1,-1.5,0,0.1" }
+	],
+	"cases": [
+		{ "name": "khronos (is)", "query": "tonemap=khronos" },
+		{ "name": "k.50 w.96 d.06", "query": "tonemap=villa&knee=0.5&white=0.96&desat=0.06" },
+		{ "name": "k.50 w.96 d.03", "query": "tonemap=villa&knee=0.5&white=0.96&desat=0.03" },
+		{ "name": "k.55 w.96 d.06", "query": "tonemap=villa&knee=0.55&white=0.96&desat=0.06" },
+		{ "name": "k.46 w.95 d.06", "query": "tonemap=villa&knee=0.46&white=0.95&desat=0.06" },
+		{ "name": "k.50 w.96 d.06 e.78", "query": "tonemap=villa&knee=0.5&white=0.96&desat=0.06&exposure=0.78" }
+	]
+}

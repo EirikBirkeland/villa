@@ -1,0 +1,15 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "crouched in the fringe on the west edge",
+      "view": "-16.6,0.62,3.4,1.62,0.02"
+    }
+  ],
+  "cases": [
+    { "name": "as-built", "query": "float=1" },
+    { "name": "glow-off", "query": "float=1", "js": "mats.tuft.emissiveColor = new BABYLON.Color3(0,0,0);" },
+    { "name": "glow-x10", "query": "float=1", "js": "mats.tuft.emissiveColor = new BABYLON.Color3(1.5,2.6,0.9);" },
+    { "name": "tuft-off", "query": "float=1", "js": "scene.getMeshByName('grassTufts').isVisible = false;" }
+  ]
+}

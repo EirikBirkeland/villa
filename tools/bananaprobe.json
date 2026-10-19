@@ -1,0 +1,59 @@
+{
+  "url": "http://localhost:8090/villa/index.html?float=1",
+  "views": [
+    {
+      "name": "bud",
+      "view": "-19.16,1.9,8.6,3.1416,0&fov=0.5",
+      "picks": [
+        {
+          "name": "the full of the bud",
+          "x": 0.5,
+          "y": 0.58
+        },
+        {
+          "name": "the shoulder",
+          "x": 0.5,
+          "y": 0.45
+        },
+        {
+          "name": "the point",
+          "x": 0.5,
+          "y": 0.72
+        },
+        {
+          "name": "the neck",
+          "x": 0.5,
+          "y": 0.3
+        }
+      ]
+    },
+    {
+      "name": "stem",
+      "view": "-17.6,0.9,6.6,-1.57,0&fov=0.45",
+      "picks": [
+        {
+          "name": "stem lit",
+          "x": 0.52,
+          "y": 0.5
+        },
+        {
+          "name": "stem shade",
+          "x": 0.44,
+          "y": 0.5
+        },
+        {
+          "name": "lawn",
+          "x": 0.9,
+          "y": 0.9
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "leaves off",
+      "query": "",
+      "js": "for (const m of scene.meshes) if (m.material && m.material.name === 'bananaLeaf') m.isVisible = false;"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "note": "The green hairline at the pool's east edge is the LAWN'S OWN CUT EDGE showing between the water and the capstone: with `lawn1` switched off the same pixel reads (109,166,169) teal instead of (109,166,169)→(97,162,24) green, and the lawn's edge is laid at x = 5.00 — exactly the plane of the pool's inner face, at y = 0, which is where a tilted eye meets the riser. So: does pulling that edge back (or sinking it) close the hairline, and what does it open up under the capstone while doing it? `lawn3` is the strip east of the water, `lawn2` the strip west. Count each saved picture with `--find 'g-b>50 && g-r>25' --where 1100,150,1260,590` (as built ~520) and LOOK at the crop too: a green stripe out under the paving's edge would be a worse fault than a green hairline at the water.",
+  "views": [
+    { "name": "over", "view": "0,14,4.6,3.1416,1.5708", "fov": 0.5 }
+  ],
+  "cases": [
+    { "name": "as-built", "query": "float=1" },
+    { "name": "east-back", "query": "float=1", "js": "scene.getMeshByName('lawn3').position.x += 0.45" },
+    { "name": "east-down", "query": "float=1", "js": "scene.getMeshByName('lawn3').position.y -= 0.06" },
+    { "name": "east-back-and-down", "query": "float=1", "js": "const m = scene.getMeshByName('lawn3'); m.position.x += 0.45; m.position.y -= 0.06" },
+    { "name": "wall-widened", "query": "float=1", "js": "const w = scene.getMeshByName('poolEast'); w.scaling.x = 1.5; w.position.x += 0.075" },
+    { "name": "no-lawn", "query": "float=1", "js": "for (const m of scene.meshes) if (/^lawn/.test(m.name)) m.setEnabled(false)" }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "sala",
+      "view": "3.5,1.6,11,2.25,-0.02",
+      "picks": [
+        { "name": "middle, under the crown", "place": [10.6, 0.66, 5.4] },
+        { "name": "walked lane by the steps", "place": [9.2, 0.66, 5.4] },
+        { "name": "north edge, leeward, dry", "place": [10.6, 0.66, 3.7] },
+        { "name": "east edge, leeward, dry", "place": [12.3, 0.66, 5.4] },
+        { "name": "west edge, windward, wet", "place": [8.9, 0.66, 5.4] },
+        { "name": "south edge, windward, wet", "place": [10.6, 0.66, 7.1] },
+        { "name": "control, sala post", "place": [12.6, 1.5, 3.4] },
+        { "name": "control, coping", "place": [3, 0.23, 1.83] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as it is", "query": "" },
+    {
+      "name": "tone off",
+      "query": "",
+      "js": "for (const m of scene.meshes) { if (m.name === 'salaFloor') { const n = m.getTotalVertices(); const c = []; for (let i = 0; i < n; i++) c.push(1, 1, 1, 1); m.setVerticesData(BABYLON.VertexBuffer.ColorKind, c, true); } }"
+    }
+  ]
+}

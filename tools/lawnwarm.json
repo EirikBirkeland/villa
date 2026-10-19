@@ -1,0 +1,37 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "Where the lawn's light actually comes from, and what colour it is when it arrives. A mown lawn seen low is a mirror of the sky at a shallow angle, and the mint veil is that mirror: `sheen` (specularIntensity) is the share of the pixel the sky owns and `albedoColor` is the share the grass owns. These cases trade one against the other at the SAME brightness, and add a warm bias to the grass's share, so the mint can be traded for grass without the garden going dark. Picks are fractions of the frame, on places read off `pictures/2112-southborder.png` and friends: a place given in metres has to be found before it is believed.",
+	"views": [
+		{
+			"name": "grazing (south border)",
+			"view": "6,1.6,13,0.27,0",
+			"picks": [
+				{ "name": "sward near", "x": 0.5, "y": 0.9 },
+				{ "name": "sward mid", "x": 0.42, "y": 0.78 },
+				{ "name": "sward far", "x": 0.62, "y": 0.68 }
+			]
+		},
+		{
+			"name": "far lawn (west paving)",
+			"view": "-11,1.7,6.8,1.57,-0.02",
+			"picks": [
+				{ "name": "lawn left", "x": 0.14, "y": 0.6 },
+				{ "name": "lawn left far", "x": 0.22, "y": 0.545 }
+			]
+		},
+		{
+			"name": "at the feet (grass)",
+			"view": "-13.5,1.5,8,-1.57,0.18",
+			"picks": [
+				{ "name": "sward near", "x": 0.5, "y": 0.86 },
+				{ "name": "sward mid", "x": 0.5, "y": 0.62 }
+			]
+		}
+	],
+	"cases": [
+		{ "name": "as built", "query": "float=1", "js": "" },
+		{ "name": "sheen .05, lift x1.22", "query": "float=1", "js": "mats.lawn.specularIntensity = 0.05; mats.lawn.albedoColor.scaleToRef(1.22, mats.lawn.albedoColor);" },
+		{ "name": "sheen .03, lift x1.45", "query": "float=1", "js": "mats.lawn.specularIntensity = 0.03; mats.lawn.albedoColor.scaleToRef(1.45, mats.lawn.albedoColor);" },
+		{ "name": "sheen .05, warm x1.3", "query": "float=1", "js": "mats.lawn.specularIntensity = 0.05; mats.lawn.albedoColor.r *= 1.42; mats.lawn.albedoColor.g *= 1.2; mats.lawn.albedoColor.b *= 1.3;" }
+	]
+}

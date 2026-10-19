@@ -1,0 +1,44 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "backclose",
+      "view": "5.6,1.6,-19.5,0,-0.3",
+      "picks": [
+        { "name": "pane west", "place": [5.1, 3.11, -13.8] },
+        { "name": "band middle (mullion)", "place": [5.6, 3.15, -13.8] },
+        { "name": "pane east", "place": [6.1, 3.11, -13.8] },
+        { "name": "wall left", "place": [4.4, 3.11, -13.9] },
+        { "name": "wall below", "place": [5.6, 1.6, -13.9] },
+        { "name": "wall above", "place": [5.6, 3.62, -13.9] },
+        { "name": "sill board", "place": [5.6, 2.89, -13.92] }
+      ]
+    },
+    {
+      "name": "backstore",
+      "view": "5.6,1.6,-19,0,-0.14",
+      "picks": [
+        { "name": "band left", "x": 0.46, "y": 0.36 },
+        { "name": "band middle (mullion)", "x": 0.5, "y": 0.36 },
+        { "name": "face below the band", "x": 0.5, "y": 0.7 },
+        { "name": "back wall west of the store", "x": 0.3, "y": 0.55 }
+      ]
+    },
+    {
+      "name": "home",
+      "view": "2.4,1.74,10.5,3.2,0.06",
+      "picks": [
+        { "name": "store doorway", "place": [5.6, 1.6, -12.0] },
+        { "name": "glass east", "place": [4.6, 1.7, -3.9] },
+        { "name": "fascia", "place": [0.0, 4.1, -3.7] },
+        { "name": "water", "place": [0.0, 0.0, 4.5] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as it is", "query": "" },
+    { "name": "shelf lamp off", "js": "const l = scene.roomLamps.find(l => l.name === 'storeShelfLampLight'); if (l) { l.intensity = 0; l.baseIntensity = 0; }" },
+    { "name": "no store glass", "js": "['storeGlassWest','storeGlassEast'].forEach(n => { const m = scene.getMeshByName(n); if (m) m.setEnabled(false); });" },
+    { "name": "room lamps off", "query": "room=0" }
+  ]
+}

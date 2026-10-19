@@ -1,0 +1,176 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "ondeck",
+      "view": "0,1.62,0.4,3.1416,0.34",
+      "picks": [
+        {
+          "name": "open deck west",
+          "place": [
+            -3,
+            0.54,
+            -0.8
+          ]
+        },
+        {
+          "name": "open deck east",
+          "place": [
+            3,
+            0.54,
+            -0.8
+          ]
+        },
+        {
+          "name": "walk line",
+          "place": [
+            0.2,
+            0.54,
+            -1.5
+          ]
+        },
+        {
+          "name": "beside the walk line",
+          "place": [
+            -3,
+            0.54,
+            -1.5
+          ]
+        },
+        {
+          "name": "where the roof lets go",
+          "place": [
+            -4,
+            0.54,
+            -1.9
+          ]
+        },
+        {
+          "name": "under the eave",
+          "place": [
+            -4,
+            0.54,
+            -3.3
+          ]
+        },
+        {
+          "name": "control, front post",
+          "place": [
+            2.2,
+            1.8,
+            -1.9
+          ]
+        },
+        {
+          "name": "control, coping",
+          "place": [
+            3,
+            0.23,
+            1.83
+          ]
+        }
+      ]
+    },
+    {
+      "name": "deck length",
+      "view": "0,7,-1.7,3.1416,1.57",
+      "fov": 1.2,
+      "picks": [
+        {
+          "name": "by the glass, roofed",
+          "place": [
+            -4,
+            0.54,
+            -3.4
+          ]
+        },
+        {
+          "name": "where the roof lets go",
+          "place": [
+            -4,
+            0.54,
+            -1.8
+          ]
+        },
+        {
+          "name": "the open deck",
+          "place": [
+            -4,
+            0.54,
+            0.2
+          ]
+        },
+        {
+          "name": "roofed, east side",
+          "place": [
+            4,
+            0.54,
+            -3.4
+          ]
+        },
+        {
+          "name": "open, east side",
+          "place": [
+            4,
+            0.54,
+            0.2
+          ]
+        },
+        {
+          "name": "the walked lane",
+          "place": [
+            0.2,
+            0.54,
+            -2.6
+          ]
+        }
+      ]
+    },
+    {
+      "name": "sala",
+      "view": "3.5,1.6,11,2.25,-0.02",
+      "picks": [
+        {
+          "name": "sala floor near",
+          "place": [
+            10,
+            0.66,
+            4.2
+          ]
+        },
+        {
+          "name": "sala floor far",
+          "place": [
+            11.6,
+            0.66,
+            6.6
+          ]
+        },
+        {
+          "name": "control, sala post",
+          "place": [
+            12.6,
+            1.5,
+            3.4
+          ]
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "as it is",
+      "query": ""
+    },
+    {
+      "name": "tone off",
+      "query": "",
+      "js": "for (const m of scene.meshes) { if (m.name === 'terraceFloor' || m.name === 'salaFloor') { const n = m.getTotalVertices(); const c = []; for (let i = 0; i < n; i++) c.push(1, 1, 1, 1); m.setVerticesData(BABYLON.VertexBuffer.ColorKind, c, true); } }"
+    },
+    {
+      "name": "tone to a third",
+      "query": "",
+      "js": "for (const m of scene.meshes) { if (m.name === 'terraceFloor' || m.name === 'salaFloor') { const n = m.getTotalVertices(); const c = []; for (let i = 0; i < n; i++) c.push(0.33, 0.33, 0.33, 1); m.setVerticesData(BABYLON.VertexBuffer.ColorKind, c, true); } }"
+    }
+  ]
+}

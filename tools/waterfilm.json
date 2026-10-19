@@ -1,0 +1,38 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "home",
+      "view": "2.4,1.74,10.5,3.2,0.06",
+      "picks": [
+        { "name": "water far", "place": [0, -0.2, 3.2] },
+        { "name": "water mid", "place": [0, -0.2, 4.6] },
+        { "name": "water near", "place": [0, -0.2, 6.4] },
+        { "name": "water far west", "place": [-3.6, -0.2, 3.4] },
+        { "name": "coping far", "place": [0, 0.24, 1.72] },
+        { "name": "coping near", "place": [0, 0.24, 7.35] },
+        { "name": "control roof", "place": [0.5, 5.6, -8.0] },
+        { "name": "control lawn", "place": [-12, 0.3, 8] }
+      ]
+    },
+    {
+      "name": "pool",
+      "view": "0,2.1,-1.5,0,0.1",
+      "picks": [
+        { "name": "water far", "place": [0, -0.2, 6.6] },
+        { "name": "water mid", "place": [0, -0.2, 5.0] },
+        { "name": "water near", "place": [0, -0.2, 2.6] },
+        { "name": "coping far", "place": [0, 0.24, 7.35] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built (film follows the angle)" },
+    { "name": "film flat over all (the old lid)", "query": "nofilmangle=1" },
+    { "name": "film x1.5", "query": "wem=1.5" },
+    { "name": "film x2", "query": "wem=2" },
+    { "name": "film x2.6", "query": "wem=2.6" },
+    { "name": "film x2 + wfp=7", "query": "wem=2&wfp=7" },
+    { "name": "film x2 + wfp=2.5", "query": "wem=2&wfp=2.5" }
+  ]
+}

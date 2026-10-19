@@ -1,0 +1,59 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "Fault 1, second sweep: the tone curve itself, and the pull on the bright end that was refused before the right cure was found. Khronos PBR Neutral (now the Villa's own curve) holds a sunlit surface's colour where ACES washes it out, but it lifts the whole frame, so it is tried at four exposures, with and without the pull (`shoulder`, which is kept as a switch and refused). `aces as it is` reproduces the released v0.10.1 — its curve and its exposure together, since the two pay for one another.",
+	"views": [
+		{
+			"name": "home",
+			"view": "2.4,1.74,10.5,3.2,0.06",
+			"picks": [
+				{ "name": "teak post, sun", "x": 0.273, "y": 0.292 },
+				{ "name": "roof tile", "x": 0.5, "y": 0.15 },
+				{ "name": "fascia", "x": 0.305, "y": 0.208 },
+				{ "name": "coping, sun", "x": 0.367, "y": 0.653 },
+				{ "name": "teak deck", "x": 0.352, "y": 0.569 },
+				{ "name": "pot by steps", "x": 0.414, "y": 0.542 },
+				{ "name": "water", "x": 0.68, "y": 0.68 }
+			]
+		},
+		{
+			"name": "westlawn",
+			"view": "-20,1.6,10,1.57,-0.02",
+			"picks": [
+				{ "name": "lawn, sun", "x": 0.5, "y": 0.8 },
+				{ "name": "hedge", "x": 0.5, "y": 0.52 }
+			]
+		},
+		{
+			"name": "frontcorner",
+			"view": "6.34,1.6,6,3.1416,-0.02",
+			"fov": "0.45",
+			"picks": [
+				{ "name": "front wall", "x": 0.5, "y": 0.45 }
+			]
+		},
+		{
+			"name": "rear",
+			"view": "0,1.6,-19,0,0.06",
+			"picks": [
+				{ "name": "back wall", "x": 0.5, "y": 0.5 },
+				{ "name": "lawn, shade", "x": 0.5, "y": 0.85 }
+			]
+		},
+		{
+			"name": "westwall",
+			"view": "-13,1.6,-8,1.57,0",
+			"picks": [
+				{ "name": "west wall", "x": 0.5, "y": 0.5 }
+			]
+		}
+	],
+	"cases": [
+		{ "name": "aces as it was", "query": "tonemap=aces&exposure=0.88" },
+		{ "name": "neutral e0.88", "query": "tonemap=neutral" },
+		{ "name": "neutral e0.80", "query": "tonemap=neutral&exposure=0.8" },
+		{ "name": "neutral e0.72", "query": "tonemap=neutral&exposure=0.72" },
+		{ "name": "neutral e0.72 sh-40", "query": "tonemap=neutral&exposure=0.72&shoulder=-40" },
+		{ "name": "neutral e0.62 sh-40", "query": "tonemap=neutral&exposure=0.62&shoulder=-40" },
+		{ "name": "aces sh-60 (refused)", "query": "tonemap=aces&exposure=0.88&shoulder=-60" }
+	]
+}

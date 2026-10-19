@@ -1,0 +1,33 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "Where are the hills, and what does the browser paint them as? From the ground they mostly hide: their tops are lower than the far tree line's tops, so they show only where the tree line has a gap. So this floats the eye 90 m over the middle of the garden (`float=1`, or the walk sets the camera back down on the ground) and looks out over the tree line, in two directions. The picks name the mesh behind the pixel, so this is a probe for where to measure, not a comparison of cures.",
+	"views": [
+		{
+			"name": "high-sse",
+			"view": "0,90,0,0.5,0.4",
+			"picks": [
+				{ "name": "a", "x": 0.5, "y": 0.2 },
+				{ "name": "b", "x": 0.5, "y": 0.3 },
+				{ "name": "c", "x": 0.5, "y": 0.4 },
+				{ "name": "d", "x": 0.5, "y": 0.5 },
+				{ "name": "e", "x": 0.25, "y": 0.4 },
+				{ "name": "f", "x": 0.75, "y": 0.4 },
+				{ "name": "g", "x": 0.5, "y": 0.6 }
+			]
+		},
+		{
+			"name": "high-nw",
+			"view": "0,90,0,3.7,0.4",
+			"picks": [
+				{ "name": "a", "x": 0.5, "y": 0.2 },
+				{ "name": "b", "x": 0.5, "y": 0.3 },
+				{ "name": "c", "x": 0.5, "y": 0.4 },
+				{ "name": "d", "x": 0.5, "y": 0.5 },
+				{ "name": "e", "x": 0.25, "y": 0.4 },
+				{ "name": "f", "x": 0.75, "y": 0.4 },
+				{ "name": "g", "x": 0.5, "y": 0.6 }
+			]
+		}
+	],
+	"cases": [{ "name": "as it is", "query": "float=1", "js": "" }]
+}

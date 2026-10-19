@@ -1,0 +1,17 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "pathside",
+      "view": "0,1.6,17,0,0.02"
+    },
+    {
+      "name": "southborder",
+      "view": "6,1.6,13,0.27,0"
+    }
+  ],
+  "cases": [
+    { "name": "beds as built", "query": "" },
+    { "name": "beds off", "js": "scene.getMeshByName('earthBedSouthWest').setEnabled(false); scene.getMeshByName('earthBedSouthEast').setEnabled(false);" }
+  ]
+}

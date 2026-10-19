@@ -1,0 +1,109 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "through",
+      "view": "2.2,1.6,6.5,3.1416,-0.05",
+      "fov": "0.9",
+      "picks": [
+        { "name": "pane centre", "place": [1.19, 1.6, -3.92] },
+        { "name": "pane east", "place": [5.0, 2.2, -3.92] },
+        { "name": "pane west", "place": [-2.0, 1.6, -3.92] },
+        { "name": "back wall centre", "place": [0, 2.6, -11.55] },
+        { "name": "back wall east", "place": [5.7, 2.4, -11.55] },
+        { "name": "floor far", "place": [0, 0.62, -10.0] },
+        { "name": "rug", "place": [-2.4, 0.63, -7.0] },
+        { "name": "sofa cushion", "place": [-2.12, 1.05, -7.84] },
+        { "name": "sofa back", "place": [-1.4, 1.35, -8.3] },
+        { "name": "chair east", "place": [0.75, 1.0, -6.5] },
+        { "name": "table bowl", "place": [-1.85, 1.1, -6.1] },
+        { "name": "panel west", "place": [-3.2, 2.55, -11.5] },
+        { "name": "plant", "place": [5.0, 1.9, -10.2] },
+        { "name": "alcove lit back", "place": [0, 1.35, -11.45] },
+        { "name": "alcove lit back high", "place": [0, 2.0, -11.45] },
+        { "name": "control mullion", "place": [0.6, 2.0, -3.8] }
+      ]
+    },
+    {
+      "name": "home",
+      "view": "2.4,1.74,10.5,3.2,0.06",
+      "picks": [
+        { "name": "pane low", "place": [1.2, 1.0, -3.92] },
+        { "name": "pane eye", "place": [1.2, 1.75, -3.92] },
+        { "name": "pane east", "place": [4.6, 2.2, -3.92] },
+        { "name": "pane west", "place": [-3.4, 2.2, -3.92] },
+        { "name": "control mullion", "place": [0.6, 2.0, -3.8] },
+        { "name": "alcove lit back", "place": [0, 1.35, -11.45] },
+        { "name": "alcove lit back high", "place": [0, 2.0, -11.45] },
+        { "name": "alcove jar", "place": [0.44, 0.97, -11.18] },
+        { "name": "alcove bowl", "place": [-0.42, 1.66, -11.18] },
+        { "name": "control coping", "place": [0, 0.14, 1.6] },
+        { "name": "control roof", "place": [0.5, 5.6, -8.0] }
+      ]
+    },
+    {
+      "name": "rake",
+      "view": "9,1.6,7,-2.536,-0.02",
+      "picks": [
+        { "name": "rug raked", "place": [-1.6, 0.63, -7.6] },
+        { "name": "sofa raked", "place": [-1.4, 1.2, -8.3] },
+        { "name": "back wall raked", "place": [-3.2, 2.4, -11.5] },
+        { "name": "plant raked", "place": [5.0, 1.9, -10.2] },
+        { "name": "pane near", "place": [4.6, 1.6, -3.92] }
+      ]
+    },
+    {
+      "name": "room",
+      "view": "0,1.6,-4.6,3.1416,0.05",
+      "picks": [
+        { "name": "back wall inside", "place": [0, 2.6, -11.5] },
+        { "name": "panel west", "place": [-3.2, 2.55, -11.5] },
+        { "name": "panel east", "place": [3.2, 2.55, -11.5] },
+        { "name": "sofa back", "place": [-1.4, 1.35, -8.3] },
+        { "name": "sofa cushion", "place": [-2.12, 1.05, -7.84] },
+        { "name": "rug", "place": [1.0, 0.63, -7.8] },
+        { "name": "floor far", "place": [0, 0.62, -10.8] },
+        { "name": "beam", "place": [0, 3.8, -10.7] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built" },
+    {
+      "name": "room lamps off",
+      "js": "scene.roomLamps.forEach(l => l.setEnabled(false))"
+    },
+    {
+      "name": "one lamp over the middle",
+      "js": "scene.roomLamps.forEach(l => { if (l.name === 'floorLampLight') l.setEnabled(false); else { l.position.x = 0; l.intensity = 13; } })"
+    },
+    {
+      "name": "no rug",
+      "js": "scene.getMeshByName('rug').setEnabled(false)"
+    },
+    {
+      "name": "furniture, beams and plant off",
+      "js": "scene.meshes.filter(m => /^(sofa|chair|table|floorLamp|ceilingBeam|panel)/.test(m.name) || /^(plantLeaf|pottedBush)/.test(m.name)).forEach(m => m.setEnabled(false))"
+    },
+    {
+      "name": "alcove and its lamp off",
+      "js": "scene.meshes.filter(m => /^alcove/.test(m.name)).forEach(m => m.setEnabled(false)); scene.roomLamps.forEach(l => { if (l.name === 'alcoveLamp') l.setEnabled(false); })"
+    },
+    {
+      "name": "lamps doubled",
+      "js": "scene.roomLamps.forEach(l => l.intensity *= 2)"
+    },
+    {
+      "name": "ceiling put back over the soffit",
+      "js": "scene.getMeshByName('interiorCeiling').position.y = 4.2"
+    },
+    {
+      "name": "store lamp off",
+      "js": "scene.roomLamps.filter(l => l.name === 'storeLampLight').forEach(l => l.setEnabled(false))"
+    },
+    {
+      "name": "store lamp doubled",
+      "js": "scene.roomLamps.filter(l => l.name === 'storeLampLight').forEach(l => l.intensity *= 2)"
+    }
+  ]
+}

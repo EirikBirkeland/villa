@@ -1,0 +1,41 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "The far rank is a curtain of leaf now, not a crowd of crowns, and a curtain shows a repeating pattern the way a crowd of rolled cards never did. This asks what the curtain should wear, how big the wear should be, and whether the leaf should be cut at all. `tile` (2 m as built) is the metres of curtain one repeat of the canvas covers, baked into the mesh's UVs by `skylineBand`; live, multiplying the texture's uScale/vScale weighs another tile (uScale 1.5 is a 1.33 m tile, uScale 0.667 is a 3 m tile). `warp` (1 as built) pulls the pattern off its grid in the geometry and cannot be turned off live — that comparison was made between two runs of this plan with and without it in `src/world.js`. The `curtain` camera stands on the west lawn and looks WEST at the near face of the band, forty-odd metres off; the `west` view is a standing camera and its two middle picks name jungleHighBelt at 77-81 m.",
+	"views": [
+		{
+			"name": "curtain",
+			"view": "-16,1.8,8,-1.57,-0.05",
+			"query": "float=1&fov=0.4",
+			"picks": [
+				{ "name": "left", "x": 0.12, "y": 0.42 },
+				{ "name": "mid-left", "x": 0.3, "y": 0.36 },
+				{ "name": "middle", "x": 0.45, "y": 0.3 },
+				{ "name": "mid-right", "x": 0.68, "y": 0.36 },
+				{ "name": "right", "x": 0.86, "y": 0.44 }
+			]
+		},
+		{
+			"name": "west",
+			"view": "-11,1.7,6.8,1.57,-0.02",
+			"picks": [
+				{ "name": "middle", "x": 0.42, "y": 0.33 },
+				{ "name": "right", "x": 0.66, "y": 0.3 }
+			]
+		}
+	],
+	"cases": [
+		{ "name": "as built: 2 m tile, warped", "js": "" },
+		{ "name": "1.33 m tile", "js": "mats.jungleFar.albedoTexture.uScale = 1.5; mats.jungleFar.albedoTexture.vScale = 1.5;" },
+		{ "name": "3 m tile", "js": "mats.jungleFar.albedoTexture.uScale = 0.667; mats.jungleFar.albedoTexture.vScale = 0.667;" },
+		{
+			"name": "2 m tile, the leaf cut out of the curtain",
+			"js": "const t = mats.jungleFar.albedoTexture; t.hasAlpha = true; mats.jungleFar.alphaCutOff = 0.5; mats.jungleFar.transparencyMode = 1;"
+		},
+		{
+			"name": "2 m tile, cut high so only the pale leaf stands",
+			"js": "const t = mats.jungleFar.albedoTexture; t.hasAlpha = true; mats.jungleFar.alphaCutOff = 0.72; mats.jungleFar.transparencyMode = 1;"
+		},
+		{ "name": "as built, colour x1.3", "js": "mats.jungleFar.albedoColor.scaleInPlace(1.3);" },
+		{ "name": "as built, colour x0.75", "js": "mats.jungleFar.albedoColor.scaleInPlace(0.75);" }
+	]
+}

@@ -1,0 +1,26 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "note": "Where the dark line on the coping actually is. The coping's north side runs from z = 1.68 to z = 2.10 and the damp foot is its inner 13 cm, so the two materials change at z = 1.97. Asked straight down in one-centimetre steps, with the mesh each step answers printed beside it: the question is whether the dark pixels fall ON that join or somewhere away from it. A line of dark pixels exactly at a join would be a seam in the work; a line elsewhere is the stone's own joint.",
+  "views": [
+    {
+      "name": "the join, in centimetres",
+      "view": "0,1.6,1.9,3.1416,1.5708",
+      "fov": 0.5,
+      "picks": [
+        { "name": "z 2.00", "place": [0, 0.26, 2.0] },
+        { "name": "z 1.99", "place": [0, 0.26, 1.99] },
+        { "name": "z 1.98", "place": [0, 0.26, 1.98] },
+        { "name": "z 1.97", "place": [0, 0.26, 1.97] },
+        { "name": "z 1.96", "place": [0, 0.26, 1.96] },
+        { "name": "z 1.95", "place": [0, 0.26, 1.95] },
+        { "name": "z 1.94", "place": [0, 0.26, 1.94] },
+        { "name": "z 1.92", "place": [0, 0.26, 1.92] },
+        { "name": "z 1.88", "place": [0, 0.26, 1.88] },
+        { "name": "z 1.80", "place": [0, 0.26, 1.8] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built", "query": "float=1" }
+  ]
+}

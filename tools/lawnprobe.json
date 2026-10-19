@@ -1,0 +1,43 @@
+{
+  "url": "http://localhost:8090/villa/index.html?float=1",
+  "views": [
+    {
+      "name": "lawnup",
+      "view": "-16,20,8,3.1416,1.5708",
+      "picks": [
+        { "name": "p0-0", "x": 0.0833, "y": 0.125 },
+        { "name": "p0-1", "x": 0.25, "y": 0.125 },
+        { "name": "p0-2", "x": 0.4167, "y": 0.125 },
+        { "name": "p0-3", "x": 0.5833, "y": 0.125 },
+        { "name": "p0-4", "x": 0.75, "y": 0.125 },
+        { "name": "p0-5", "x": 0.9167, "y": 0.125 },
+        { "name": "p1-0", "x": 0.0833, "y": 0.375 },
+        { "name": "p1-1", "x": 0.25, "y": 0.375 },
+        { "name": "p1-2", "x": 0.4167, "y": 0.375 },
+        { "name": "p1-3", "x": 0.5833, "y": 0.375 },
+        { "name": "p1-4", "x": 0.75, "y": 0.375 },
+        { "name": "p1-5", "x": 0.9167, "y": 0.375 },
+        { "name": "p2-0", "x": 0.0833, "y": 0.625 },
+        { "name": "p2-1", "x": 0.25, "y": 0.625 },
+        { "name": "p2-2", "x": 0.4167, "y": 0.625 },
+        { "name": "p2-3", "x": 0.5833, "y": 0.625 },
+        { "name": "p2-4", "x": 0.75, "y": 0.625 },
+        { "name": "p2-5", "x": 0.9167, "y": 0.625 },
+        { "name": "p3-0", "x": 0.0833, "y": 0.875 },
+        { "name": "p3-1", "x": 0.25, "y": 0.875 },
+        { "name": "p3-2", "x": 0.4167, "y": 0.875 },
+        { "name": "p3-3", "x": 0.5833, "y": 0.875 },
+        { "name": "p3-4", "x": 0.75, "y": 0.875 },
+        { "name": "p3-5", "x": 0.9167, "y": 0.875 }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as it is", "query": "float=1" },
+    {
+      "name": "tone flat",
+      "query": "float=1",
+      "js": "for (const m of scene.meshes) { if (m.name.startsWith('lawn')) { const n = m.getTotalVertices(); const c = []; for (let i = 0; i < n; i++) c.push(1, 1, 1, 1); m.setVerticesData(BABYLON.VertexBuffer.ColorKind, c); } }"
+    }
+  ]
+}

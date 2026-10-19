@@ -1,0 +1,19 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "lawn twenty metres off",
+      "view": "-13.5,1.5,8,-1.57,0.18"
+    },
+    {
+      "name": "the west lawn looking east",
+      "view": "-20,1.6,10,1.57,-0.02"
+    }
+  ],
+  "cases": [
+    { "name": "as built", "query": "" },
+    { "name": "hedge bump 0.3", "js": "mats.hedge.bumpTexture.level = 0.3;" },
+    { "name": "hedge bump off", "js": "mats.hedge.bumpTexture.level = 0;" },
+    { "name": "hedge bump 0.25", "js": "mats.hedge.bumpTexture.level = 0.25;" }
+  ]
+}

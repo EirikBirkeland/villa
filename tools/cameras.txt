@@ -1,0 +1,38 @@
+# The standing cameras, in one place for both tools that use them.
+#
+#   tools/views.sh    redraws these with the CPU drawing   (pictures/drawn-<name>.png)
+#   tools/photos.sh   photographs these in a real browser  (pictures/<number>-<name>.png)
+#
+# One line per view: the name, where a visitor stands and what they look at as x,y,z,yaw,pitch
+# (metres and radians; the Villa has -z as north, and a yaw of 0 looks south, 3.14 north), and a
+# narrow eye angle where the wide one is
+# no use — a "-" means the Villa's own 0.85 radians.
+#
+# `backstore` is the seventeenth, and it is there because the sixteen before it never looked at the
+# back of the house east of the store room: stand on `rear`, 5 m off the north face, and every point
+# of the store's own face projects outside the right edge of the picture (`tools/bandwhere.json`
+# says OUT OF FRAME for x = 5.1 and everything east of it). So the store room's face — and the band
+# of glass cut into it — was in no picture this folder takes. If a view comes and goes here the set no
+# longer lines up by counting, so add new cameras at the end and never in the middle.
+#
+# Keep the two tools on these cameras: a browser picture and a drawing of the same place are the only
+# way to tell a fault in the Villa from a fault in the drawing.
+home        2.4,1.74,10.5,3.2,0.06        -
+rear        0,1.6,-19,0,0.06              -
+rearup      0,1.6,-21,0,-0.35             -
+rearcorner  -15,1.6,-20,0.66,0.05         -
+sala        3.5,1.6,11,2.25,-0.02         -
+path        -3,1.7,19,2.9,0.02            -
+west        -11,1.7,6.8,1.57,-0.02        -
+pool        0,2.1,-1.5,0,0.1              -
+westlawn    -20,1.6,10,1.57,-0.02         -
+pondbank    -15.6,1.62,17.4,-2.11,0.14  -
+pondlawn    -25,1.62,20,2.54,0.12      -
+eastlawn    20,1.6,-14,-1.57,0            -
+colonnade   2.2,1.6,9,3.1416,-0.14        0.45
+frontcorner 6.34,1.6,6,3.1416,-0.02       0.45
+salaroof    16,1.6,-2,-0.63,-0.1          -
+westwall    -13,1.6,-8,1.57,0             -
+grass       -13.5,1.5,8,-1.57,0.18          -
+southborder 6,1.6,13,0.27,0            -
+backstore   5.6,1.6,-19,0,-0.14        -

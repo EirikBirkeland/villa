@@ -1,0 +1,48 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "home",
+      "view": "2.4,1.74,10.5,3.2,0.06",
+      "picks": [
+        { "name": "glass west", "place": [-3.0, 2.4, -3.92] },
+        { "name": "glass centre", "place": [0.2, 2.4, -3.92] },
+        { "name": "glass east", "place": [4.2, 2.4, -3.92] },
+        { "name": "glass low", "place": [1.2, 1.2, -3.92] },
+        { "name": "alcove through glass", "place": [0, 1.6, -11.4] },
+        { "name": "control mullion", "place": [0.6, 2.0, -3.8] },
+        { "name": "control coping", "place": [0, 0.14, 1.6] },
+        { "name": "control fascia", "place": [0, 4.2, -3.6] }
+      ]
+    },
+    {
+      "name": "room inside",
+      "view": "0,1.6,-4.6,3.1416,0.05",
+      "picks": [
+        { "name": "back wall high", "place": [0, 3.6, -11.5] },
+        { "name": "back wall low", "place": [2.0, 1.0, -11.5] },
+        { "name": "ceiling", "place": [0, 4.0, -9.5] },
+        { "name": "alcove back", "place": [0, 2.0, -11.42] },
+        { "name": "control sofa", "place": [-1.4, 1.35, -8.3] }
+      ]
+    },
+    {
+      "name": "westwall",
+      "view": "-13,1.6,-8,1.57,0",
+      "picks": [
+        { "name": "window A", "place": [-6.6, 2.2, -6.2] },
+        { "name": "window B", "place": [-6.6, 2.0, -9.4] },
+        { "name": "control wall", "place": [-6.7, 2.4, -8] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built (pair at 20)" },
+    { "name": "pair 26", "js": "scene.roomLamps.forEach(l => { if (/^roomLamp/.test(l.name)) l.intensity = 26; })" },
+    { "name": "pair 32", "js": "scene.roomLamps.forEach(l => { if (/^roomLamp/.test(l.name)) l.intensity = 32; })" },
+    { "name": "pair 40", "js": "scene.roomLamps.forEach(l => { if (/^roomLamp/.test(l.name)) l.intensity = 40; })" },
+    { "name": "warm plaster (probe)", "js": "mats.interiorPlaster.albedoColor = new BABYLON.Color3(1.08, 0.96, 0.76)" },
+    { "name": "pair 26 + warm plaster", "js": "scene.roomLamps.forEach(l => { if (/^roomLamp/.test(l.name)) l.intensity = 26; }); mats.interiorPlaster.albedoColor = new BABYLON.Color3(1.08, 0.96, 0.76)" },
+    { "name": "pair 32 + warm plaster", "js": "scene.roomLamps.forEach(l => { if (/^roomLamp/.test(l.name)) l.intensity = 32; }); mats.interiorPlaster.albedoColor = new BABYLON.Color3(1.08, 0.96, 0.76)" }
+  ]
+}

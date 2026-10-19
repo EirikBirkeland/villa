@@ -1,0 +1,60 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "home",
+      "view": "2.4,1.74,10.5,3.2,0.06",
+      "picks": [
+        { "name": "pane low", "place": [1.2, 1.0, -3.92] },
+        { "name": "pane eye", "place": [1.2, 1.75, -3.92] },
+        { "name": "pane high", "place": [1.2, 3.0, -3.92] },
+        { "name": "pane top", "place": [1.2, 3.85, -3.92] },
+        { "name": "pane west", "place": [-3.4, 2.2, -3.92] },
+        { "name": "pane east", "place": [4.6, 2.2, -3.92] },
+        { "name": "control mullion", "place": [0.6, 2.0, -3.8] },
+        { "name": "control coping", "place": [0, 0.14, 1.6] }
+      ]
+    },
+    {
+      "name": "close",
+      "view": "1.2,2.1,-0.4,3.1416,0.12",
+      "fov": "0.6",
+      "picks": [
+        { "name": "pane low", "place": [1.2, 1.0, -3.92] },
+        { "name": "pane eye", "place": [1.2, 1.75, -3.92] },
+        { "name": "pane high", "place": [1.2, 3.0, -3.92] },
+        { "name": "sofa", "place": [-1.6, 1.0, -6.6] },
+        { "name": "back wall", "place": [0, 2.4, -11.6] },
+        { "name": "interior floor", "place": [0, 0.61, -8] }
+      ]
+    },
+    {
+      "name": "rake",
+      "view": "-13,1.6,9,2.33,0.0",
+      "picks": [
+        { "name": "pane far", "place": [-4.0, 1.9, -3.92] },
+        { "name": "pane low mid", "place": [1.2, 1.0, -3.92] },
+        { "name": "pane high mid", "place": [1.2, 3.2, -3.92] }
+      ]
+    }
+  ],
+  "cases": [
+    { "name": "as built" },
+    {
+      "name": "glass taken away",
+      "js": "scene.getMeshByName('frontGlass').setEnabled(false)"
+    },
+    {
+      "name": "room lamps x3",
+      "js": "scene.roomLamps.forEach(l => l.intensity *= 3)"
+    },
+    {
+      "name": "sky mirrored harder",
+      "js": "mats.glass.environmentIntensity = 1.2; mats.glass.roughness = 0.04"
+    },
+    {
+      "name": "clearer glass, less of it",
+      "js": "mats.glass.alpha = 0.22; mats.glass.albedoColor = new BABYLON.Color3(0.62,0.7,0.68)"
+    }
+  ]
+}

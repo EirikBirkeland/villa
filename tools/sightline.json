@@ -1,0 +1,35 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"views": [
+		{
+			"name": "home",
+			"view": "2.4,1.74,10.5,3.2,0.06",
+			"picks": [
+				{ "name": "wall far west", "place": [-6.0, 1.6, -11.55] },
+				{ "name": "wall west", "place": [-4.0, 1.6, -11.55] },
+				{ "name": "wall mid west", "place": [-2.0, 1.6, -11.55] },
+				{ "name": "wall centre", "place": [0.0, 1.6, -11.55] },
+				{ "name": "wall mid east", "place": [3.0, 1.6, -11.55] },
+				{ "name": "wall east", "place": [5.0, 1.6, -11.55] },
+				{ "name": "wall far east", "place": [6.2, 1.6, -11.55] },
+				{ "name": "wall east low", "place": [5.0, 1.0, -11.55] },
+				{ "name": "wall mid east low", "place": [3.0, 1.0, -11.55] },
+				{ "name": "wall centre high", "place": [0.0, 3.2, -11.55] }
+			]
+		},
+		{
+			"name": "colonnade",
+			"view": "2.2,1.6,9,3.1416,-0.14",
+			"fov": "0.45",
+			"picks": [
+				{ "name": "wall far west", "place": [-6.0, 1.6, -11.55] },
+				{ "name": "wall west", "place": [-4.0, 1.6, -11.55] },
+				{ "name": "wall centre", "place": [0.0, 1.6, -11.55] },
+				{ "name": "wall mid east", "place": [3.0, 1.6, -11.55] },
+				{ "name": "wall east", "place": [5.0, 1.6, -11.55] },
+				{ "name": "wall east low", "place": [5.0, 1.0, -11.55] }
+			]
+		}
+	],
+	"cases": [{ "name": "as built" }]
+}

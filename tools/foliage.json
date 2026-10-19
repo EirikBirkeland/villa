@@ -1,0 +1,44 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "views": [
+    {
+      "name": "crown",
+      "view": "14.2,1.6,-3.2,-0.85,-0.9",
+      "picks": [
+        { "name": "frond left", "x": 0.3, "y": 0.55 },
+        { "name": "frond right", "x": 0.72, "y": 0.6 }
+      ]
+    },
+    {
+      "name": "banana",
+      "view": "-17.2,1.6,7.9,-1.95,0.05",
+      "picks": [
+        { "name": "blade", "x": 0.5, "y": 0.45 }
+      ]
+    },
+    { "name": "grass", "view": "-13.5,1.5,8,-1.57,0.18" },
+    { "name": "home", "view": "2.4,1.74,10.5,3.2,0.06" },
+    { "name": "pool", "view": "0,2.1,-1.5,0,0.1" },
+    { "name": "sala", "view": "3.5,1.6,11,2.25,-0.02" },
+    { "name": "west", "view": "-11,1.7,6.8,1.57,-0.02" }
+  ],
+  "cases": [
+    { "name": "as built" },
+    {
+      "name": "one side only",
+      "js": "mats.palmLeaf.twoSidedLighting = false; mats.bananaLeaf.twoSidedLighting = false; mats.tuft.twoSidedLighting = false; mats.tuft.backFaceCulling = true;"
+    },
+    {
+      "name": "no leaf light",
+      "js": "mats.palmLeaf.emissiveColor.set(0,0,0); mats.bananaLeaf.emissiveColor.set(0,0,0); mats.tuft.emissiveColor.set(0,0,0);"
+    },
+    {
+      "name": "leaf light x2",
+      "js": "mats.palmLeaf.emissiveColor.scaleInPlace(2); mats.bananaLeaf.emissiveColor.scaleInPlace(2); mats.tuft.emissiveColor.scaleInPlace(2);"
+    },
+    {
+      "name": "clumps off",
+      "js": "scene.getMeshByName('grassTufts').isVisible = false;"
+    }
+  ]
+}

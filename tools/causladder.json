@@ -1,0 +1,23 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"views": [
+		{
+			"name": "the floor from a metre above the water",
+			"view": "0,1.0,4.6,3.1416,1.5708",
+			"picks": [
+				{ "name": "floor and net", "place": [0, -1.6, 4.4] },
+				{ "name": "floor further off", "place": [2.2, -1.6, 3.2] }
+			]
+		},
+		{
+			"name": "the far wall from the coping",
+			"view": "2.4,1.74,10.5,3.2,0.06"
+		}
+	],
+	"cases": [
+		{ "name": "as built", "query": "float=1" },
+		{ "name": "net 0.8 and 0.45", "query": "float=1", "js": "scene.getMeshByName('causticsA').visibility = 0.8; scene.getMeshByName('causticsB').visibility = 0.45;" },
+		{ "name": "net 1.0 and 0.6", "query": "float=1", "js": "scene.getMeshByName('causticsA').visibility = 1.0; scene.getMeshByName('causticsB').visibility = 0.6;" },
+		{ "name": "net off", "query": "float=1", "js": "scene.getMeshByName('causticsA').visibility = 0; scene.getMeshByName('causticsB').visibility = 0;" }
+	]
+}

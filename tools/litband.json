@@ -1,0 +1,69 @@
+{
+	"url": "http://localhost:8090/villa/index.html",
+	"_note": "The ceiling question (fault 1 and fault 16 in NOTES.md). A sunlit horizontal face — the teak terrace, the paving, the coping, a chair seat — is pressed up against the top of the tone curve, so nothing painted on it can show. These cases pull the whole picture down off the ceiling with the exposure and put the shade back with the two fill lamps, which is the only pair of levers that moves the top without moving the bottom. `as it is` is the Villa as shipped. Each line is read on the sunlit faces, on a shaded wall, and on the lawn and the water, which must not be spoiled by the cure.",
+	"views": [
+		{
+			"name": "home",
+			"view": "2.4,1.74,10.5,3.2,0.06",
+			"picks": [
+				{ "name": "coping, sun", "place": [1.9, 0.23, 7.2] },
+				{ "name": "teak deck", "place": [4.5, 0.5, -0.5] },
+				{ "name": "west deck", "place": [-10.2, 0.14, 6.8] },
+				{ "name": "water", "place": [1.3, 0, 4.5] }
+			]
+		},
+		{
+			"name": "colonnade",
+			"view": "2.2,1.6,9,3.1416,-0.14",
+			"fov": "0.45",
+			"picks": [
+				{ "name": "teak near", "place": [3.0, 0.5, 0.2] },
+				{ "name": "teak far", "place": [-3.0, 0.5, -2.5] }
+			]
+		},
+		{
+			"name": "frontcorner",
+			"view": "6.34,1.6,6,3.1416,-0.02",
+			"fov": "0.45",
+			"picks": [
+				{ "name": "deck at steps", "place": [2.0, 0.14, 1.2] },
+				{ "name": "pot", "place": [3.4, 0.4, 1.4] }
+			]
+		},
+		{
+			"name": "sala",
+			"view": "3.5,1.6,11,2.25,-0.02",
+			"picks": [
+				{ "name": "sala floor", "place": [8.6, 0.66, 6.0] },
+				{ "name": "paving", "place": [6.5, 0.14, 8.5] }
+			]
+		},
+		{
+			"name": "rear",
+			"view": "0,1.6,-19,0,0.06",
+			"picks": [
+				{ "name": "back wall, shade", "x": 0.5, "y": 0.5 },
+				{ "name": "lawn at house", "x": 0.5, "y": 0.78 }
+			]
+		},
+		{
+			"name": "westwall",
+			"view": "-13,1.6,-8,1.57,0",
+			"picks": [{ "name": "west wall, shade", "x": 0.5, "y": 0.5 }]
+		},
+		{
+			"name": "westlawn",
+			"view": "-20,1.6,10,1.57,-0.02",
+			"picks": [{ "name": "lawn near", "x": 0.5, "y": 0.86 }]
+		}
+	],
+	"cases": [
+		{ "name": "as it is", "js": "" },
+		{ "name": "e0.66", "query": "exposure=0.66", "js": "hemi.intensity=7.4;bounce.intensity=6.6;" },
+		{ "name": "e0.60", "query": "exposure=0.60", "js": "hemi.intensity=8.2;bounce.intensity=7.2;" },
+		{ "name": "e0.54", "query": "exposure=0.54", "js": "hemi.intensity=9.1;bounce.intensity=8.0;" },
+		{ "name": "e0.48", "query": "exposure=0.48", "js": "hemi.intensity=10.2;bounce.intensity=9.0;" },
+		{ "name": "e0.66 fills same", "query": "exposure=0.66" },
+		{ "name": "sun down fills same", "query": "sun=41&exposure=1.06" }
+	 ]
+}

@@ -1,0 +1,19 @@
+{
+  "url": "http://localhost:8090/villa/index.html",
+  "note": "A one-pixel grass-green line, near (97,162,25), runs the whole 5 m of the pool's EAST edge in the narrow overhead frame: `0,14,4.6,3.1416,1.5708` with a 0.5 eye, pixels x 1142..1144 of a 1280-wide picture, y 150..590. The west, north and south edges show none, and at the Villa's own 0.85 eye the same edge sits at x 934 and shows none either. Each case here switches a MESH out. Count each saved picture with `node tools/pixels.js <png> --find 'g-b>50 && g-r>25' --where 1100,150,1180,590`: as built it answers ~510, and the case that empties that count is the answer.",
+  "views": [
+    { "name": "over", "view": "0,14,4.6,3.1416,1.5708", "fov": 0.5 }
+  ],
+  "cases": [
+    { "name": "as-built", "query": "float=1" },
+    { "name": "no-east-wall", "query": "float=1", "js": "scene.getMeshByName('poolEast').setEnabled(false)" },
+    { "name": "no-splash-east", "query": "float=1", "js": "scene.getMeshByName('splashEast').setEnabled(false)" },
+    { "name": "no-coping-east", "query": "float=1", "js": "scene.getMeshByName('copingEast').setEnabled(false)" },
+    { "name": "no-pool-meshes", "query": "float=1", "js": "for (const m of scene.meshes) if (/pool|wet|splash|water|caustic/i.test(m.name)) m.setEnabled(false)" },
+    { "name": "no-shadows", "query": "float=1&noshadow=1" },
+    { "name": "no-environment", "query": "float=1", "js": "scene.environmentTexture = null" },
+    { "name": "no-grass", "query": "float=1", "js": "for (const m of scene.meshes) if (/tuft|grass/i.test(m.name)) m.setEnabled(false)" },
+    { "name": "no-lawn", "query": "float=1", "js": "for (const m of scene.meshes) if (/^lawn/.test(m.name)) m.setEnabled(false)" },
+    { "name": "no-deck", "query": "float=1", "js": "for (const m of scene.meshes) if (/deck|paver|path/i.test(m.name)) m.setEnabled(false)" }
+  ]
+}
