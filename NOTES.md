@@ -9504,3 +9504,80 @@ history will not be rewritten to fix it (no rebase, no reset). **The rule for ne
 with `git commit --only <my paths>`, or check `git diff --cached --stat` before committing.** `src/materials.js`
 is still only partly committed: their staged bill material went in, my `streamEarth` and the stream water's
 retune are still uncommitted, which is why `src/stream.js` falls back to `mats.pondSilt`.
+
+## Session seventy-seven: the carp were squids, and then they were carp
+
+The master's charge was that the four fish in the basin read as "squids without tentacles" and that they
+should be nudged up to plausible at three metres, with the swim left alone. It was the shape and the fins,
+not the swim, and the pictures are all in `pictures/` under `koi-*` and `tmp-koi-*`.
+
+**Three faults, and one of them was a bug, not a taste.**
+
+1. **The caudal fin was not attached to the fish.** `src/koi.js` built the tail fan with
+   `fin(scene, n("TailFin"), ...)` and never set `.parent`, while `swim` dutifully beat
+   `k.tailNode.rotation.y` — a node the fin was not under. So the animal swam with no tail fin, and its
+   largest fin lay at the world's origin, out in the garden, never seen by anyone. Found by listing every
+   piece of the fish with where it stands (`tools/koishot.js` now prints that table): the list had no
+   `TailFin` in it at all. This is why the master's eye said *disconnected* — what was left of the tail was
+   a bare stalk.
+2. **The dorsal fin was inside the fish.** Its stations were drawn at a top of `deep * 0.075`, which is
+   1.2 cm above the animal's own middle, while the back there stands 6-7 cm above it. A fish with nothing
+   standing up off its back is a sausage, however good its tail is. The sail is now hung off `backAt(t)`,
+   the same table the body is lofted with, so it can never be buried again; and the pectorals are hung off
+   `sideAt(t)` for the same reason (the first pair were rooted six centimetres inside the flank, two
+   centimetres long, and drooping at 66°: a nub and a pair of arms).
+3. **The outline tapered at both ends**, which is an eye-shape, a leaf — `pictures/koi-before-top.png`.
+   Blunt it up and it becomes a sperm whale (`pictures/tmp-koi-front.png`): a block of a head, a flat back
+   and a tail stuck on the behind. What a carp is instead is a HANDLE, a LOAF and a HEAD, with the back an
+   ARCH — highest at the nape behind the head, falling both ways — and the tables now say that. The snout is
+   narrowed and rounded by a new `nose` on the loft rather than by leaving the last ring fat.
+
+**What else went in.** Ventral fins under the belly and an anal fin under the tail (sixty triangles, and a
+fish that rolls at the feeding place no longer shows a submarine's underside); a mouth, flat and hardly
+proud, because a blunt head with a knob on it is a whale's jaw; a bigger forked caudal with its root buried
+in the stalk and its trailing edge swept instead of straight across; brighter skin and crisper-edged red
+saddles in `koiCanvas` (the old white came back the colour of pond scum through the tannin water); fins at
+0.62 alpha instead of 0.42, since a fin has to be seen before it can be transparent; and matte eyes, because
+a glossy 2 cm bead is a bright coin on the face — the duck's eyes are that material too, and a rubber duck's
+eyes are printed flat, so that suits as well.
+
+**`src/loft.js` grew three options**, all defaulting to what it did before, so the shark is untouched: `nose`
+(draws the snout cap forward of the last ring, for a blunt dome), and `capStart`/`capEnd` (leave an end open).
+The koi's three body lofts overlap and their buried ends are now left open: capped, a buried disc's rim
+pricks through the neighbour's skin and the fish is barbed with a bright line at every joint (`pictures/tmp-koi-front.png`).
+
+**What the pictures say.** `pictures/koi-three-metres.png` against `pictures/koi-before-3m.png` is the
+master's own distance, and the fish are now fish: head, saddle, dorsal, tail. `pictures/koi-side.png` and
+`pictures/koi-face.png` are the hard views, at 0.6 m and dead ahead. From dead ahead the two bright dots
+beside the head are NOT the fish: `node` and a projection say one is a sunlit pectoral and the other is
+sun glitter on the water. The eye is a dark bead, measured at 82,82,65 where it shows, and it reads from the
+side (`pictures/tmp-koi-qtr7.png`).
+
+**`tools/koishot.js`** is new and worth keeping: it frames one fish of the running scene at a chosen
+distance and bearing, can freeze it at any swim `phase` (so a fin that only shows when swung can be
+photographed), prints where every piece stands and how big it is, projects the marked pieces onto the
+picture and reads back their pixels. `node tools/koishot.js pictures/x.png --fish 1 --off 3 --round 1.2
+--up 1.2`, or `--bank` for the standing view.
+
+**Left alone, on purpose:** the swim. `swim` was not touched but for the pectoral's base angle, which had to
+move with the fins it hangs; the tail beat, the roll, the forage and the cruise are as they were.
+
+**Not done, and next.** The body seams still show a crease at the two joints when the fish bends hard,
+though the bright line is gone. The caudal is still one flat sheet, so it reads best moving. From directly
+above a fish is still a pale spindle, which is honest but dull — a ripple on the water over each fish would
+sell it better than any more geometry. The stream hand owns `src/sound.js` and part of `src/materials.js`;
+nothing of theirs is staged or committed here.
+
+— Viscount Gary of Syntax, who found a tail fin lying in the garden and put it back on the fish 🐟
+
+**After the release.** The trickle was re-measured along the new route and one fault found: inside `bank` the
+gain kept climbing — 0.157 against the 0.12 set — because `over` was clamped at zero and not at one. Clamped both
+ways (`src/sound.js`): in the water 0.12, at the lip 0.117, on the bank 0.102, at the house 0 ✓. Committed
+`256a78b` with `git commit --only`, the rule from the mistake above.
+
+Standing pictures re-taken by `./tools/photos.sh`: `044-streamup.png` (luminance 93, water 1.9%, earth 2%, no
+blown whites or blacks) and `045-streamdown.png` (114). From the standing cameras the watercourse is a thin
+ribbon — 1.6 m of channel seen end-on at thirty metres — and it is only at the bank that it fills the frame,
+which is how a stream behaves and not a fault to fix. A balloon view was tried three times and each time a palm
+stood in the way (palmLeaf 15-18% at 5-6 m): the garden's palms are between the house and the watercourse, and
+that is where the master put them for the shade.
