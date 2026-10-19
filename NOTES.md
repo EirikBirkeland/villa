@@ -10208,3 +10208,22 @@ minification has to do the most work, and the plaster's fine grain (96 cells acr
 and a half of ground per cell) is well below a pixel at five metres. Coarsening the *broad* wash was measured
 and did not take the marks away, so if the next hand wants to try a texture remedy, the lever is the **grain**,
 not the wash, and the test is whether the marks still appear at 5 m while the face stays smooth at 2 m.
+
+### Addendum: the grain was not it either
+
+The texture lever named above was tried in the source and measured: a `grainCells` argument was given to
+`plasterCanvas` and `mats.plasterDark` was rebuilt on forty cells instead of ninety-six. **The diagonal and the
+comb are still there**, unchanged to the eye at 1280 px and in the strip statistics; the change was reverted and
+`src/` is back to the released state (1483 meshes, no page errors, `pictures` untouched). So of the plausible
+causes, these are now all closed with a number or a look: tone-map banding, received shadows, the broad wash's
+scale, the fine grain's scale, tile seams, missing mip maps, clamped anisotropy, and the camera stand.
+
+What is left, and it is geometry and not texture: with `storeRoof` hidden the marks vanish, and `storeRoof` is a
+single 46 cm-thick slab capping the store. The diagonal is ruled straight, which no shading does and which every
+box edge does. **Look next at which *face* of that slab is doing it** — the slab's front face and its underside
+meet at a corner, and a camera 5 m off and pitched slightly up sees both, one lit and one not, which would give
+a straight boundary across the store's face exactly where the master's picture shows one. `tools/cover.js --js`
+with `m.visibility = 0.5` on the slab, or a stand taken 2 m further back and level with the slab's underside,
+will tell in one picture. If that is what it is, the fault is not a glitch at all but the store's own cornice,
+too thick and too dark to read as one — and the fix is to thin it and put a drip shadow under it, not to chase
+the pixels any further.
