@@ -10496,3 +10496,12 @@ frozen by default and the postcard is a postcard when asked.
 
 Worth keeping in mind for every measurement made in this folder: until now, any frame mean taken across the water
 was moving under the hand that held it.
+
+## Session eighty-four, seventeenth stretch: the pool's water is named `water`, and it is still bright
+
+A fact worth a line, because I wasted a command not knowing it: the pool's surface mesh is called **`water`** and
+wears the material of the same name with `alpha 0.48` — the pond's is `pondWater`, and `tools/surface.js` answers
+"nothing named poolWater is in this picture" for the pool and means it. Measured inside its own face at one o'clock,
+after the fill was halved: mean **139.1**, spread sd **13.6**, **0.00%** over L200 and **0.00%** under L20. The
+water has light in it and detail in it, and nothing is crushed or blown, so the halved environment took some of the
+sky out of its reflection and not its life.
