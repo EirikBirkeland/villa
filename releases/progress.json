@@ -1,20 +1,20 @@
 {
-  "updated": "2026-10-19T05:07:08.985Z",
+  "updated": "2026-10-19T05:09:10.266Z",
   "release": {
     "version": "0.94.1",
     "released": "2026-10-19T04:43:26.692Z"
   },
   "tokens": {
-    "total": 10326928,
-    "generated": 68893,
+    "total": 11554295,
+    "generated": 75923,
     "countedFrom": null
   },
   "sessions": 1,
-  "files": 3,
-  "added": 176,
+  "files": 4,
+  "added": 242,
   "removed": 22,
   "linesCountedFrom": null,
-  "pictures": 4,
+  "pictures": 7,
   "typical": {
     "tokens": 8426341,
     "releases": 10

@@ -97,6 +97,10 @@ export const LEVEL = {
 	raven: 0.6,
 	coin: 0.2,
 	shot: 0.34,
+	launch: 0.3,
+	// Measured: at 0.95 the blast came out at 1.01 of full scale — past the top of the numbers, which
+	// is a click and not a boom. Half that is the loudest thing in the garden by a distance and still fits.
+	boom: 0.5,
 };
 
 /** No more of these at once. A pond full of frogs all starting together is a wall of buzz. */
@@ -520,5 +524,125 @@ export const VOICES = {
 		osc.start(t0);
 		osc.stop(t0 + 0.14);
 		return 0.22;
+	},
+
+	/**
+	 * A rocket leaving the tube: a hiss that climbs, and the thud of the charge lighting.
+	 *
+	 * A rocket is not a gun. A gun is one crack and it is over; a rocket is a sound that STARTS and keeps going
+	 * for a quarter of a second while the thing is still in the tube, because the propellant is burning along
+	 * its length rather than going off at a point. So this is a band of noise with the band sliding up as the
+	 * gas leaves, and a low thump under the first tenth of a second, which is the overpressure arriving at the
+	 * ear before the hiss does.
+	 */
+	launch(ctx, out, rand) {
+		const t0 = ctx.currentTime + 0.005;
+		const len = 0.42;
+		const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * len), ctx.sampleRate);
+		const data = buffer.getChannelData(0);
+		for (let i = 0; i < data.length; i++) {
+			const u = i / data.length;
+			// Loud at the start, and a long slow tail: the pressure falls away as the tube empties.
+			data[i] = (Math.random() * 2 - 1) * Math.pow(1 - u, 1.5) * (0.7 + 0.3 * Math.sin(u * 40));
+		}
+		const src = ctx.createBufferSource();
+		src.buffer = buffer;
+		const band = ctx.createBiquadFilter();
+		band.type = "bandpass";
+		band.Q.value = 1.1;
+		// The band slides from a growl to a scream: 400 Hz to 3 kHz over the length of the hiss.
+		band.frequency.setValueAtTime(380 + rand() * 120, t0);
+		band.frequency.exponentialRampToValueAtTime(2600 + rand() * 900, t0 + len * 0.85);
+		const env = ctx.createGain();
+		env.gain.setValueAtTime(0.85, t0);
+		env.gain.exponentialRampToValueAtTime(0.001, t0 + len);
+		src.connect(band);
+		band.connect(env);
+		env.connect(out);
+		src.start(t0);
+		const osc = ctx.createOscillator();
+		osc.type = "triangle";
+		osc.frequency.setValueAtTime(150 + rand() * 40, t0);
+		osc.frequency.exponentialRampToValueAtTime(52, t0 + 0.16);
+		const thud = ctx.createGain();
+		thud.gain.setValueAtTime(0, t0);
+		thud.gain.linearRampToValueAtTime(0.4, t0 + 0.01);
+		thud.gain.exponentialRampToValueAtTime(0.001, t0 + 0.2);
+		osc.connect(thud);
+		thud.connect(out);
+		osc.start(t0);
+		osc.stop(t0 + 0.24);
+		return len + 0.1;
+	},
+
+	/**
+	 * A blast: a crack, a wall of low pressure, and a long rumble behind it.
+	 *
+	 * Three parts, in the order they actually arrive. First the crack — the shock front, which is the loudest
+	 * thing and the shortest, and which has every frequency in it. Then the pressure, which is felt more than
+	 * heard: a sine that starts well above audibility and falls to thirty hertz, which is where a chest notices
+	 * it. Then the rumble, which is the same noise as the crack turned the other way round — band-limited to
+	 * the bottom end and lasting a second and a half, because a blast does not stop when the fire stops; the
+	 * ground and the walls go on answering for a while afterwards.
+	 */
+	boom(ctx, out, rand) {
+		const t0 = ctx.currentTime + 0.005;
+		const rate = ctx.sampleRate;
+		// The crack.
+		const crackLen = 0.12;
+		const crack = ctx.createBuffer(1, Math.floor(rate * crackLen), rate);
+		const cd = crack.getChannelData(0);
+		for (let i = 0; i < cd.length; i++) {
+			cd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / cd.length, 1.8);
+		}
+		const crackSrc = ctx.createBufferSource();
+		crackSrc.buffer = crack;
+		const bright = ctx.createBiquadFilter();
+		bright.type = "highpass";
+		bright.frequency.value = 900 + rand() * 500;
+		const crackEnv = ctx.createGain();
+		crackEnv.gain.setValueAtTime(0.75, t0);
+		crackEnv.gain.exponentialRampToValueAtTime(0.001, t0 + crackLen);
+		crackSrc.connect(bright);
+		bright.connect(crackEnv);
+		crackEnv.connect(out);
+		crackSrc.start(t0);
+		// The pressure: a tone that falls out of hearing.
+		const osc = ctx.createOscillator();
+		osc.type = "sine";
+		osc.frequency.setValueAtTime(180 + rand() * 60, t0);
+		osc.frequency.exponentialRampToValueAtTime(28, t0 + 0.85);
+		const pressure = ctx.createGain();
+		pressure.gain.setValueAtTime(0, t0);
+		pressure.gain.linearRampToValueAtTime(1, t0 + 0.02);
+		pressure.gain.exponentialRampToValueAtTime(0.001, t0 + 1.0);
+		osc.connect(pressure);
+		pressure.connect(out);
+		osc.start(t0);
+		osc.stop(t0 + 1.05);
+		// The rumble: the low end of the same noise, slow to arrive and slow to leave.
+		const rumbleLen = 1.6;
+		const rumble = ctx.createBuffer(1, Math.floor(rate * rumbleLen), rate);
+		const rd = rumble.getChannelData(0);
+		for (let i = 0; i < rd.length; i++) {
+			const u = i / rd.length;
+			// A swell rather than a decay: the rumble is loudest a tenth of a second after the crack, because
+			// that is when the reflected pressure from the ground and the walls comes back.
+			rd[i] = (Math.random() * 2 - 1) * Math.sin(Math.PI * Math.min(1, u * 1.6)) * (1 - u * 0.5);
+		}
+		const rumbleSrc = ctx.createBufferSource();
+		rumbleSrc.buffer = rumble;
+		const low = ctx.createBiquadFilter();
+		low.type = "lowpass";
+		low.frequency.setValueAtTime(420, t0 + 0.02);
+		low.frequency.exponentialRampToValueAtTime(120, t0 + rumbleLen);
+		const rumbleEnv = ctx.createGain();
+		rumbleEnv.gain.setValueAtTime(0.5, t0);
+		rumbleEnv.gain.exponentialRampToValueAtTime(0.001, t0 + rumbleLen);
+		rumbleSrc.connect(low);
+		low.connect(rumbleEnv);
+		rumbleEnv.connect(out);
+		rumbleSrc.start(t0);
+		return rumbleLen + 0.2;
 	},
 };

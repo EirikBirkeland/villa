@@ -3849,6 +3849,71 @@ export function puffCanvas(size = 128, { seed = 31, lobes = 11 } = {}) {
 }
 
 /**
+ * A puff of smoke, for the one thing in this Villa that makes a great deal of it.
+ *
+ * This is `puffCanvas` with the spray taken out and the lobes turned up: smoke is a mass with a broken edge and
+ * no droplets, and the dots that make a water crown look right make a column of smoke look like a sticker. The
+ * lobes are placed on a ring rather than at random so the edge is ragged at every scale, which is what a bill-
+ * board of smoke needs to stop looking like a plate.
+ */
+export function smokeCanvas(size = 256, { seed = 77, lobes = 17, rings = 3 } = {}) {
+	const canvas = canvasOfSize(size);
+	const ctx = context2d(canvas);
+	const rand = randomGenerator(seed);
+	ctx.clearRect(0, 0, size, size);
+	const mid = size / 2;
+	const lobe = (x, y, r, strength) => {
+		const skin = ctx.createRadialGradient(x, y, 0, x, y, r);
+		skin.addColorStop(0, `rgba(255,255,255,${strength})`);
+		skin.addColorStop(0.42, `rgba(246,246,246,${strength * 0.82})`);
+		skin.addColorStop(0.78, `rgba(228,228,228,${strength * 0.34})`);
+		skin.addColorStop(1, "rgba(0,0,0,0)");
+		ctx.fillStyle = skin;
+		ctx.beginPath();
+		ctx.arc(x, y, r, 0, Math.PI * 2);
+		ctx.fill();
+	};
+	lobe(mid, mid, mid * 0.52, 0.9);
+	for (let ring = 1; ring <= rings; ring++) {
+		const out = mid * (0.16 + ring * 0.13);
+		const count = Math.max(3, Math.round(lobes * (ring / rings)));
+		const turn = rand() * Math.PI * 2;
+		for (let i = 0; i < count; i++) {
+			const th = turn + (i / count) * Math.PI * 2 + rand() * 0.5;
+			const r = mid * (0.1 + rand() * 0.22) * (1.25 - ring * 0.16);
+			lobe(mid + Math.cos(th) * out, mid + Math.sin(th) * out, r, 0.3 + rand() * 0.45);
+		}
+	}
+	return canvas;
+}
+
+/**
+ * The ring a blast pushes out along the ground: a band of light with nothing inside it and nothing outside it.
+ *
+ * Drawn as a band across the whole canvas rather than a circle in the middle of one, because the mesh it is
+ * painted on is a disc seen nearly edge-on: a ring drawn as a ring would be squashed to a line by the view, and
+ * a band read across a disc is a ring standing up.
+ */
+export function ringCanvas(size = 256, { thickness = 0.16, softness = 0.5 } = {}) {
+	const canvas = canvasOfSize(size);
+	const ctx = context2d(canvas);
+	ctx.clearRect(0, 0, size, size);
+	const band = ctx.createLinearGradient(0, 0, 0, size);
+	const mid = 0.5;
+	const half = thickness / 2;
+	band.addColorStop(0, "rgba(0,0,0,0)");
+	band.addColorStop(Math.max(0, mid - half), "rgba(0,0,0,0)");
+	band.addColorStop(Math.max(0, mid - half * softness), `rgba(255,255,255,${0.55})`);
+	band.addColorStop(mid, "rgba(255,255,255,0.95)");
+	band.addColorStop(Math.min(1, mid + half * softness), `rgba(255,255,255,${0.5})`);
+	band.addColorStop(Math.min(1, mid + half), "rgba(0,0,0,0)");
+	band.addColorStop(1, "rgba(0,0,0,0)");
+	ctx.fillStyle = band;
+	ctx.fillRect(0, 0, size, size);
+	return canvas;
+}
+
+/**
  * The flash at a gun's muzzle: a hot core with a handful of spikes out of it.
  *
  * A real muzzle flash is a ball of burning gas with the unburnt powder jetting out in front of it, and

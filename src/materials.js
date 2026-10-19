@@ -2,7 +2,7 @@
 // Each one is a physically based material built from a painted canvas pattern, so no surface
 // in the Villa is a single flat colour.
 
-import { texture, grassCanvas, paverCanvas, poolTileCanvas, plasterCanvas, teakCanvas, roofTileCanvas, palmBarkCanvas, palmBladeCanvas, bananaBladeCanvas, stalkCanvas, bushCanvas, bushEdgeCanvas, bushClusterCanvas, tuftAtlasCanvas, clothCanvas, cushionCanvas, copingCanvas, poolWaterCanvas, causticsCanvas, rippleCanvas, hedgeCanvas, canopyClusterCanvas, canopyAtlas, farCanopyCanvas, distanceCanvas, greyNoiseCanvas, bumpFromCanvas, timberCanvas, terracottaCanvas, rockCanvas, soilCanvas, rugCanvas, butterflyWingCanvas, cockroachCanvas, frogSkinCanvas, lilyPadCanvas, rippleRingCanvas, koiCanvas, sharkSkinCanvas, bloodCanvas, geckoSkinCanvas, royalCoinCanvas, puffCanvas, flashCanvas } from "./textures.js";
+import { texture, grassCanvas, paverCanvas, poolTileCanvas, plasterCanvas, teakCanvas, roofTileCanvas, palmBarkCanvas, palmBladeCanvas, bananaBladeCanvas, stalkCanvas, bushCanvas, bushEdgeCanvas, bushClusterCanvas, tuftAtlasCanvas, clothCanvas, cushionCanvas, copingCanvas, poolWaterCanvas, causticsCanvas, rippleCanvas, hedgeCanvas, canopyClusterCanvas, canopyAtlas, farCanopyCanvas, distanceCanvas, greyNoiseCanvas, bumpFromCanvas, timberCanvas, terracottaCanvas, rockCanvas, soilCanvas, rugCanvas, butterflyWingCanvas, cockroachCanvas, frogSkinCanvas, lilyPadCanvas, rippleRingCanvas, koiCanvas, sharkSkinCanvas, bloodCanvas, geckoSkinCanvas, royalCoinCanvas, puffCanvas, flashCanvas, smokeCanvas, ringCanvas } from "./textures.js";
 
 const { PBRMaterial, Color3, Color4, Texture, ImageProcessingConfiguration } = BABYLON;
 
@@ -1754,6 +1754,47 @@ export function createMaterials(scene) {
 		mat.disableDepthWrite = true;
 		mats[name] = mat;
 	}
+	// The rocket and what it leaves behind (`src/rocket.js`).
+	//
+	// Smoke is painted, not simulated: a column of a few dozen billboards, each one a lumpy puff on a card that
+	// turns to face the sight. It is self-lit because a cloud of hot dust a second after a blast is still glowing
+	// on the inside, and it is blended rather than added because smoke hides things — an added cloud in front of
+	// a house is a ghost, and a blended one is a wall.
+	mats.smoke = pbr(scene, "smoke", { roughness: 1, environmentalIntensity: 0 });
+	mats.smoke.disableLighting = true;
+	mats.smoke.emissiveColor = new Color3(0.34, 0.3, 0.26);
+	mats.smoke.opacityTexture = texture(scene, smokeCanvas(256, { seed: 77 }), { name: "smoke puff", scale: 1 });
+	mats.smoke.transparencyMode = 2; // blend
+	mats.smoke.backFaceCulling = false;
+	mats.smoke.disableDepthWrite = true;
+	// The heart of the blast, which is added rather than blended because it is fire and not dust, and whose
+	// emissive sits above the bloom's threshold so the one explosion in this garden glows like the lamps do.
+	mats.blastFire = pbr(scene, "blastFire", { roughness: 1, environmentalIntensity: 0 });
+	mats.blastFire.disableLighting = true;
+	mats.blastFire.emissiveColor = new Color3(2.6, 1.35, 0.42);
+	mats.blastFire.opacityTexture = texture(scene, smokeCanvas(256, { seed: 191, lobes: 13, rings: 2 }), { name: "blast fire", scale: 1 });
+	mats.blastFire.transparencyMode = 3; // add
+	mats.blastFire.backFaceCulling = false;
+	mats.blastFire.disableDepthWrite = true;
+	// The ring that runs out along the ground. Additive, because it is dust catching the light from the fire
+	// rather than a thing in itself, and it must be able to pass over a wall without leaving a mark on it.
+	mats.shockRing = pbr(scene, "shockRing", { roughness: 1, environmentalIntensity: 0 });
+	mats.shockRing.disableLighting = true;
+	mats.shockRing.emissiveColor = new Color3(1.15, 1.0, 0.78);
+	mats.shockRing.opacityTexture = texture(scene, ringCanvas(256, { thickness: 0.2, softness: 0.7 }), { name: "shock ring", scale: 1 });
+	mats.shockRing.transparencyMode = 3; // add
+	mats.shockRing.backFaceCulling = false;
+	mats.shockRing.disableDepthWrite = true;
+	// The scar left on the lawn. This one IS lit, because a scorch is the absence of light rather than a
+	// presence: it has to go dark at night along with everything else around it, or the garden has a black
+	// sticker on it until the visitor presses R.
+	mats.scorch = pbr(scene, "scorch", { roughness: 1, environmentalIntensity: 0.2 });
+	mats.scorch.albedoColor = paint([34, 26, 20]);
+	mats.scorch.opacityTexture = texture(scene, smokeCanvas(256, { seed: 313, lobes: 12, rings: 2 }), { name: "scorch", scale: 1 });
+	mats.scorch.transparencyMode = 2; // blend
+	mats.scorch.backFaceCulling = false;
+	mats.scorch.disableDepthWrite = true;
+	mats.scorch.specularIntensity = 0.1;
 	return mats;
 }
 
