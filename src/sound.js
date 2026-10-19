@@ -229,11 +229,15 @@ export function buildSound(camera) {
 				l.setPosition(p.x, p.y, p.z);
 				l.setOrientation(f.x, f.y, f.z, 0, 1, 0);
 			}
-			// And the held sounds ride with the ear. A panner is no use for sixty-two metres of water — a point
+			// And the held sounds ride with the ear. A panner is no use for thirty-four metres of water — a point
 			// source would go quiet at one end of it and loud at the other — so the gain is written from the
 			// distance to the nearest point of the watercourse instead, which is what `near` answers.
 			for (const m of murmurs) {
-				const over = Math.max(0, 1 - (m.near(p) - m.bank) / m.span);
+				// Clamped at 1 on BOTH sides. Without the upper clamp the gain keeps climbing once the ear is
+				// inside `bank` — the trickle measured 0.157 against the 0.12 it is set to, which is a sound
+				// turning itself up as you lean in, and the one kind of loudness that reaches the master's ear
+				// before the master's hand reaches `M`.
+				const over = Math.max(0, Math.min(1, 1 - (m.near(p) - m.bank) / m.span));
 				// `scale` is the other thing that can hold a bed back: an insect is not out at ten in the morning,
 				// and the day already knows how dark it is.
 				const want = m.loud * over * over * (m.scale ? m.scale() : 1);
