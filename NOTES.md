@@ -9845,3 +9845,17 @@ itself is right on both sides. What sits high in the store's rear wall is a band
 y 2.92 to 3.30 with a teak frame and mullion, and the store's fittings are deliberately left
 out of the room's lamp list — which is what I think the master is describing: the door reads
 well and the only thing that catches the eye above it is a small framed panel. NOT FIXED YET.
+
+WHERE THE HUNT STANDS AT THE END OF THE SESSION, honestly. I could not make the panel move. I
+photographed eight unmoving views several times each and counted the pixels that would not
+settle; everywhere I got 0.03 to 0.11% of the frame, and the pixels that moved were palm leaves
+and the edge of the sky. The suspects my plane-finder gave me, on inspection, are not quarrels:
+the interior linings stand 5 cm inside the wall they line, and the store's linings stand inside
+the store's walls, so the faces that match are the pressed-together faces, and the room never
+sees both. The one thing still standing is the six-light contest described above, which is a
+real defect and does change with where the visitor stands — but it moves whole walls at dusk,
+not one panel in daylight, and the owner's picture is daylight (its sky is (131,191,233)).
+
+What I need from the master to finish it: the hour of day, and roughly where they were standing.
+The picture is 2283x1729 and I can match it to no camera I own; two seconds of "I was standing by
+the pond looking back" would save an hour of guessing.
