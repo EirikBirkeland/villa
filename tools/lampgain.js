@@ -38,6 +38,15 @@ const built = await page.evaluate((m) => {
 	return { names: found.map((l) => l.name), intensity: found.map((l) => l.intensity) };
 }, MATCH);
 if (!built.names.length) { console.log(`no lamp whose name holds "${MATCH}"`); process.exit(1); }
+// Say what the instrument is looking at. Every wrong reading this tool has ever given came from a stand the
+// garden refused, or from a frame that did not contain the thing being lit — so the middle of the picture and
+// the ground low in it are named out loud before any number is worth discussing.
+const looking = await page.evaluate(() => {
+	const V = window.__villa, cv = V.engine.getRenderingCanvas();
+	const at = (x, y) => V.scene.pick(x, y)?.pickedMesh?.name || "open sky";
+	return `centre ${at(cv.width / 2, cv.height / 2)}, low ${at(cv.width / 2, cv.height * 0.85)}`;
+});
+console.log(`the sight falls on: ${looking}`);
 const flame = INTENSITY ?? Math.max(...built.intensity);
 console.log(`hour ${HOUR} at ${VIEW}`);
 console.log(`lamps ${built.names.join(", ")} — built strength ${Math.max(...built.intensity)}, testing ${flame}\n`);

@@ -10102,3 +10102,31 @@ six-light budget per material (see the festoon entry above) and the *heavy* EDIC
 shadow maps, IBL from an HDRI — all want the same kind of decision and none of them can be judged on a software
 renderer. This sandbox renders at two to six frames a second and understates MSAA, anisotropy and any ambient
 occlusion badly; a gain measured here is a floor and not an estimate.
+
+## Session eighty-four, fifth stretch (the garden lamp posts, and six things ruled out)
+
+The eight lamp posts nearest the terrace had glowing bulbs and no lamp: `tools/lamplight.js` measured six metres
+and more to the nearest burning light. I gave them real point lights — 115 units, range 6, the strength the
+pool's own fittings work out to at that height — and **not one pixel in the picture moved**. Reverted. The tools
+stay, because they are the record of what was ruled out, and the hunt would otherwise be run again:
+
+* **Not strength.** Nothing at 9, 45, 115, 400, 1150 or 4000 units. Forty times the pool fittings' worth.
+* **Not the six-light budget.** With every material forced to thirteen slots every frame (`tools/lightslots.js`,
+  and again with the boot-time raise bolted in) the frame moved by *one pixel*.
+* **Not the stand.** The camera was read back at the place asked for, and the pick named the surfaces:
+  `deckWest0/paver` at 3.9 m, `terraceFloor/teakFloor` at 4.2 m — inside range of a 6 m lamp.
+* **Not a stale frame.** At the same stand the sun put out took the mean 17.58 → 16.18, the sun at 60 lifted it
+  to 48.19, and painting the paving red lifted it to 44.71. The picture answers; it just will not answer to
+  these lamps.
+* **Not the place.** The decisive test (`tools/probelamp.js` does a cousin of it): the back-door lantern light
+  that *does* work, taken as it stands and moved to the lamp post's position, lifted that frame from **17.58 to
+  41.17** and the pixels over L60 from **5.3% to 24.8%**. Same light object, new place, immediate effect.
+* **Not build time either, apparently.** A lamp created in the page in front of you — after everything is
+  compiled, nothing else touched — is inert at every strength too.
+
+So whether a point light reaches the garden depends on *something about the light*, not on where it is, how
+strong it is, or how many slots the material has. The missing observation is small and specific, and whoever
+takes this up should begin with it: **ask Babylon, at that stand, whether `deckWest0`'s own `lightSources`
+list contains `lampPostLight-6.9`.** If the light is in the mesh's list and still paints nothing, the fault is
+in the compiled effect; if it is not in the list, the fault is in the selection and the six-slot ceiling is
+still guilty after all. Two more hours should not be spent before that question is answered.
