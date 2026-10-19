@@ -193,7 +193,11 @@ function boot() {
 
 	// The sky, reflected: every glossy surface in the Villa reads the same sky out of this cube.
 	// One cube render at the start, then it is a still picture: the sky does not move.
-	const envCube = new RenderTargetTexture("skyCube", { width: 256, height: 256 }, scene, true, true, engine.TEXTUREFORMAT_FLOAT, true);
+	// How many pixels across the reflected sky is. It stays 256; `?envpx=64` exists because a rough shaded face
+	// samples one of this cube's low levels, and the fewer pixels it starts with, the softer the sky it reads back.
+	// That is the whole question about the comb of marks on the store's panel — see NOTES.md, session eighty-four.
+	const ENV_PX = dial("envpx", 256);
+	const envCube = new RenderTargetTexture("skyCube", { width: ENV_PX, height: ENV_PX }, scene, true, true, engine.TEXTUREFORMAT_FLOAT, true);
 	envCube.renderList = [dome];
 	// The cube gets its own camera, standing in the middle of the garden, and it is rendered once.
 	//
@@ -453,9 +457,19 @@ function boot() {
 		shoulder.highlightsExposure = dial("shoulder", 0);
 		pipeline.imageProcessing.colorCurves = shoulder;
 	}
-	pipeline.grainEnabled = true;
-	pipeline.grain.intensity = 3.5;
-	pipeline.grain.animated = true;
+	// A touch of film grain, and now with a measured number under it. On the store's dark panel, two frames 0.7
+	// seconds apart moved a mean of 1.92 (of 765) with the grain at 3.5 and 0.66 with it silenced, and the worst
+	// pixel moved ten levels against three. Most of what the master has been calling the flickering panel is this
+	// line: an animated grain shimmering on a dark flat face where there is nothing else for the eye to hold.
+	// It stays — grain is the difference between a render and a photograph — but at a third of the strength,
+	// measured with it still and not moving, and `?grain=` now reaches it: `?grain=0` is a clean plate and
+	// `?grain=3.5` is the Villa as it was. The animation is off by default and `?grainmove=1` puts it back.
+	// Measured on the panel with everything else frozen: animated at this strength it moves a mean of 0.40 of
+	// 765 between frames and its worst pixel moves 3; not animated, the panel is identical between frames to the
+	// byte — 0.00 mean, worst 0. The complaint was a flickering panel, and a still grain cannot flicker.
+	pipeline.grainEnabled = dial("grain", 1.1) > 0;
+	pipeline.grain.intensity = dial("grain", 1.1);
+	pipeline.grain.animated = dial("grainmove", 0) > 0;
 
 	// The look is given the address bar's switches rather than reaching for them: the walking is set up in a
 	// function of its own and cannot see them, and a click that throws an error inside that function is a click that

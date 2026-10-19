@@ -10423,3 +10423,30 @@ The price, measured rather than guessed:
 If the master prefers a gentler cut, it is one number: `fillNow = 1 - 0.5 * w` in `src/daylight.js`. At `0.35` the
 room keeps more of its light and the panel keeps more of its marks; the two move together and there is no way to
 have one without the other until the sky itself is convolved properly.
+
+## Session eighty-four, thirteenth stretch: the flickering panel flickers because of the film grain
+
+I would not let the v0.100.0 claim stand. The numbers said the panel's marks were largely cured and **the eye said
+they were not** — at high resolution the hard diagonal and the comb of level marks are still there. So the number
+I had been trusting was measuring the hardness of steps, not the pattern, and "came free from the fill" was an
+overclaim. It is corrected here and in the next release's changelog rather than papered over.
+
+Then I hunted the cause again, and killed more suspects with numbers: the environment cube's resolution (32, 64
+and 256 pixels give the panel to within 0.7 of a point and 0.01% of the steps), specular environment
+(`reflectionIntensity = 0`: no change at all), fog (switched off: byte for byte the same picture), and geometry —
+`storeWallNorthPart1` turns out to be one box, 24 vertices, 12 triangles, six axis-aligned normals, 2.00 m by
+2.42 m by 0.16 m, so no amount of shading on it should vary across its face at all. The environment is only part
+of the story too: switching it off takes the panel's mean from 47.5 to 20.4 but its row swing only from 29.8 to
+20.8.
+
+**What actually flickers is the film grain.** The pipeline carried `grain.intensity = 3.5` with `animated = true`,
+and `?grain=0` never reached it — the switch sat in the help text and did nothing, so no visitor could ever have
+turned it off. Measured on the panel, two frames apart, with the grain at 3.5: a mean of 1.92 of 765 and the worst
+pixel moving ten levels; with the grain silenced: 0.66 and three. On a dark flat face with nothing else for the eye
+to hold, an animated grain *is* a flickering panel.
+
+Now: `grain.intensity` is 1.1 and **the grain is not animated by default**, with `?grain=` reaching the number and
+`?grainmove=1` putting the motion back for anyone who wants it. Measured in place under `still=1`, the panel is
+identical between frames — mean 0.00, worst 0 — while the still picture keeps its grain. The remaining marks (the
+diagonal and the comb) are the un-convolved sky cube's diffuse light and are for the HDRI, which is still the right
+cure and still not done.
