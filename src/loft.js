@@ -57,8 +57,16 @@ export function along(keys, t) {
  * the tube, its edges falling on ring lines. The shark's mouth is made this way (`src/shark.js`): a mouth is
  * a hole in an animal, and anything less than actually taking the skin out is a mouth painted on a closed
  * one. Whatever the hole reveals is up to the caller; the shark puts a dark tube inside it.
+ *
+ * `nose` pushes the snout cap that far FORWARD of the last ring. Without it an end is closed with a flat
+ * disc, which is right for a tail stalk and wrong for a head: a carp's head is a blunt dome, and a blunt
+ * dome needs the cap drawn out in front of the ring it is closing.
+ *
+ * `capStart` and `capEnd`, either of them `false`, leave that end of the tube OPEN. A tube whose end is
+ * buried inside the next tube along wants that: a buried cap is a flat disc whose rim can prick through the
+ * skin it is buried in.
  */
-export function loft(scene, name, mat, { long, wide, deep, from, to, rings = 20, girth = 11, flank, dorsal, belly, cut = null }) {
+export function loft(scene, name, mat, { long, wide, deep, from, to, rings = 20, girth = 11, flank, dorsal, belly, cut = null, nose = 0, capStart = true, capEnd = true }) {
 	const positions = [];
 	const uvs = [];
 	const indices = [];
@@ -103,7 +111,14 @@ export function loft(scene, name, mat, { long, wide, deep, from, to, rings = 20,
 	}
 	// The two caps: a fan from each end ring out to a point on the axis. The snout is a real end; the tail
 	// end is where the caudal fin starts and the cap keeps it closed when the tail beats across it.
+	//
+	// An end that is buried inside the next tube along is NOT a real end, and capping it is a mistake: the
+	// disc's rim pricks through the neighbour's skin whenever the two tubes are not running exactly together,
+	// and the fish is then barbed with a bright line across its middle at every joint it bends at
+	// (`pictures/tmp-koi-front.png`). `capStart` and `capEnd` leave such an end open.
 	for (const end of ["start", "end"]) {
+		if (end === "start" && !capStart) continue;
+		if (end === "end" && !capEnd) continue;
 		const base = end === "start" ? 0 : (loop.length - 1) * girth;
 		const i = end === "start" ? 0 : loop.length - 1;
 		// A cap is only put on a ring that is whole. A cut ring would otherwise fan out over the hole it made.
@@ -112,8 +127,8 @@ export function loft(scene, name, mat, { long, wide, deep, from, to, rings = 20,
 			for (let j = 0; j < girth; j++) if (gone(i, j)) holed = true;
 			if (holed) continue;
 		}
-		const z = positions[base * 3 + 2];
 		const forward = end === "end";
+		const z = positions[base * 3 + 2] + (forward ? nose : 0);
 		const centre = positions.length / 3;
 		positions.push(0, 0, z);
 		uvs.push(forward ? 1 : 0, 0.5);

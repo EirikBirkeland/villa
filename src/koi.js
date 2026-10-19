@@ -61,24 +61,51 @@ const KOI = [
 ];
 
 // The loft: how many rings along the fish and how many stations round it. Twenty-one rings is one every
-// 2 cm of a 40 cm fish — enough that a bent fish is not a bent hexagon — and eleven round is enough for an
-// oval with no flat in it while staying cheap enough for four fish.
+// 2 cm of a 40 cm fish — enough that a bent fish is not a bent hexagon — and thirteen round is what it takes
+// for an oval with no flat in it along the broad flank, while staying cheap enough for four fish.
 const RINGS = 20;
-const GIRTH = 11;
+const GIRTH = 13;
 
 // The girth tables. `t` runs from the tail tip (0) to the snout (1). FLANK is how far the side stands out
 // as a fraction of the fish's full width — so half of it is half the fish across — and DORSAL and BELLY
-// are how far the back rises and the belly hangs, as fractions of the full depth. A carp is deepest about
-// where the dorsal begins and comes to a stalk behind that: the tail is a paddle on a handle, not a
-// continuation of the loaf, and the handle is what the tail beats.
+// are how far the back rises and the belly hangs, as fractions of the full depth.
+//
+// Read them from the tail forwards, because that is how a carp is built: a handle, then the loaf, then the
+// head. The HANDLE is what the tail beats and it is thin side to side but carries its depth; the LOAF is
+// broadest and deepest a little before the middle, just where the dorsal stands; and the HEAD is broad and
+// blunt and only eases away at the very snout.
+//
+// Two faults these numbers are walking between, both found by looking at a picture and not at a number.
+//
+// Tapered at both ends, the fish is an eye-shape, a leaf, a squid with its tentacles taken off
+// (`pictures/koi-before-top.png`). Two pointed ends never read as a fish at three metres, however well the
+// tail beats.
+//
+// Blunt the other way — head the widest and deepest thing about it, tapering away behind — and it is a
+// sperm whale (`pictures/tmp-koi-front.png`): a cachalot is a block of a head with a tail stuck on the
+// back, and a carp is the opposite, widest over the shoulders and with a head flattened on top. So the
+// peak of every table sits before the head, the head comes a step below it, and the snout is rounded by
+// `nose` in the loft rather than by width.
+//
+// And the head holds itself for a while and then stops: broad and flat across the crown from behind the eye
+// to the front, and dropping off in the last tenth where the mouth hangs. Tapered gradually from the nape to
+// the tip — which is what these numbers did next — the same animal is a dolphin with fins on it
+// (`pictures/tmp-koi-live2-f4.png`): a carp's head is a plateau with a cliff at the end of it, not a beak.
 const FLANK = [
-	[0, 0.05], [0.1, 0.13], [0.24, 0.32], [0.4, 0.47], [0.56, 0.5], [0.7, 0.44], [0.82, 0.34], [0.92, 0.17], [1, 0.04],
+	[0, 0.06], [0.1, 0.11], [0.22, 0.22], [0.36, 0.4], [0.5, 0.52], [0.62, 0.56],
+	[0.72, 0.54], [0.82, 0.48], [0.92, 0.4], [1, 0.2],
 ];
+// The back is where the carp's whole character is, and it is an ARCH and not a level road. The nape — the
+// shoulder behind the head — is the highest thing on the fish, and the back falls away both ways from
+// there: down the slope of the head to the mouth, and down the handle to the tail. Level from end to end,
+// with the head as deep as the loaf, the animal is a cachalot; this arch is what makes it a carp.
 const DORSAL = [
-	[0, 0.05], [0.12, 0.24], [0.3, 0.42], [0.46, 0.5], [0.62, 0.47], [0.76, 0.38], [0.88, 0.22], [1, 0.05],
+	[0, 0.06], [0.14, 0.2], [0.3, 0.28], [0.46, 0.42], [0.6, 0.5], [0.72, 0.5],
+	[0.84, 0.44], [0.94, 0.3], [1, 0.1],
 ];
 const BELLY = [
-	[0, 0.05], [0.12, 0.28], [0.3, 0.45], [0.46, 0.5], [0.62, 0.46], [0.76, 0.36], [0.88, 0.2], [1, 0.04],
+	[0, 0.05], [0.14, 0.18], [0.3, 0.34], [0.46, 0.42], [0.6, 0.4], [0.72, 0.34],
+	[0.84, 0.3], [0.94, 0.2], [1, 0.09],
 ];
 
 
@@ -91,12 +118,12 @@ const BELLY = [
  */
 function makeKoi(scene, mats, { tag, spec, pond }) {
 	const long = spec.long;
-	// A carp's proportions, all of them off the one measure: about a quarter of its length across the flanks
-	// and just under a third deep. The first pass had 0.30 and 0.34 and a browser said what that was — a fat
-	// grub with a sail on the end, and no head to speak of (`pictures/tmp-koi-big.png`). What a koi seen
-	// from above actually is: a long bolt that swells behind the pectorals and comes to a stalk behind.
-	const wide = long * 0.24;
-	const deep = long * 0.3;
+	// A carp's proportions, all of them off the one measure: about a third of its length deep through the
+	// loaf, and a shade under a third through the shoulders and the head, which are the widest thing about
+	// it. The first pass had 0.30 and 0.34 and a browser said what that was — a fat grub with a sail on the
+	// end, and no head to speak of (`pictures/tmp-koi-big.png`).
+	const wide = long * 0.21;
+	const deep = long * 0.27;
 	const n = (what) => `koi${tag}${what}`;
 	const mat = mats[spec.mat];
 
@@ -114,47 +141,106 @@ function makeKoi(scene, mats, { tag, spec, pond }) {
 
 	// The three lofts run a little past the bend each one is hung from, so they overlap: two tubes meeting
 	// at an angle leave a notch in each other, and the notch is right where the fish bends most. Overlapping
-	// costs a few triangles and hides the join however the segments are turned.
-	loft(scene, n("Fore"), mat, { long, wide, deep, from: 0.56, to: 1, rings: RINGS, girth: GIRTH, flank: FLANK, dorsal: DORSAL, belly: BELLY }).parent = fore;
-	loft(scene, n("Mid"), mat, { long, wide, deep, from: 0.28, to: 0.64, rings: RINGS, girth: GIRTH, flank: FLANK, dorsal: DORSAL, belly: BELLY }).parent = mid;
-	loft(scene, n("Rear"), mat, { long, wide, deep, from: 0, to: 0.34, rings: RINGS, girth: GIRTH, flank: FLANK, dorsal: DORSAL, belly: BELLY }).parent = rear;
+	// costs a few triangles and hides the join however the segments are turned. `nose` draws the snout cap
+	// forward of the last ring, so the front end is a blunt dome and not a cut off the end of a tube. The
+	// ends that are buried in the next tube along are left OPEN: capped, their rim shows through the skin.
+	loft(scene, n("Fore"), mat, { long, wide, deep, from: 0.54, to: 1, nose: long * 0.03, capStart: false, rings: RINGS, girth: GIRTH, flank: FLANK, dorsal: DORSAL, belly: BELLY }).parent = fore;
+	loft(scene, n("Mid"), mat, { long, wide, deep, from: 0.26, to: 0.68, capStart: false, capEnd: false, rings: RINGS, girth: GIRTH, flank: FLANK, dorsal: DORSAL, belly: BELLY }).parent = mid;
+	loft(scene, n("Rear"), mat, { long, wide, deep, from: 0, to: 0.38, capEnd: false, rings: RINGS, girth: GIRTH, flank: FLANK, dorsal: DORSAL, belly: BELLY }).parent = rear;
 
-	// The caudal fin: a forked fan on the stalk, its two lobes swept back. It is set on a node of its own
-	// at the tail tip so `swim` can swing it further than the body can go without tearing the loft.
+	// Where the skin of the fish is at any place along it, which is what the fins have to be hung from. Both
+	// read the same tables the body is lofted with, so a fin can never be buried in the flesh again — and one
+	// of them was: see the dorsal below.
+	const backAt = (t) => along(DORSAL, t) * deep;
+	const sideAt = (t) => along(FLANK, t) * wide;
+	// Along-position, in the frame of whichever segment a piece is hung from. The three segments are bent
+	// about their own nodes at t = 0.6, 0.3 and 0, so a station told in `t` has to be stated relative to the
+	// node it hangs on: measure from the wrong one and the fin is thirty centimetres down the fish from where
+	// it was meant to be, out in the water behind the tail (`pictures/tmp-koi-live.png`).
+	const z = (t) => (t - 0.6) * long; // fore
+	const zm = (t) => (t - 0.3) * long; // mid
+	const zr = (t) => t * long; // rear, whose node stands at the tail tip
+
+	// The caudal fin: a forked fan on the handle, its two lobes swept back. It is set on a node of its own at
+	// the tail tip so `swim` can swing it further than the body can go without tearing the loft — and the fin
+	// is a CHILD of that node, which it was not: the fish beat a tail that was not attached to it, and the
+	// fin itself lay out in the garden at the world's origin, never seen by anyone
+	// (`pictures/tmp-koi-measure.png`, which lists where every piece stands and had no `TailFin` in it).
+	// It is the
+	// largest fin by a good way — as deep as the fish is tall at the stalk, which is what a carp's tail is —
+	// because the swing of a big fan is the one movement that says fish across a pond. The last station comes
+	// forward again, and that is the fork: without it the fan is a paddle and the fish is a tadpole. Between
+	// the tip of a lobe and the fork the edge is drawn in, not straight across: a carp's tail has a swept,
+	// rounded trailing edge, and a straight one is a triangle of card on a stick
+	// (`pictures/tmp-koi-side5.png`).
+	//
+	// The first station is FORWARD of the tail tip, buried in the stalk. Started at the tip itself, the fan
+	// was joined to the fish by a sliver of membrane and floated behind it like a flag on a pole
+	// (`pictures/tmp-koi-front.png`); run its root inside the animal and it grows out of the fish instead of
+	// hanging off the end of it.
 	const tailNode = new TransformNode(n("Tail"), scene);
 	tailNode.parent = rear;
 	fin(scene, n("TailFin"), mats.koiFin, [
-		{ a: [0, deep * 0.05], b: [0, -deep * 0.05] },
-		{ a: [-long * 0.08, deep * 0.13], b: [-long * 0.08, -deep * 0.13] },
-		{ a: [-long * 0.17, deep * 0.26], b: [-long * 0.17, -deep * 0.26] },
-		{ a: [-long * 0.24, deep * 0.32], b: [-long * 0.24, -deep * 0.32] },
-	]);
+		{ a: [long * 0.035, deep * 0.1], b: [long * 0.035, -deep * 0.1] },
+		{ a: [-long * 0.05, deep * 0.26], b: [-long * 0.05, -deep * 0.26] },
+		{ a: [-long * 0.13, deep * 0.46], b: [-long * 0.13, -deep * 0.46] },
+		{ a: [-long * 0.15, deep * 0.38], b: [-long * 0.15, -deep * 0.38] },
+		{ a: [-long * 0.09, deep * 0.22], b: [-long * 0.09, -deep * 0.22] },
+	]).parent = tailNode;
 
-	// The dorsal: a small sail set well back — a carp's dorsal is short and stands over the midsection, and
-	// a long one along the back is a different fish entirely. Its bottom edge is sunk a little into the back
-	// so no gap shows where the two meet, whichever way the fish bends.
-	const z = (t) => (t - 0.6) * long;
+	// The dorsal: a sail over the deepest part of the loaf, standing OUT of the back.
+	//
+	// It used to be drawn with its top at seven hundredths of the body depth, which on a half-metre fish is
+	// 1.2 cm — where the back itself is 6 to 7 cm above the fish's own middle. The fin was the whole way
+	// inside the fish and the animal wore no dorsal at all, and a fish with nothing standing up off it is a
+	// sausage, however good its tail is (`pictures/koi-before-top.png`). So the sail hangs off `backAt`: its
+	// lower edge sunk into the flesh so no gap shows however the fish bends, its top two centimetres clear.
+	const sail = (t, over) => [z(t), backAt(t) + over];
+	const sunk = (t) => [z(t), backAt(t) - deep * 0.12];
 	fin(scene, n("Dorsal"), mats.koiFin, [
-		{ a: [z(0.62), deep * 0.01], b: [z(0.62), -deep * 0.08] },
-		{ a: [z(0.69), deep * 0.07], b: [z(0.69), -deep * 0.08] },
-		{ a: [z(0.77), deep * 0.075], b: [z(0.77), -deep * 0.08] },
-		{ a: [z(0.84), deep * 0.04], b: [z(0.84), -deep * 0.08] },
+		{ a: sail(0.54, deep * 0.01), b: sunk(0.54) },
+		{ a: sail(0.61, deep * 0.16), b: sunk(0.61) },
+		{ a: sail(0.69, deep * 0.26), b: sunk(0.69) },
+		{ a: sail(0.76, deep * 0.2), b: sunk(0.76) },
+		{ a: sail(0.81, deep * 0.06), b: sunk(0.81) },
 	]).parent = fore;
 
-	// The pectorals: a paddle behind each gill, laid back against the flank rather than stuck out: a koi
-	// cruising holds them close and only spreads them to steer and to hold a place. Stuck out at half a
-	// right angle they read as arms, which is the last thing a fish wants.
+	// The ventrals and the anal: the two small fins under the belly and the one under the tail. From the bank
+	// they are never seen — the fish is between them and the sky — but a koi that rolls at the feeding place
+	// shows its underside, and an underside with nothing on it is the underside of a submarine. Three flat
+	// sheets, sixty-odd triangles between them.
+	for (const side of [1, -1]) {
+		const node = new TransformNode(n(`Ventral${side}`), scene);
+		node.parent = mid;
+		node.position.set(side * sideAt(0.5) * 0.55, -along(BELLY, 0.5) * deep * 0.75, zm(0.5));
+		fin(scene, n(`VentralFin${side}`), mats.koiFin, [
+			{ a: [long * 0.02, side * wide * 0.02], b: [-long * 0.015, side * wide * 0.02] },
+			{ a: [-long * 0.03, side * wide * 0.16], b: [-long * 0.06, side * wide * 0.13] },
+		], "x").parent = node;
+	}
+	fin(scene, n("Anal"), mats.koiFin, [
+		{ a: [zr(0.24), -along(BELLY, 0.24) * deep + deep * 0.06], b: [zr(0.24), -along(BELLY, 0.24) * deep - deep * 0.1] },
+		{ a: [zr(0.15), -along(BELLY, 0.15) * deep - deep * 0.05], b: [zr(0.15), -along(BELLY, 0.15) * deep - deep * 0.14] },
+	]).parent = rear;
+
+	// The pectorals: a fan behind each gill, laid back along the flank rather than stuck out. Two things were
+	// wrong with the first pair: they were rooted six centimetres inside the flank and they were two
+	// centimetres long, so all that showed was a nub; and they were held at sixty-odd degrees of droop, which
+	// reads as a pair of arms. They now start on the flank itself, reach a fifth of the fish's width clear of
+	// it, and lie back — which is the two pale fans a koi at the surface shows from above, and one of the
+	// things that says fish rather than flipper. A koi cruising holds them close and only spreads them to
+	// steer and to hold a place.
 	const pects = [];
 	for (const side of [1, -1]) {
 		const node = new TransformNode(n(`Pec${side}`), scene);
 		node.parent = fore;
-		node.position.set(side * along(FLANK, 0.72) * wide * 0.8, -deep * 0.14, z(0.72));
-		node.rotation.z = side * 1.15;
-		node.rotation.y = side * 0.5;
+		node.position.set(side * sideAt(0.76), -deep * 0.12, z(0.76));
+		node.rotation.z = side * 0.3;
+		node.rotation.y = side * 0.62;
 		fin(scene, n(`PecFin${side}`), mats.koiFin, [
-			{ a: [long * 0.04, 0], b: [-long * 0.02, 0] },
-			{ a: [0.0, wide * 0.11], b: [-long * 0.05, wide * 0.1] },
-			{ a: [-long * 0.03, wide * 0.15], b: [-long * 0.07, wide * 0.11], },
+			{ a: [long * 0.025, 0], b: [-long * 0.02, 0] },
+			{ a: [0, wide * 0.26], b: [-long * 0.045, wide * 0.22] },
+			{ a: [-long * 0.045, wide * 0.4], b: [-long * 0.09, wide * 0.3] },
 		], "x").parent = node;
 		pects.push({ node, side });
 	}
@@ -171,6 +257,19 @@ function makeKoi(scene, mats, { tag, spec, pond }) {
 			mat: mats.koiEye, parent: fore, tile: 0.01,
 		});
 	}
+
+	// The mouth: a carp's is a short tube at the very front of the head, pointing down and forwards, and
+	// ordinarily shut. It is modelled and not painted because a painted line on a curved snout is a smudge at
+	// three metres, whereas this is a flat bar the width of the mouth on the front of the head: a fish coming
+	// at you or sliding past you then has a front end, and not a boiled egg with eyes.
+	//
+	// Kept flat and hardly proud of the snout. Set out as a knob it is a jawbone, and a blunt head with a
+	// jawbone on it is a sperm whale (`pictures/tmp-koi-front.png`).
+	sphere(scene, n("Mouth"), {
+		diameterX: wide * 0.3, diameterY: deep * 0.1, diameterZ: long * 0.028,
+		segments: 6, px: 0, py: -deep * 0.02, pz: z(1) + long * 0.004,
+		mat: mats.koiEye, parent: fore, tile: 0.01,
+	});
 
 	const rand = randomGenerator(spec.seed);
 	return {
@@ -363,8 +462,9 @@ function swim(k, time, delta) {
 	k.tailNode.rotation.y = 0.34 * amp * Math.sin(k.phase - 2.8);
 	for (const { node, side } of k.pects) {
 		// The pectorals row: not in time with the tail, at about a third of its rate, because they are for
-		// going slow and for holding a place rather than for going anywhere. They stay near the flank.
-		node.rotation.z = side * (1.15 + 0.14 * Math.sin(k.phase * 0.34 + side));
+		// going slow and for holding a place rather than for going anywhere. The base is the angle they are
+		// hung at and the row is a seventh of it, so they stay near the flank.
+		node.rotation.z = side * (0.3 + 0.16 * Math.sin(k.phase * 0.34 + side));
 	}
 
 	// The swell. Only when the back is really near the surface and the animal is really moving, and no more

@@ -33,6 +33,9 @@ Feature request:
 - Add fruit trees: a mango or banana tree whose fruit ripens, drops, and can be picked.
 - Add visitors at dawn: a monk on his alms round passing the gate, or a vendor's cart on the road outside the wall.
 
+Fix first: the dark panel inside the grey frame on the side of the house flickers. It has been glitchy for a very long time. Picture: `owner-flickering-wall.png`.
+Fix first: the exterior door looks fine from outside, but from inside it looks like a window: a small wooden shuttered panel high up on the wall.
+
 Current focus: graphical fidelity, across the board. The Villa is viewed on an RTX 5090, so render for that, not for a weak laptop.
 - First the simple settings, one at a time, checking each in a screenshot: antialiasing on the engine, rendering at the screen's full pixel ratio, anisotropic filtering at 16 on the ground and wall textures, and a `DefaultRenderingPipeline` with 4x MSAA, FXAA, ACES tone mapping and sensible exposure and contrast.
 - Then the heavier effects: ambient occlusion (SSAO2), soft shadows with larger shadow maps, bloom on the lamps and string lights, and image-based lighting from a Poly Haven HDRI.
