@@ -6,6 +6,15 @@ import { randomGenerator, noiseField, ridgeField, bumpFromField } from "./noise.
 
 const { DynamicTexture, Texture } = BABYLON;
 
+// How hard textures are filtered where they run away from the eye. Sixteen is what the master asked for;
+// `?aniso=` is there so the claim can be measured and not asserted — see `tools/grazing.js`, and the note on
+// `anisotropicFilteringLevel` inside `texture()` below.
+const ANISOTROPY = (() => {
+	const asked = new URLSearchParams(window.location.search).get("aniso");
+	const n = asked === null ? 16 : Number(asked);
+	return Number.isFinite(n) && n >= 1 ? Math.min(16, Math.round(n)) : 16;
+})();
+
 /**
  * Wraps a painted canvas into a repeating Babylon texture.
  *
@@ -32,7 +41,13 @@ export function texture(scene, canvas, { name = "pattern", scale = 1, gamma = tr
 	tex.uScale = scale;
 	tex.vScale = scale;
 	tex.gammaSpace = gamma;
-	tex.anisotropicFilteringLevel = 8;
+	// Sixteen, which is what the master asked for and what a driver will usually give. Anisotropic filtering is
+	// the only sharpness dial that costs no colour: it stops a texture being averaged into porridge when it is
+	// seen at a graze — the lawn at the far side of the court, the plaster seen along its face, the mosaic
+	// courses under the pool's film (see the long note by the pool joint in this file). `?aniso=` is there so
+	// the claim can be measured rather than asserted — `tools/grazing.js` reads the grain of the ground at a low
+	// stand with this at 1, 4, 8 and 16 — and past sixteen the driver clamps it in any case.
+	tex.anisotropicFilteringLevel = ANISOTROPY;
 	return tex;
 }
 

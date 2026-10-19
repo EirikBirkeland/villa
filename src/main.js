@@ -360,6 +360,13 @@ function boot() {
 	// steadier for one compositing pass fewer.
 	const pipeline = new DefaultRenderingPipeline("post", true, scene, [camera]);
 	pipeline.fxaaEnabled = true;
+	// Four samples of multisampling on top of FXAA, which is what the master asked for and which is not a
+	// doubling of the same work: MSAA smooths the geometry edges while they are still triangles, and FXAA
+	// smooths what the post chain draws afterwards — the bloom's edge, the tone-mapped skyline, and anything
+	// the hardware refuses multisampling for. `?msaa=1` puts it back to a single sample, which is how the
+	// staircase count in `tools/jaggies.js` was measured either way. The Villa is built for a card with room
+	// to spare and not for a software renderer, so the cost is paid where there is money.
+	pipeline.samples = Math.max(1, dial("msaa", 4));
 	pipeline.bloomEnabled = true;
 	// The bloom used to start at 1.0, which in this scene is no threshold at all: a sunlit face here is
 	// between 1.5 and 4 in raw light (back a sunlit plaster fascia through `tools/backlight.js` and it
