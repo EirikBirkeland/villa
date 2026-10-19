@@ -9703,3 +9703,82 @@ fins and eyes and `src/loft.js` — because `release.sh` copies the whole `src/`
 **What is left, in the order I would do it:** the watercourse and its veil have no mirror of their own (the pool
 has `poolCube`); the raven still has no coin on the ground under it; the dawn chorus and the cicada are still
 synthesised; and the trickle's recording stands or falls on the master's ear, which has not been heard yet.
+
+
+## Session eighty: the raven's coins come in from the cold, and metal turns out never to have been metal
+
+Released as **v0.98.2** (the night taking back its light, finished) and **v0.98.3** (the raven's coins and the
+metals).
+
+**Finished the night glow.** The last of it was the leaves. `src/daylight.js` now remembers each borrowed daylight
+material's own `emissiveIntensity` at boot and writes `at * (1 - amount * night)` every frame, in the same place it
+already rides the pool's water and the mirrors. Water, damp earth and the veil go down to about a tenth, because
+they have no lamps. `amount` for the ten leaf materials was set from a picture and not from a theory: at 0.78 the
+leaves went to (13,35,3) and the whole night view went 22% pure black — a black picture with some green in it — so
+it came down to 0.62, which leaves palm at (16,44,4) clearly a different colour from lawn at (4,21,6) under the
+moon, and 20.9% black, which is what v0.98.1 already was. The pool's water is deliberately NOT in the list: two
+real electric fittings live in its far wall. Day costs nothing: at `night = 0` the multiplier is exactly 1, and the
+start view at noon is (122,130,116) both before and after.
+
+**THE RAVEN'S COINS, which is what the master asked for and what took the time.** Three of the ten places the bird
+drops from — and it can only ever be one of these ten, because the coin is put back at the same place on every later
+visit — were under water or inside the house: `(-4.5, 15.4)` and `(4.5, 15.4)` are in the pool and `(-5.8, 12.4)`
+stands inside a room. Two more, `(2.6, 9.6)` and `(3.4, 11.2)`, are under a lounger, since `src/props.js` places
+loungers on that arithmetic and the list had not been told. The raven was paying out treasure into the deep end.
+`tools/dropcheck.js` now weighs all ten — walkable, out of doors, and what material it lands on — and three of the
+six new places came out of `tools/dropfind.js`, which sweeps the ground and keeps only what is flat, clear of every
+blocker, and not already claimed by a lounger, a table, a planter, the shark's railed deck or the water.
+
+And the coins were buried. A coin is 26 mm across and lies on its edge, so its rim reaches 13 mm above its centre;
+it was laid with its centre four millimetres over the ground, which is nine millimetres of gold under the paving and
+a sliver above. `src/raven.js` now lifts a coin by its own radius, and by `cos` of its lean, because a coin tipping
+over reaches lower than an upright one: measured, the centre stands 18–20 mm over the paving where it was 4 mm.
+
+**METAL HAD NEVER BEEN METAL, and this is the one to come back to.** `pbr()` in `src/materials.js` writes
+`mat.metalness`. The library's property is `metallic`. Every call site passes `metalness:` and every one of them has
+been writing a property nothing reads, so the gold, the brass, the gun's steel, the lanterns' dark iron and the
+raven's feather and sheen — six materials — have rendered as painted plaster since the first release. This is now
+fixed where metal is asked for, and *only* there, for a measured reason: `metallic` ships as `null`, and null is not
+zero. Setting `metallic = 0` on every material — which is what the naive fix does to the other several hundred —
+lifted the start view's mean from **130.1 to 188.7** across three identical runs each, and turned the lawn from
+(62,105,79) to **(132,219,73)**: 73% of the frame moved by more than 90 points (`/tmp/m-off.png`, `/tmp/m-on.png`,
+`/tmp/m-restricted.png`). Every colour in this Villa has been matched to photographs under the shading it has always
+had. That is a change for the master's eye, with the garden on the screen, and not something to slip in beside a
+coin — so it is written here instead, and the metals alone were changed, which moved 0.44% of the frame and left the
+mean at 129.9 against 130.1.
+
+**The coin is photographed at last**, and the tool says so in the picture's own pixels rather than by assertion.
+`pictures/s111-raven-coin.png`: nine pixels across at the middle of the frame, the scene's own pick at that pixel
+answers `royalCoin`, and the drawn file paints the place **(184,148,44)** — gold. Before this session the same
+measurement gave (32,27,11), a dark brown, because the coin was painted bone-white on the theory that the metal
+would supply the colour; a metal takes its colour from what is painted on it, so `royalGold` is painted gold now.
+`pictures/s111-raven-both.png` holds the bird on the ridge and the coin on the paving together, at 15 m: the ridge
+and the ground between them span more than the sight's 28° of vertical angle from anywhere nearer.
+
+**Three ways this tool failed before it worked, all of them in its header.** Writing `camera.position` does nothing:
+the walking controller owns those numbers and rewrites them from the visitor's state; the `view=` switch on the
+address is the door, and it places the VISITOR (asked for `5.97,1.83,2.97` the camera stands at `5.97,1.74,2.97`,
+the ground plus the eye). The purse lives in `localStorage` and survives a reload — but only in the same browser
+context, and a throwaway profile starts empty. And a coin falls at 5.4 m a second of the VILLA's time while this
+sandbox draws a few frames a second, so three metres of air is many seconds of the wall clock: wait for the height
+to stop changing.
+
+**And a git lesson, learned twice in one session, so it is written twice.** Another hand's work was hanging about
+uncommitted in this folder. First mistake, earlier: `git add <my paths> && git commit` while a dirty index was
+already in place. Second mistake, this session: `git commit --only <file>`, which I reached for believing it would
+commit the hunks I had staged — it does not, it takes the WHOLE WORKING-TREE FILE and ignores the index, and so
+another hand's `koiFin` and `koiEye` lines went into a commit about gold (`84e0e02`). Nothing was lost or broken,
+and history was not rewritten. The recipe that does work: `git diff <file> > /tmp/p.patch`, split it at its `@@`
+markers in node, keep only your own hunks, `git apply --cached` that, check `git diff --cached --stat` names only
+your file and your lines, then `git commit` with no path at all.
+
+**Checked before release:** `node --check` on every source file; the start view at noon unchanged at (122,130,116);
+the metals confined to 0.44% of the frame with no black holes introduced; ten drop places all walkable and outdoors;
+the coin's own pick and colour; and the standing picture pass.
+
+**What is left, in the order I would do it:** first, the `metallic` question above, with the master looking at the
+garden; then the watercourse's and the veil's missing mirror; then the dawn chorus and the cicada, still
+synthesised.
+
+Look at: `s111-raven-coin.png`, `s111-raven-both.png`, `s109-head.png`, `s109-head2.png`,
+`s109-night-bank.png`, `s109-night-palms.png`, `releases/v0.98.3/preview.png`.
