@@ -10184,3 +10184,27 @@ behind a plasterDark point.
 Also learned the hard way: **live in-page writes to `receiveShadows` / `castShadow` do not alter the rendered
 picture in this build**, so a shadow hypothesis can only be tested in the source and measured — the same lesson
 the lamp hunt taught about `setEnabled`, one class wider.
+
+### Addendum: who paints it, and two things the instruments gave back
+
+Hiding one group at a time in one page — the experiment the paragraph above said to run — names the painter at
+once: with **`storeRoof` hidden, the diagonal and the comb both vanish** and the store's face is a clean, even,
+dark field (the picture is in the run: `/tmp/hide-roof-crop.png`, kept as `pictures/`-style evidence in
+`s84-store-panel-5m.png` for the version with the marks). `storeRoof` is one box, 24 vertices, wearing
+`plasterDark`, and it lies between this stand and the wall at a shallow angle. So the marks are on a big flat
+face seen near-edge-on, which is where plaster texture has the least to say for itself.
+
+Two checks came back clean and should not be run again:
+
+* **Mip maps are being generated.** `generateMipMaps` reads `undefined` in this build and put me on a false
+  trail; the live property is `_generateMipMaps`, and it is `true` on the Villa's canvas textures. (The
+  options-object form of `DynamicTexture` answers `false`, so leave the positional call in `src/textures.js`
+  alone.)
+* **Anisotropic filtering is not clamped in this sandbox**: `MAX_TEXTURE_MAX_ANISOTROPY_EXT` answers **16**, so
+  the aniso measurements taken today were made with the filtering actually on and are worth what they claim.
+
+The standing explanation, unproven and written as such: a flat, dark, finely-patterned face at a graze is where
+minification has to do the most work, and the plaster's fine grain (96 cells across a 1.2 m tile — a centimetre
+and a half of ground per cell) is well below a pixel at five metres. Coarsening the *broad* wash was measured
+and did not take the marks away, so if the next hand wants to try a texture remedy, the lever is the **grain**,
+not the wash, and the test is whether the marks still appear at 5 m while the face stays smooth at 2 m.
