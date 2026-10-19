@@ -106,7 +106,7 @@ The script checks the syntax, copies the walkable Villa into `releases/v<version
 - Stay inside this folder. The one exception is reading `../villa_old`, as said above.
 - Do not try to leave your sandbox.
 - Do not delete `AGENTS.md`, `EDICT.md`, `jargon.md`, `NOTES.md`, `CHANGELOG.md`, `release.sh` or `releases/`.
-- Do not ask questions. Decide, write the decision in `NOTES.md`, and continue.
+- You may ask the owner questions or tell them things whenever you want to. If no answer comes, decide, write the decision in `NOTES.md`, and continue.
 
 ## Version control
 

@@ -79,6 +79,7 @@ try {
 function boot() {
 	// Small switches, for looking at the Villa while it is being built. A visitor never sees them.
 	//   ?noshadow=1  ?noenv=1  ?nofog=1  ?float=1   turn a thing off
+	//   ?lock=0                    drag to look instead of the sight taking the mouse (a lock is the default)
 	//   ?fly=1                   start off the ground (the same key the visitor taps: space)
 	//   ?view=x,y,z,yaw,pitch   stand the visitor somewhere particular
 	//   ?roach=14             the cockroach in centimetres: 4.5 is the animal, 14 what it is shown at
@@ -431,7 +432,7 @@ function boot() {
 	// The look is given the address bar's switches rather than reaching for them: the walking is set up in a
 	// function of its own and cannot see them, and a click that throws an error inside that function is a click that
 	// does half its work and stops.
-	const walk = setupWalking(ground, { wantLock: switches.has("lock") });
+	const walk = setupWalking(ground, { wantLock: dial("lock", 1) > 0 });
 	// The ear. Until now this Villa has been stone dead silent, and a garden at ten at night is not silent.
 	// Every sound is synthesised at the moment it is asked for (`src/sound.js`) — nothing is fetched — and the
 	// browser will not let a page make a noise until a person has touched it, so the first click or key is what
@@ -702,7 +703,7 @@ function boot() {
 }
 
 /** How the visitor moves: the keys walk, the mouse looks, the ground holds them up — until they fly. */
-function setupWalking(ground, { wantLock = false } = {}) {
+function setupWalking(ground, { wantLock = true } = {}) {
 	const EYE = 1.6; // soles to eye, metres
 	const WALK = 5.5;
 	const RUN = 9.5;
@@ -760,14 +761,30 @@ function setupWalking(ground, { wantLock = false } = {}) {
 	canvas.addEventListener("pointerdown", (event) => {
 		dragging = true;
 		rebase(event);
-		// Pointer lock is OFF by default and has to be asked for with `?lock=1`. It used to be taken on the first
-		// click, which is a demand no visitor of a garden agreed to: once locked, the sight follows the mouse
-		// without a button held, the cursor disappears, and the lock is the browser's to give back — Escape, a
-		// backgrounded tab or a browser that simply tires of it all take it away again, and every one of those is
-		// a state the Villa cannot see coming. Dragging looks round is the control the plate promises, and it is
-		// the one that can be relied on to still mean the same thing after a shark, an alt-tab and a coffee.
+		// THE SIGHT TAKES THE MOUSE, AS AN FPS DOES, and that is the default. The first click on the picture asks
+		// the browser for a pointer lock: after it the sight follows the hand with no button held, which is what a
+		// person walking a garden with a shark in the pool expects. `?lock=0` puts the old drag-only control back
+		// for anyone who would rather keep their cursor.
+		//
+		// What makes a lock safe to take by default is not the lock, it is the two guards below. A lock can be
+		// taken back at any moment without asking — Escape, a backgrounded tab, a browser that simply tires of it —
+		// and the movement that arrives in the same instant as such a change is a jump of two hundred pixels, half
+		// a turn of the world aimed at the floor, at the exact moment the visitor was trying to walk somewhere. So
+		// a movement that comes too soon after another, or across a lock changing hands, is thrown away; and the
+		// drag path underneath still works, so a lost lock costs nothing but the habit of holding the button.
 		if (wantLock) {
-			canvas.setPointerCapture && canvas.setPointerCapture(event.pointerId);
+			// `setPointerCapture` throws `InvalidStateError` when the pointer is not in a state to be captured — a
+			// synthetic pointer, a pointer already gone, a second request while the browser is still deciding about
+			// the first. Measured: the Villa logged `page error: Failed to execute 'setPointerCapture'` and carried
+			// on, which is the right OUTCOME and the wrong way to get there. So it is asked for and refused in the
+			// same breath, and the lock below is what actually matters.
+			try {
+				if (canvas.setPointerCapture && canvas.hasPointerCapture && !canvas.hasPointerCapture(event.pointerId)) {
+					canvas.setPointerCapture(event.pointerId);
+				}
+			} catch (error) {
+				/* the pointer is not capturable: dragging still works, and the lock does not need it */
+			}
 			const request = canvas.requestPointerLock || canvas.webkitRequestPointerLock;
 			if (request) {
 				try {
@@ -803,11 +820,15 @@ function setupWalking(ground, { wantLock = false } = {}) {
 	window.addEventListener("pointerup", stopDrag);
 	window.addEventListener("pointercancel", stopDrag);
 	window.addEventListener("blur", stopDrag);
-	// And when a lock is lost — however it is lost, and the browser never asks — the drag is over whatever the
-	// mouse was doing a moment ago. Without this the first move after the lock is gone is a swipe across the
-	// whole garden from wherever the cursor happens to have drifted to.
-	document.addEventListener("pointerlockchange", stopDrag);
-	document.addEventListener("pointerlockerror", stopDrag);
+	// And when a lock is lost or gained — however it is lost, and the browser never asks — the drag is over
+	// whatever the mouse was doing a moment ago, and `lastMove` is zeroed so the first movement across that
+	// change is thrown away instead of being read as a swipe across the whole garden.
+	const changeHands = () => {
+		dragging = false;
+		lastMove = 0;
+	};
+	document.addEventListener("pointerlockchange", changeHands);
+	document.addEventListener("pointerlockerror", changeHands);
 
 	const forward = new Vector3(0, 0, 1);
 	const right = new Vector3(1, 0, 0);
