@@ -1,6 +1,23 @@
 # Changelog
 
 
+## 0.99.1 — 2026-07-28
+The barred-up back door is a door on the room's side too.
+
+  Out on the garden it always was: a lined recess, a teak leaf, a shadow gap. Inside the house the
+  same stretch of wall was bare plaster with a small dark framed panel hung high over it, so the door
+  you can walk round to did not exist on the face you actually look at from the room — it read as a
+  window, or as a boarded hatch. The room now gets the same recipe read from the other side: a hole in
+  the lining, a board across its back, and a leaf standing in the reveal with four centimetres of dark
+  showing all round it, with two battens and a brass catch. The panel that stood square over it hangs
+  further west now.
+
+  Measured from inside by projecting the world points and reading the picture back at them: plaster
+  L170, teak leaf L58, shadow gap L12. The gap first wore the Villa's dark metal and came back at
+  L74 to L142, metal catching every lamp in the room, so shadow gaps have a matte near-black of their
+  own now. Walked past sideways, none of it will not hold still: plaster swings 5 points, the leaf 2,
+  the gap 1 (`tools/shadowcrawl.js`, which follows the surface and not the pixel).
+
 ## 0.99.0 — 2026-07-28
 The visitor carries a flashlight now, on `F`.
 

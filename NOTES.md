@@ -9859,3 +9859,47 @@ not one panel in daylight, and the owner's picture is daylight (its sky is (131,
 What I need from the master to finish it: the hour of day, and roughly where they were standing.
 The picture is 2283x1729 and I can match it to no camera I own; two seconds of "I was standing by
 the pond looking back" would save an hour of guessing.
+
+## Session eighty-two (the back door, seen from the room, and a shadow gap that is a shadow)
+
+THE MASTER WAS RIGHT about the door and I found the fault in the geometry, not by guessing. The
+back door at x = -2.5 has NEVER been a hole — the note in villa.js says so — and on the room's side
+the wall was bare plaster, while `panelFrameWest` hung at py 2.55 square over the same metre of
+wall. So from inside: no door, and one small dark panel high up. Exactly the words in the owner
+note. Two of the house's openings were fighting over one stretch of wall.
+
+WHAT I BUILT. The room now gets the same recipe the garden sees, read from the other side: a hole
+in the interior lining (`backDoorHole`, x -3.09..-1.91, floor to 2.79), a board across its back, and
+a teak leaf standing in the middle of the reveal with four centimetres of board showing all round
+it, with two battens and a brass catch — a plain flush panel that size is what a cupboard looks
+like. The west panel moved to x = -4.7 to clear it. The east one went to 3.9 and NOT to +4.7,
+because the store's doorway cuts the wall at x 4.9..6.3; the pair is uneven and that is the wall's
+doing and not my eye for symmetry.
+
+MEASURED with `tools/interiordoor.js`, which projects the world points and reads the drawn picture
+back at them rather than trusting a screenshot: at 2.6 m and at 6 m inside the room — plaster L170,
+leaf L58, gap L12. That number was not got at once: the gap first wore `mats.darkMetal`, and metal
+being now actually metal (v0.98.3), it caught every lamp in the room and read L74..L142 — a panel,
+not a shadow. So `mats.recessShadow` exists: near-black, roughness 1, no metal, no sheen. A shadow
+gap is a shadow again.
+
+WHAT I CHECKED AND FOUND CLEAN. The room's overall mean moved 130.3 to 129.7. Nothing new blocks a
+walk (mesh.js `box()` leaves checkCollisions false, and ground.js only reads those). The outside of
+the same door was measured too — leaf L33, jamb L31, wall L53 at 17.5 h — so the metal fix did not
+brighten the garden's shadow gap and I left it alone.
+
+NEW TOOL, and the one mistake it taught me. `tools/shadowcrawl.js` walks a visitor sideways in five
+stands and reports how much each SURFACE swings. My first version compared the pixel at a fixed
+screen position between stands and reported 52.74% of the frame swinging, which was parallax and
+nothing else: move half a metre sideways and everything slides across the picture. It follows
+named world points now. On the room's back wall: plaster 5, plaster high 5, the new leaf 2, the gap
+1 — nothing will not hold still.
+
+STILL OPEN, and I want the master's camera for it. The flickering panel is still not reproduced. The
+crawl gives me a way to hunt it that I did not have: ask the owner for the two or three world points
+inside the dark panel of the owner picture and I can walk past them and see whether any of them
+swings. `garden` probe set in the tool is a starting guess; it needs real points from the picture.
+
+RELEASED v0.99.1. Its preview measures mean 112.6 against v0.99.0's 112.7, no white, no black, which
+is the start view unchanged, as it should be: the fix is inside the house and the menu picture is
+outside it.
