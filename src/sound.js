@@ -45,22 +45,19 @@ import { randomGenerator } from "./noise.js";
  * `slice` is the shortest and longest piece taken from the recording, in seconds.
  */
 const RECORDINGS = {
-	// ONE ANIMAL, croaking. This used to be a slice of a whole pond (`sounds/frogs-night.mp3`, thirty-four seconds
-	// of several hundred frogs arguing), which meant that every time one frog on a stone opened its mouth the
-	// entire pond opened with it — four animals in the garden and a wall of twenty heard. The single call is a
-	// frog and it is trimmed to sit where the chorus sat: measured at peak 0.054 against the chorus's 0.153,
-	// which is a little over a third as loud, so `trim` goes from a third to about a tenth of that again once
-	// `LEVEL.frog` is taken off, and the call lands where it was.
+	// THE FROG, exactly as the master chose it: a slice of a real pond of frogs, WIM's thirty-four seconds,
+	// started at a random moment in the argument and cut to about two seconds. This is the sound that was in
+	// v0.98.3 and it is the sound that stays.
 	//
-	// `slice` is the whole of the 1.33-second file: a croak is one thing, and taking a piece of it is taking half
-	// a word. See the raven's entry.
-	frog: { file: "sounds/frog-croak.mp3", slice: [1.33, 1.33], trim: 0.9 },
-	// The pond's own chorus, held and not called: this is the frog sound IN THE GARDEN ON ITS OWN, which is what
-	// the master asked for, and not a thing behind a key. Tropical frogs recorded at night, thirteen and a half
-	// seconds, looped at the quiet places. It comes up when the day goes out and stops when the day comes back,
-	// by `scale`, because a frog at noon is a frog in the wrong place; and it is anchored to the water, so it is
-	// loudest on the bank and dies away over the lawn. See `startBeds` in `src/main.js`.
-	frogChorus: { file: "sounds/frogs-pond.mp3", slice: [4, 9], trim: 1 },
+	// WHAT WAS TRIED AND SENT BACK, so nobody tries it again. Two recordings went in after this one: a single
+	// isolated croak (`frog-croak.mp3`) to stand for one animal, and a second, held "chorus" of tropical frogs
+	// (`frogs-pond.mp3`) looped at the water. Both are out. The master's words were "really weird sounds around
+	// the lake" and "high-pitched", and then "that sound is holy" about this one — and the ear is the instrument
+	// that matters here, as it was with the synthesised stream hiss and the borrowed crickets. My reason for
+	// changing it was that one frog opening its mouth should not bring the whole pond with it, which is a
+	// reasonable thought and the wrong answer: the Villa is not an emulator of a particular pond in Thailand,
+	// it is this garden, and the master picked this croak.
+	frog: { file: "sounds/frogs-night.mp3", slice: [1.0, 2.1], trim: 0.34 },
 	// The house gecko of this climate, recorded in the Philippines: a string of hard "tok" pulses ending in a
 	// drawn-out squeak. Short slices, because the animal says three or four syllables and no more, and trimmed
 	// hard, because a tokay recorded at the microphone is a scream and a gecko two metres up a wall is not.
@@ -115,10 +112,6 @@ export function recordingGain(buffer) {
  */
 export const LEVEL = {
 	frog: 0.5,
-	// The pond's chorus, held. Set against the calls it lies under: a single croak near the ear is the loudest
-	// thing at the bank, and the chorus behind it is the pond's size rather than a shout. Measured through
-	// `tools/ears.js` after the change, not before it.
-	frogChorus: 0.34,
 	gecko: 0.3,
 	raven: 0.6,
 	coin: 0.2,

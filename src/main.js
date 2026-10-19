@@ -483,37 +483,12 @@ function boot() {
 					span: 4.5,
 				});
 		}
-		// THE POND'S FROGS, ON THEIR OWN AND NOT ON A KEY — the master's words: take the frog off the
-		// keyboard, I want it in the garden on its own. The four animals on the stones have always croaked by
-		// themselves (`src/creatures.js`), but the plate used to read `M — the frogs and the geckos, off and on`,
-		// which told a visitor that the pond was something you had to remember to switch on. What was missing
-		// behind the four is the pond itself talking, and that is a held sound and not a call: a borrowed chorus
-		// of tropical frogs at night, looped at the water, coming up when the day goes out and stopping when it
-		// comes back — `scale` is asked every frame, and a frog at noon is a frog in the wrong place. It is
-		// anchored to the water and not spread over the garden: loudest on the bank, thin over the lawn, gone at
-		// the hedge. `M` takes it with everything else, as it takes the trickle.
-		if (pond && pond.plan && dial("frog", 1) > 0) {
-			sound.startMurmur({
-				// The pond's own frogs: a chorus at the water's edge, which is what a Thai pond actually sounds
-				// like at night, and which is NOT the single croak of the frog that sits on the rim four metres
-				// from where the visitor starts — one is an animal, the other is the place. It is scaled by the day
-				// cycle and so is silent at noon. What used to hang here was a bed of crickets, which the master
-				// sent back for sounding like weather; these are frogs, and they are recorded as frogs.
-				name: "frogChorus",
-				file: "frogChorus",
-				loud: LEVEL.frogChorus,
-				// Measured from the water's edge and not from its middle: the pond is some metres across, and a
-				// bed that is only full at the middle of the water would begin to fade before a frog on the near
-				// stone was left behind.
-				near: (p) => Math.max(0, Math.hypot(p.x - pond.plan.cx, p.z - pond.plan.cz) - 4),
-				bank: 1.5,
-				span: 16,
-				// A fade and not a switch: the day cycle already carries a `night` number that runs from nothing at
-				// noon to one at midnight, so the pond comes up through the dusk and stops at the dawn instead of
-				// being cut over at one hour like a lamp on a timer.
-				scale: () => (day ? day.night : 0),
-			});
-		}
+		// No held chorus at the water. One was built — a second, looped recording of tropical frogs
+		// bedded under the four animals on the stones — and the master sent it back inside the hour: "really weird
+		// sounds around the lake", "high-pitched", and then the word that settles it about the croak they chose
+		// themselves: "that sound is holy". The frogs in this garden are the ones in `sounds/frogs-night.mp3`,
+		// called animal by animal from the stones, exactly as they were in v0.98.3, and nothing else talks at the
+		// water. The trickling stream keeps its own small bed, and `M` takes both.
 		// No cricket bed. One was tried, and the master asked what the waterfall was. There is no waterfall in
 		// this garden: the answer was the borrowed "crickets" — three and a half minutes whose loudest band is
 		// 220 Hz, and whose loudest quarter-second is only twice its quietest. That is a wind, or a stream, baked
