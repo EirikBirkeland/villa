@@ -10512,3 +10512,21 @@ Ten combinations booted clean with no page errors, meshes and lights as expected
 `?rocket=0` 1377, `?flash=0` 1494 with one light fewer, `?frog=0` and `?lock=0` unchanged at 1495, `?sound=0` 1435,
 `?still=1&grain=0` 1495, the new `?envpx=64&msaa=1` 1495, and `?stream=0&rocket=0` 1330. This mattered because the
 day's work touched the day's own table, the post pipeline's grain, and the render loop itself.
+
+## Session eighty-four, nineteenth stretch: the harness I built in /tmp, written down so it can be rebuilt
+
+Three small scripts did the work of this session's last stretches and live only in `/tmp`, so their shape is
+recorded here rather than trusted to survive.
+
+* **Frame-to-frame over a box.** Load a stand at `?still=1`, wait, shoot, wait 0.8 s, shoot again, then for each
+  pixel sum `|R1-R2| + |G1-G2| + |B1-B2|` and report the mean of that over 765, the worst pixel, and the share of
+  pixels that moved at all. Run against three bases in turn — `releases/v0.100.0/index.html`,
+  `releases/v0.100.1/index.html`, and the working tree — and the flicker cure proves itself where the master will
+  actually walk it: 1.25 mean before, 0.00 after, in one harness at one stand.
+* **Whole frame, same measure, four stands** (front and pool, rear at dusk, by the pond, inside at night). Run it
+  once with `still=1` and once without: the first must read 0.000 everywhere, the second must show the Villa alive
+  (36% of the pool view and 46% of the pond moving). A still harness that passes only because the scene is dead is
+  worthless, and that second run is what keeps it honest.
+* **One face, one name.** `tools/surface.js` already ties a measurement to a mesh the picker answers, and now
+  takes `PRE` for a live material write and `EXTRA` for any address-bar switch — that pair is how the grain, the
+  environment, the fog and the environment-cube size were each killed one at a time.
