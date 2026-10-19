@@ -10041,3 +10041,19 @@ range about 9 — measured with `tools/lampgain.js` under `still=1` on a stand w
 frame, which means finding the stand by taking a picture and reading it and not by arithmetic; (b) the west
 wall at midnight, still 7.9% pure black and the darkest of the five views; (c) the flickering panel from
 `owner-flickering-wall.png`, still waiting on the hour and the standing place from the master.
+
+**The retry, done and reverted, so nobody spends this hour twice.** The festoon lamps were hung again at 45
+units with an 8 m reach and measured from a stand the ground admits (`0,2.16,-1,3.14,−0.5`: the deck top is
+0.54 and `ground.free` says walkable from z −4.4 to 0, and the frame picks `soffit @ 3.1 m` — checked, because
+every earlier terrace stand in this session was illegal and the walk controller snapped it back to the start,
+which is what made a working lamp look dead). Forty-five units two metres above the soffit is worth about a
+seventh of what the pool fittings do at the water, and it still moved nothing: brightest gain 0 over a noise
+floor of 27.5% of the frame. So the festoon stays as it was and the twenty-nine painted bulbs stay on the
+record through `tools/lamplight.js`.
+
+What I could not settle, and where it should go: `tools/whowlights.js` says a terrace mesh is *offered* eleven
+lights for its six slots, and no strength I tried moved a pixel — which reads like the festoon lamps never
+reach the shader at all rather than arriving too weak. That is the same six-light budget already parked for the
+master's ruling, and it should be asked there: raise the budget on a handful of materials (measured before:
+inside 136→146, house from the pool 96→85, lawn by the pond 53→43, still 60 fps) and the festoon question
+answers itself in one run of `tools/lamplight.js` and `tools/lampgain.js`.
