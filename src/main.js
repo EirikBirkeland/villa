@@ -13,6 +13,7 @@ import { buildFireflies } from "./fireflies.js";
 import { buildDayCycle, hourWords } from "./daylight.js";
 import { buildSound } from "./sound.js";
 import { buildGeckos } from "./gecko.js";
+import { buildRaven } from "./raven.js";
 import { buildCreatures } from "./creatures.js";
 import { buildKoi } from "./koi.js";
 import { buildShark } from "./shark.js";
@@ -425,7 +426,10 @@ function boot() {
 	pipeline.grain.intensity = 3.5;
 	pipeline.grain.animated = true;
 
-	const walk = setupWalking(ground);
+	// The look is given the address bar's switches rather than reaching for them: the walking is set up in a
+	// function of its own and cannot see them, and a click that throws an error inside that function is a click that
+	// does half its work and stops.
+	const walk = setupWalking(ground, { wantLock: switches.has("lock") });
 	// The ear. Until now this Villa has been stone dead silent, and a garden at ten at night is not silent.
 	// Every sound is synthesised at the moment it is asked for (`src/sound.js`) — nothing is fetched — and the
 	// browser will not let a page make a noise until a person has touched it, so the first click or key is what
@@ -531,8 +535,7 @@ function boot() {
 	// and the answer to the master's "discoverable, not obvious". One is on the west wall between the shuttered
 	// windows for whoever walks the west path, and one on the east wall over the store room's end.
 	let geckos = null;
-	if (dial("gecko", 1) > 0 && sound) {
-		geckos = buildGeckos(scene, mats, {
+	if (dial("gecko", 1) > 0 && sound) {		geckos = buildGeckos(scene, mats, {
 			sound,
 			spots: [
 				{ x: -2.95, y: 2.42, z: -3.9, face: [0, 0, 1], seed: 11 },
@@ -542,6 +545,16 @@ function boot() {
 			],
 		});
 	}
+	// The bird on the ridge (`src/raven.js`): it comes, it sits, it calls from up there and you hear it before you
+	// find it, and every few days of the Villa's own day it drops a gold coin into the yard and the coin is still
+	// there when the page is opened again — which is why the day count and where the coins fell are written into
+	// `localStorage`, and why `?raven=0` is here for anyone who wants the garden without the bird.
+	let raven = null;
+	if (dial("raven", 1) > 0) raven = buildRaven(scene, mats, { ground, sound });
+	// The day has to be counted and not merely told, because "every few days" is the whole of the raven's bill and
+	// the day clock only knows the hour. It ticks when the hour goes past midnight, and so a page left open
+	// overnight gets its coin overnight, which is what a bird would have done.
+	let lastHour = dial("hour", 17.5);
 	const day = buildDayCycle(scene, {
 		sky, light, hemi, bounce, mats,
 		water: mats.water,
@@ -614,6 +627,14 @@ function boot() {
 			geckos.visit(camera.position);
 			geckos.animate(still ? 0 : time, still ? 0 : delta);
 		}
+		// The raven is told the hour, whether it is dark, whether the hour has just gone past midnight, and how
+		// long the Villa has been awake: the first two decide where the bird is, the third pays out a coin and the
+		// fourth is the only clock that does not skip when the tab is left in a corner.
+		if (raven) {
+			const wrapped = day.hour < lastHour - 0.5;
+			lastHour = day.hour;
+			raven.animate({ delta: still ? 0 : delta, night: !!nightHeld, wrapped, elapsed: time });
+		}
 		if (duck) duck.animate(still ? 0 : time);
 		if (fireflies) fireflies.animate(still ? 0 : time, still ? 0 : delta);
 		// The day goes on whether the small things are frozen or not — unless `?still=1`, which stops it too,
@@ -658,7 +679,7 @@ function boot() {
 		}
 	});
 	document.body.classList.add("ready");
-	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, duck, fireflies, day, sound, geckos };
+	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, duck, fireflies, day, sound, geckos, raven };
 	// The two numbers a bite leaves, for the tools. Read them to see what the animal left behind; write them to
 	// pose a flinch, because a jolt that lasts a third of a second is not something a picture can wait for.
 	window.__villa.bite = {
@@ -670,7 +691,7 @@ function boot() {
 }
 
 /** How the visitor moves: the keys walk, the mouse looks, the ground holds them up — until they fly. */
-function setupWalking(ground) {
+function setupWalking(ground, { wantLock = false } = {}) {
 	const EYE = 1.6; // soles to eye, metres
 	const WALK = 5.5;
 	const RUN = 9.5;
@@ -702,6 +723,13 @@ function setupWalking(ground) {
 	let dragging = false;
 	let lastX = 0;
 	let lastY = 0;
+	let lastMove = 0;
+	// How long a gap in the mouse's movements is not a movement at all but a return to the page: an alt-tab, a
+	// stall, a lock the browser took back without asking. The distance across such a gap is a jump, and a jump of
+	// two hundred pixels at this sensitivity is half a turn of the world, aimed at the floor, at the exact moment
+	// the visitor was trying to walk somewhere. The master called this "the camera does not restore after being
+	// bitten", and the bite was only ever the thing that made a person move their hand.
+	const STALE = 240;
 
 	const setPitch = (value) => {
 		camera.rotation.x = Math.max(-1.25, Math.min(1.25, value));
@@ -712,12 +740,23 @@ function setupWalking(ground) {
 		setPitch(camera.rotation.x + dy * turn);
 	};
 
-	canvas.addEventListener("pointerdown", (event) => {
-		dragging = true;
+	const rebase = (event) => {
 		lastX = event.clientX;
 		lastY = event.clientY;
-		canvas.setPointerCapture && canvas.setPointerCapture(event.pointerId);
-		if (!document.pointerLockElement) {
+		lastMove = event.timeStamp || performance.now();
+	};
+
+	canvas.addEventListener("pointerdown", (event) => {
+		dragging = true;
+		rebase(event);
+		// Pointer lock is OFF by default and has to be asked for with `?lock=1`. It used to be taken on the first
+		// click, which is a demand no visitor of a garden agreed to: once locked, the sight follows the mouse
+		// without a button held, the cursor disappears, and the lock is the browser's to give back — Escape, a
+		// backgrounded tab or a browser that simply tires of it all take it away again, and every one of those is
+		// a state the Villa cannot see coming. Dragging looks round is the control the plate promises, and it is
+		// the one that can be relied on to still mean the same thing after a shark, an alt-tab and a coffee.
+		if (wantLock) {
+			canvas.setPointerCapture && canvas.setPointerCapture(event.pointerId);
 			const request = canvas.requestPointerLock || canvas.webkitRequestPointerLock;
 			if (request) {
 				try {
@@ -731,22 +770,33 @@ function setupWalking(ground) {
 	});
 
 	canvas.addEventListener("pointermove", (event) => {
+		const now = event.timeStamp || performance.now();
+		const gap = now - lastMove;
 		if (document.pointerLockElement === canvas) {
-			look(event.movementX || 0, event.movementY || 0);
+			// Under a lock there are no coordinates to re-base from, only a delta — so a long gap is thrown away
+			// instead, which is the same protection stated in the only units this path is given.
+			if (gap < STALE) look(event.movementX || 0, event.movementY || 0);
+			lastMove = now;
 			return;
 		}
 		if (!dragging) return;
-		look(event.clientX - lastX, event.clientY - lastY);
-		lastX = event.clientX;
-		lastY = event.clientY;
+		if (gap < STALE) look(event.clientX - lastX, event.clientY - lastY);
+		rebase(event);
 	});
 
+	// Letting go is listened for on the window and not on the canvas, because a person who drags past the edge of
+	// the picture and releases there does tell the window about it and does not tell the canvas.
 	const stopDrag = () => {
 		dragging = false;
 	};
-	canvas.addEventListener("pointerup", stopDrag);
-	canvas.addEventListener("pointercancel", stopDrag);
-	canvas.addEventListener("pointerleave", stopDrag);
+	window.addEventListener("pointerup", stopDrag);
+	window.addEventListener("pointercancel", stopDrag);
+	window.addEventListener("blur", stopDrag);
+	// And when a lock is lost — however it is lost, and the browser never asks — the drag is over whatever the
+	// mouse was doing a moment ago. Without this the first move after the lock is gone is a swipe across the
+	// whole garden from wherever the cursor happens to have drifted to.
+	document.addEventListener("pointerlockchange", stopDrag);
+	document.addEventListener("pointerlockerror", stopDrag);
 
 	const forward = new Vector3(0, 0, 1);
 	const right = new Vector3(1, 0, 0);

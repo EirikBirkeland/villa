@@ -33,6 +33,7 @@ export const LEVEL = {
 	gecko: 0.3,
 	raven: 0.6,
 	coin: 0.2,
+	shot: 0.34,
 };
 
 /** No more of these at once. A pond full of frogs all starting together is a wall of buzz. */
@@ -334,5 +335,57 @@ export const VOICES = {
 			osc.stop(t0 + decay + 0.02);
 		}
 		return 0.36;
+	},
+	/**
+	 * A gunshot: a crack of noise and a thump underneath it, and it is over in a fifth of a second.
+	 *
+	 * There is no weapon in the garden and nothing about it is a bird, so this is built the way a pistol is
+	 * actually heard rather than the way a bird is: a hard pressure wave, which is a burst of noise with every
+	 * frequency in it opened at once and shut again in ten milliseconds, and a low thump from the powder, which
+	 * is where the sound is felt rather than heard. The noise is band-limited on purpose — raw white noise at
+	 * this length is a torn sheet of paper, and a real report from the far side of a yard has lost its very
+	 * highest and very lowest before it arrives.
+	 */
+	shot(ctx, out, rand) {
+		const t0 = ctx.currentTime + 0.005;
+		const len = 0.19;
+		const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * len), ctx.sampleRate);
+		const data = buffer.getChannelData(0);
+		for (let i = 0; i < data.length; i++) {
+			// Crackle first and fastest, then the tail: a plain exponential from the first sample is a hiss.
+			const u = i / data.length;
+			data[i] = (Math.random() * 2 - 1) * Math.pow(1 - u, 2.6);
+		}
+		const src = ctx.createBufferSource();
+		src.buffer = buffer;
+		const crack = ctx.createBiquadFilter();
+		crack.type = "bandpass";
+		crack.frequency.value = 1500 + rand() * 700;
+		crack.Q.value = 0.6;
+		const body = ctx.createBiquadFilter();
+		body.type = "lowpass";
+		body.frequency.value = 2400;
+		const env = ctx.createGain();
+		env.gain.setValueAtTime(0.9, t0);
+		env.gain.exponentialRampToValueAtTime(0.002, t0 + len);
+		src.connect(crack);
+		crack.connect(body);
+		body.connect(env);
+		env.connect(out);
+		src.start(t0);
+		// The thump. Sixty-odd Hz, down to nothing in a twelfth of a second, and a quarter as loud as the crack.
+		const osc = ctx.createOscillator();
+		osc.type = "triangle";
+		osc.frequency.setValueAtTime(120 + rand() * 30, t0);
+		osc.frequency.exponentialRampToValueAtTime(46, t0 + 0.09);
+		const thump = ctx.createGain();
+		thump.gain.setValueAtTime(0, t0);
+		thump.gain.linearRampToValueAtTime(0.3, t0 + 0.006);
+		thump.gain.exponentialRampToValueAtTime(0.001, t0 + 0.11);
+		osc.connect(thump);
+		thump.connect(out);
+		osc.start(t0);
+		osc.stop(t0 + 0.14);
+		return 0.22;
 	},
 };

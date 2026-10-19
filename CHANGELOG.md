@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.93.2 — 2026-10-19
+
+- **The pool is inside the pool again.** The master noticed that the water could be seen through the walls of the
+  house. It was not the walls: the water's sheet, the blood and the surface rings had each been put in a render
+  group of their own, so that a cloud of blood would not be drawn on top of the film it belongs under. A render
+  group is a blunt instrument — whatever is in a later group is drawn over everything in an earlier one — and the
+  villa is mostly glass, which is transparent and so does not write depth. The whole pool was being painted
+  across the house: glass, wall, dry deck.
+- All three are back in the ordinary order, sorted by distance from the eye like the rest of the garden, which
+  gives the wanted ordering by itself: blood lies under the surface, so it is further away, so it is drawn first.
+  What has to be said out loud is said now, where the film is made: the water does not write depth.
+- Measured, not assumed: the same view from the west deck before and after. Before, a blue sheen with a hard
+  diagonal edge lay across the dry teak for two metres. After, the teak is teak, the coping is stone, and a held
+  bleed still spreads its rust-coloured cloud under the film exactly as it did before the change.
+- New tool: `tools/perch.js`, which puts the raven on the roof and opens its purse, so a bird that arrives when
+  it feels like it and a coin that falls every three days can actually be photographed.
+
+
 ## 0.93.1 — 2026-10-19
 
 - **A bite can no longer cost you your walk.** The master reported that after the shark bites, the camera stays

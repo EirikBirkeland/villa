@@ -1,5 +1,11 @@
 [
   {
+    "version": "0.93.2",
+    "date": "2026-10-19",
+    "released": "2026-10-19T04:10:37.248Z",
+    "summary": "The pool no longer paints itself across the house"
+  },
+  {
     "version": "0.93.1",
     "date": "2026-10-19",
     "released": "2026-10-19T03:45:16.853Z",

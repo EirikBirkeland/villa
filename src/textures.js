@@ -3592,27 +3592,33 @@ export function geckoSkinCanvas(size = 128, { seed = 512, base = [146, 134, 120]
 	return canvas;
 }
 
+
 /**
  * A gold coin stamped with a royal emblem, for the raven to drop in the yard.
  *
- * WHAT IS ON IT, and what is not. The master asked for the Thai king's motif on a gold coin, and the honest
+ * WHAT IS ON IT, and what is not. The master asked for the Thai king's motif on a gold coin, and the plain
  * reading of a Thai coin is the king's head — the face of the reigning king is on every baht in every pocket in
- * the country. It is not on this one. A living person's face is not something to paint into a toy, and a small
- * stamped face at twenty-six millimetres would be a caricature even if it were attempted, so the coin wears the
- * royal *emblem* instead, which is what Thai coins and medals wear on the other face anyway:
+ * the country. It is not on this one. A living person's face is not something to draw into a toy, and a stamped
+ * face at twenty-six millimetres would be a caricature even if it were attempted, so the coin wears the royal
+ * *emblem* instead, which is what Thai coins and medals wear on the other face anyway:
  *
- *   the crown. The pointed crown of a Thai king — a spire in the middle with two lesser spires leaning against
- *   it, standing on a banded circlet, and a ray of light off the top of it. `crown`.
- *   the chakra. A wheel with eight spokes under the crown, the Ashvalakachakra the House of Chakri bears.
- *   the talk-backs. Two scrolls curling out either side of the wheel like the raised hands of a narthex,
- *   which is the ornamental pair that flanks royal things in Thailand, and one of the few parts of a royal
- *   seal that can be drawn without the seal.
- *   the border. Forty beads inside the rim, because a coin's border is a ring of beads and nothing else, and
- *   a ring is the cheapest thing on this list to count and the easiest to get wrong.
+ *   the crown. The pointed crown of a Thai king: a spire in the middle with two lesser spires leaning against
+ *   it, standing on a banded circlet, and a ray off the top of it.
+ *   the chakra. A wheel with eight spokes under the crown, the wheel the House of Chakri bears.
+ *   the talk-backs. Two scrolls curling up either side of the wheel like a pair of raised hands, which is the
+ *   ornamental pair that flanks royal things in Thailand and one of the few parts of a royal seal that can be
+ *   drawn without drawing the seal.
+ *   the border. Forty beads inside the rim, because a coin's border is a ring of beads and nothing else, and a
+ *   ring is the cheapest thing on this list to count and the easiest to get wrong.
  *
- * The coin is 26 mm across and will be lying on paving or in grass, so the stamp is cut deep and bright: a
- * die-struck coin is all relief and no colour, and the whole of its read at three metres is the difference
- * between the raised metal and the field. All of it is drawn in the gold's own lightness: no paint, no black.
+ * HOW IT IS PAINTED, and the fault that had to be found first. A struck coin has no colour: it is one metal, and
+ * the whole of its read is the difference between the raised device and the sunken field. So every device here
+ * is drawn twice through `relief`, once sunk and dark and once proud and bright, and every device takes the tone
+ * it is *handed* rather than carrying its own. The first cut of this function handed each device a tone and then
+ * filled it with a colour written into the device instead, which meant both passes painted the same mid-gold and
+ * the coin came out as one flat tone with a bruise on it — see `pictures/tmp-coin.png`, and do not do that again.
+ * The field is now struck dark, the devices are struck nearly white, and the offset between the two passes is the
+ * depth of the blow.
  */
 export function royalCoinCanvas(size = 320) {
 	const canvas = document.createElement("canvas");
@@ -3621,88 +3627,87 @@ export function royalCoinCanvas(size = 320) {
 	const g = canvas.getContext("2d");
 	const rand = randomGenerator(0x5c1);
 	const R = size * 0.5;
-	const GOLD = [232, 190, 84];
-	const ink = (r, gg, b, a) => `rgba(${Math.round(GOLD[0] * r)}, ${Math.round(GOLD[1] * gg)}, ${Math.round(GOLD[2] * b)}, ${a})`;
-	// The stamp is relief, so every raised thing gets a light edge up-left and a dark one down-right, and the
-	// only way to do that with one canvas is to draw each shape twice and offset the second time.
-	const relief = (draw, lift = size * 0.006) => {
+	const GOLD = [236, 194, 92];
+	const tone = (r, gg, b, a = 1) => `rgba(${Math.round(GOLD[0] * r)}, ${Math.round(GOLD[1] * gg)}, ${Math.round(GOLD[2] * b)}, ${a})`;
+	const SUNK = tone(0.44, 0.36, 0.2);
+	const PROUD = tone(1.16, 1.1, 0.86);
+
+	/**
+	 * One struck device: a dark copy thrown down and to the right, and the bright one laid over it. `draw` is
+	 * called twice and is expected to paint in the tone it is given — that is the whole of the arrangement, and
+	 * the reason it is written down here.
+	 */
+	const relief = (draw, deep = size * 0.013) => {
 		g.save();
-		g.translate(-lift, -lift);
-		draw(ink(1.16, 1.13, 1.06, 1));
+		g.translate(deep, deep * 1.2);
+		g.fillStyle = SUNK;
+		g.strokeStyle = SUNK;
+		draw();
 		g.restore();
-		g.save();
-		g.translate(lift * 0.8, lift * 0.9);
-		draw(ink(0.6, 0.55, 0.4, 0.85));
-		g.restore();
-		draw(ink(0.99, 0.94, 0.78, 1));
+		g.fillStyle = PROUD;
+		g.strokeStyle = PROUD;
+		draw();
 	};
 
-	// The field. Not flat gold: a struck coin's field is a shallow saucer, brightest where it catches the sky.
-	const field = g.createRadialGradient(R * 0.72, R * 0.66, R * 0.1, R, R, R * 1.05);
-	field.addColorStop(0, ink(1.2, 1.18, 1.0, 1));
-	field.addColorStop(0.55, ink(1, 1, 0.92, 1));
-	field.addColorStop(1, ink(0.72, 0.66, 0.46, 1));
+	// The field: a saucer, struck down. It is DARK against the devices and that is not a matter of taste — the
+	// devices only stand out of the coin if the coin is behind them.
+	const field = g.createRadialGradient(R * 0.7, R * 0.62, R * 0.08, R, R, R * 1.06);
+	field.addColorStop(0, tone(1.02, 0.97, 0.78));
+	field.addColorStop(0.5, tone(0.7, 0.64, 0.45));
+	field.addColorStop(1, tone(0.46, 0.4, 0.27));
 	g.fillStyle = field;
 	g.fillRect(0, 0, size, size);
 
-	// Hammers. A coin is struck once, but the blank it was struck from was hammered, and a saucer of dents is
-	// what makes gold look like metal instead of plastic.
-	for (let i = 0; i < 900; i++) {
+	// Hammers. The coin was struck once but the blank it was struck from was hammered, and a saucer of dents is
+	// what makes gold look like metal rather than like a biscuit.
+	for (let i = 0; i < 850; i++) {
 		const a = rand() * Math.PI * 2;
 		const rr = Math.sqrt(rand()) * R * 0.93;
-		const x = R + Math.cos(a) * rr;
-		const y = R + Math.sin(a) * rr;
-		const d = size * (0.004 + rand() * 0.011);
 		g.beginPath();
-		g.arc(x, y, d, 0.4 + rand(), 3.5 + rand());
-		g.strokeStyle = ink(0.8 + rand() * 0.3, 0.76 + rand() * 0.3, 0.6 + rand() * 0.25, 0.16);
+		g.arc(R + Math.cos(a) * rr, R + Math.sin(a) * rr, size * (0.004 + rand() * 0.01), 0.4 + rand(), 3.5 + rand());
+		g.strokeStyle = tone(0.78 + rand() * 0.34, 0.73 + rand() * 0.34, 0.56 + rand() * 0.3, 0.15);
 		g.lineWidth = size * 0.0035;
 		g.stroke();
 	}
 
-	// The rim, and the reeding about the edge. A milled edge is the reason a coin can be proved to be a coin.
+	// The rim and its reeding: ninety-six cuts round the edge, which is the milled edge that proves a coin is a
+	// coin and, at this size, the only part of the border that catches a light from a metre away.
 	g.beginPath();
 	g.arc(R, R, R * 0.955, 0, Math.PI * 2);
-	g.strokeStyle = ink(0.66, 0.62, 0.44, 0.9);
-	g.lineWidth = size * 0.016;
+	g.strokeStyle = tone(0.5, 0.44, 0.3, 0.85);
+	g.lineWidth = size * 0.02;
 	g.stroke();
 	for (let i = 0; i < 96; i++) {
 		const a = (i / 96) * Math.PI * 2;
 		g.beginPath();
 		g.moveTo(R + Math.cos(a) * R * 0.9, R + Math.sin(a) * R * 0.9);
-		g.lineTo(R + Math.cos(a) * R * 0.995, R + Math.sin(a) * R * 0.995);
-		g.strokeStyle = ink(0.78, 0.74, 0.56, 0.5);
-		g.lineWidth = size * 0.006;
+		g.lineTo(R + Math.cos(a) * R * 1.0, R + Math.sin(a) * R * 1.0);
+		g.strokeStyle = tone(0.86, 0.8, 0.6, 0.4);
+		g.lineWidth = size * 0.0055;
 		g.stroke();
 	}
 
-	// Forty beads inside the rim.
-	const beads = 40;
-	for (let i = 0; i < beads; i++) {
-		const a = (i / beads) * Math.PI * 2 - Math.PI / 2;
+	// Forty beads inside the rim, each one struck proud with its own shadow.
+	for (let i = 0; i < 40; i++) {
+		const a = (i / 40) * Math.PI * 2 - Math.PI / 2;
 		const x = R + Math.cos(a) * R * 0.845;
 		const y = R + Math.sin(a) * R * 0.845;
-		g.beginPath();
-		g.arc(x, y, size * 0.0135, 0, Math.PI * 2);
-		g.fillStyle = ink(1.06, 1.02, 0.86, 1);
-		g.fill();
-		g.beginPath();
-		g.arc(x + size * 0.003, y + size * 0.004, size * 0.0135, 0.6, 3.6);
-		g.strokeStyle = ink(0.66, 0.6, 0.42, 0.55);
-		g.lineWidth = size * 0.0035;
-		g.stroke();
+		relief(() => {
+			g.beginPath();
+			g.arc(x, y, size * 0.014, 0, Math.PI * 2);
+			g.fill();
+		});
 	}
 
-	// The chakra: a hub, eight spokes and a ring, and the ring is drawn as an annulus because a wheel with a
-	// hole in it is a wheel and a disc with lines on it is a plate.
-	const wheelY = R * 1.16;
-	const wheelR = R * 0.235;
+	const wheelY = R * 1.18;
+	const wheelR = R * 0.21;
+	// The chakra: an outer ring, eight spokes and a hub, with the field left showing between the spokes because
+	// a wheel with a hole in it is a wheel and a disc with lines scratched on it is a plate.
 	relief(() => {
 		g.beginPath();
 		g.arc(R, wheelY, wheelR, 0, Math.PI * 2);
-		g.moveTo(R + wheelR * 0.72, wheelY);
-		g.arc(R, wheelY, wheelR * 0.72, 0, Math.PI * 2, true);
-		g.fillStyle = ink(1.0, 0.97, 0.8, 1);
+		g.moveTo(R + wheelR * 0.68, wheelY);
+		g.arc(R, wheelY, wheelR * 0.68, 0, Math.PI * 2, true);
 		g.fill("evenodd");
 	});
 	g.save();
@@ -3710,80 +3715,76 @@ export function royalCoinCanvas(size = 320) {
 	for (let i = 0; i < 8; i++) {
 		g.save();
 		g.rotate((i / 8) * Math.PI * 2);
-		relief(() => {
-			g.fillStyle = ink(1.02, 0.99, 0.82, 1);
-			g.fillRect(-size * 0.008, -wheelR * 0.74, size * 0.016, wheelR * 0.76);
-		});
+		relief(() => g.fillRect(-size * 0.008, -wheelR * 0.7, size * 0.016, wheelR * 0.72));
 		g.restore();
 	}
 	relief(() => {
 		g.beginPath();
-		g.arc(0, 0, wheelR * 0.22, 0, Math.PI * 2);
-		g.fillStyle = ink(1.08, 1.04, 0.88, 1);
+		g.arc(0, 0, wheelR * 0.21, 0, Math.PI * 2);
 		g.fill();
 	});
 	g.restore();
 
-	// The crown, above the wheel: a banded circlet, three spires with the middle one tallest, and a ray off
-	// the top of it.
-	const crownY = R * 0.6;
+	// The crown: a banded circlet, three spires with the middle tallest, and a ray off the top of it.
+	const crownY = R * 0.62;
 	relief(() => {
-		g.fillStyle = ink(1.03, 1.0, 0.84, 1);
 		g.beginPath();
-		g.moveTo(R - R * 0.3, crownY + R * 0.16);
-		g.lineTo(R + R * 0.3, crownY + R * 0.16);
-		g.lineTo(R + R * 0.26, crownY + R * 0.05);
-		g.lineTo(R - R * 0.26, crownY + R * 0.05);
+		g.moveTo(R - R * 0.31, crownY + R * 0.17);
+		g.lineTo(R + R * 0.31, crownY + R * 0.17);
+		g.lineTo(R + R * 0.27, crownY + R * 0.04);
+		g.lineTo(R - R * 0.27, crownY + R * 0.04);
 		g.closePath();
 		g.fill();
 	});
-	for (const [dx, tall, wide] of [[-R * 0.19, R * 0.17, R * 0.075], [0, R * 0.31, R * 0.095], [R * 0.19, R * 0.17, R * 0.075]]) {
+	for (const [dx, tall, wide] of [[-R * 0.19, R * 0.17, R * 0.075], [0, R * 0.3, R * 0.095], [R * 0.19, R * 0.17, R * 0.075]]) {
 		relief(() => {
-			g.fillStyle = ink(1.05, 1.01, 0.85, 1);
 			g.beginPath();
-			g.moveTo(R + dx - wide, crownY + R * 0.06);
-			g.lineTo(R + dx + wide, crownY + R * 0.06);
-			g.lineTo(R + dx + wide * 0.42, crownY - tall * 0.55);
+			g.moveTo(R + dx - wide, crownY + R * 0.05);
+			g.lineTo(R + dx + wide, crownY + R * 0.05);
+			g.lineTo(R + dx + wide * 0.4, crownY - tall * 0.56);
 			g.lineTo(R + dx, crownY - tall);
-			g.lineTo(R + dx - wide * 0.42, crownY - tall * 0.55);
+			g.lineTo(R + dx - wide * 0.4, crownY - tall * 0.56);
 			g.closePath();
 			g.fill();
 		});
 	}
-	// The ray off the crown's top: a thin spike of light, and the brightest thing on the coin.
-	g.beginPath();
-	g.moveTo(R, crownY - R * 0.31);
-	g.lineTo(R + size * 0.008, crownY - R * 0.42);
-	g.lineTo(R - size * 0.008, crownY - R * 0.42);
-	g.closePath();
-	g.fillStyle = ink(1.3, 1.28, 1.1, 1);
-	g.fill();
+	relief(() => {
+		g.beginPath();
+		g.moveTo(R - size * 0.009, crownY - R * 0.3);
+		g.lineTo(R + size * 0.009, crownY - R * 0.3);
+		g.lineTo(R, crownY - R * 0.44);
+		g.closePath();
+		g.fill();
+	}, size * 0.006);
 
-	// The two talk-backs, one either side of the wheel, curling out and up like a pair of raised hands. They
-	// are mirrored, so one path and one flip does them and they cannot disagree about their own shape.
+	// The two talk-backs, mirrored off the middle so they cannot disagree about their own shape. They rise and
+	// lean in toward the crown, thick at the root and thin at the tip, which is what they do on a seal; the first
+	// cut drew them as two even C-curves at the wheel's own height and the whole coin came out as a chamber pot
+	// with two grips on it.
 	for (const side of [1, -1]) {
 		g.save();
-		g.translate(R, wheelY);
+		g.translate(R, R * 0.96);
 		g.scale(side, 1);
 		relief(() => {
-			g.strokeStyle = ink(1.04, 1.0, 0.84, 1);
-			g.lineWidth = size * 0.028;
-			g.lineCap = "round";
 			g.beginPath();
-			g.moveTo(wheelR * 1.1, wheelR * 0.5);
-			g.quadraticCurveTo(wheelR * 2.05, wheelR * 0.42, wheelR * 2.0, -wheelR * 0.5);
-			g.quadraticCurveTo(wheelR * 1.96, -wheelR * 1.1, wheelR * 1.36, -wheelR * 1.02);
-			g.stroke();
+			g.moveTo(R * 0.36, R * 0.34);
+			g.quadraticCurveTo(R * 0.54, R * 0.25, R * 0.55, R * 0.02);
+			g.quadraticCurveTo(R * 0.57, -R * 0.28, R * 0.41, -R * 0.44);
+			g.quadraticCurveTo(R * 0.34, -R * 0.51, R * 0.36, -R * 0.33);
+			g.quadraticCurveTo(R * 0.38, -R * 0.1, R * 0.44, R * 0.0);
+			g.quadraticCurveTo(R * 0.45, R * 0.17, R * 0.33, R * 0.19);
+			g.closePath();
+			g.fill();
 		});
 		g.restore();
 	}
 
-	// One last sheen across the whole coin from the top left, because metal is never evenly lit and a flat
-	// gold disc is the thing that makes fake gold look fake.
+	// One last light across the whole coin from the top left, because metal is never evenly lit and a flat gold
+	// disc is the thing that makes false gold look false.
 	const shine = g.createLinearGradient(0, 0, size, size);
-	shine.addColorStop(0, "rgba(255,248,220,0.2)");
-	shine.addColorStop(0.45, "rgba(255,248,220,0)");
-	shine.addColorStop(0.8, "rgba(70,44,8,0.14)");
+	shine.addColorStop(0, "rgba(255,250,226,0.22)");
+	shine.addColorStop(0.45, "rgba(255,250,226,0)");
+	shine.addColorStop(0.82, "rgba(66,42,6,0.16)");
 	g.fillStyle = shine;
 	g.fillRect(0, 0, size, size);
 	return canvas;

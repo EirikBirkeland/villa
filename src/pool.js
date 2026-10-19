@@ -194,16 +194,16 @@ export function buildPool(scene, mats, shadows) {
 		bothSides: false,
 	});
 	water.receiveShadows = false;
-	// THE ORDERING OF THE POOL, which the engine cannot work out for itself: the sheet of water is drawn
-	// LAST (group 2), and anything that belongs UNDER it — a cloud of blood, a shark's wake — is drawn in
-	// group 1 (`src/blood.js`). Without this the engine sorts the water and the blood by their distance from
-	// the eye, the water's distance is the middle of the basin, and a puff of blood near the visitor is nearer
-	// than the middle and so is drawn after the sheet it is supposed to be under — and the sheet writes
-	// depth, so the puff fails its depth test and is not drawn at all. Two groups say plainly what is under
-	// what. Nothing else in the garden is in either group, and nothing overhangs the water close enough for
-	// the water being last to matter: asked with a bounding-box sweep of the pit, the only things above it are
-	// butterflies and the far tree line.
-	water.renderingGroupId = 2;
+	// Everything here is drawn in the ordinary order, sorted by distance from the eye like the rest of the garden.
+	// It used to be put in a render group of its own so that a cloud of blood under the film could not be drawn
+	// after the sheet it belongs under. A render group is a blunt instrument: whatever is in a later group is
+	// drawn over everything in an earlier one, and the villa is mostly glass, which is transparent and so does
+	// not write depth — so the whole pool was being painted across the walls of the house, dry deck and all.
+	// The ordering wanted is the ordering the distance sort already gives: blood lies under the surface, so it
+	// is further from the eye, so it is drawn first. What does have to be said out loud is that the film must
+	// not write depth, because a surface that writes depth and is only half there is a mask over everything it
+	// is drawn across.
+	mats.water.forceDepthWrite = false;
 	built.push(water);
 
 	// Six rings of disturbance on the surface, spent by whatever breaks it: the shark's fin, its tail, and
@@ -217,7 +217,6 @@ export function buildPool(scene, mats, shadows) {
 		ring.isVisible = false;
 		ring.visibility = 0;
 		// Group 3: a ring IS the surface, so it is drawn over the water's film and not under it.
-		ring.renderingGroupId = 3;
 		rippleRings.push({ mesh: ring, left: 0, from: 0.3, span: 1, show: 0.5, life: 2 });
 	}
 	built.push(...rippleRings.map((r) => r.mesh));

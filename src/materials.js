@@ -2,7 +2,7 @@
 // Each one is a physically based material built from a painted canvas pattern, so no surface
 // in the Villa is a single flat colour.
 
-import { texture, grassCanvas, paverCanvas, poolTileCanvas, plasterCanvas, teakCanvas, roofTileCanvas, palmBarkCanvas, palmBladeCanvas, bananaBladeCanvas, stalkCanvas, bushCanvas, bushEdgeCanvas, bushClusterCanvas, tuftAtlasCanvas, clothCanvas, cushionCanvas, copingCanvas, poolWaterCanvas, causticsCanvas, rippleCanvas, hedgeCanvas, canopyClusterCanvas, canopyAtlas, farCanopyCanvas, distanceCanvas, greyNoiseCanvas, bumpFromCanvas, timberCanvas, terracottaCanvas, rockCanvas, soilCanvas, rugCanvas, butterflyWingCanvas, cockroachCanvas, frogSkinCanvas, lilyPadCanvas, rippleRingCanvas, koiCanvas, sharkSkinCanvas, bloodCanvas, geckoSkinCanvas } from "./textures.js";
+import { texture, grassCanvas, paverCanvas, poolTileCanvas, plasterCanvas, teakCanvas, roofTileCanvas, palmBarkCanvas, palmBladeCanvas, bananaBladeCanvas, stalkCanvas, bushCanvas, bushEdgeCanvas, bushClusterCanvas, tuftAtlasCanvas, clothCanvas, cushionCanvas, copingCanvas, poolWaterCanvas, causticsCanvas, rippleCanvas, hedgeCanvas, canopyClusterCanvas, canopyAtlas, farCanopyCanvas, distanceCanvas, greyNoiseCanvas, bumpFromCanvas, timberCanvas, terracottaCanvas, rockCanvas, soilCanvas, rugCanvas, butterflyWingCanvas, cockroachCanvas, frogSkinCanvas, lilyPadCanvas, rippleRingCanvas, koiCanvas, sharkSkinCanvas, bloodCanvas, geckoSkinCanvas, royalCoinCanvas } from "./textures.js";
 
 const { PBRMaterial, Color3, Color4, Texture, ImageProcessingConfiguration } = BABYLON;
 
@@ -1629,6 +1629,41 @@ export function createMaterials(scene) {
 	mats.geckoPupil = pbr(scene, "geckoPupil", { roughness: 0.35, environmentalIntensity: 0.3 });
 	mats.geckoPupil.albedoColor = paint([12, 11, 10]);
 	mats.geckoPupil.emissiveColor = new Color3(0.004, 0.004, 0.003);
+	// The raven (`src/raven.js`), on the ridge. Soot is not black: a crow's plumage is a very dark blue-grey that
+	// takes the sky along the shoulders, and a flat black albedo on a bird sixty metres away is a hole cut in the
+	// sky — the first cut of this came out as a silhouette with no part of it separable from any other. So the
+	// body is dark blue-grey and matte, and the shoulders are a separate, glossier, bluer thing, which is the one
+	// place the bird is allowed to flash.
+	mats.ravenFeather = pbr(scene, "ravenFeather", { roughness: 0.5, metalness: 0.14, environmentalIntensity: 0.75 });
+	mats.ravenFeather.albedoColor = paint([19, 21, 28]);
+	mats.ravenFeather.emissiveColor = new Color3(0.007, 0.008, 0.012);
+	mats.ravenFeather.specularIntensity = 0.5;
+	mats.ravenSheen = pbr(scene, "ravenSheen", { roughness: 0.24, metalness: 0.42, environmentalIntensity: 1.3 });
+	mats.ravenSheen.albedoColor = paint([30, 40, 66]);
+	mats.ravenSheen.emissiveColor = new Color3(0.01, 0.014, 0.026);
+	// The blue-green oil of a raven's wing, if this build of Babylon will take it. It is not needed — the gloss
+	// and the blue albedo do most of the work on their own — so it is tried and not relied on.
+	mats.ravenSheen.iridescence = 0.55;
+	mats.ravenSheen.iridescenceIntensity = 0.6;
+	// The bill, the shanks and the toes: horn, which is darker than the feather and a little waxy.
+	mats.ravenBill = pbr(scene, "ravenBill", { roughness: 0.42, environmentalIntensity: 0.7 });
+	mats.ravenBill.albedoColor = paint([26, 24, 23]);
+	mats.ravenBill.specularIntensity = 0.55;
+	// The eye: a black bead, and the only part of the bird with a hard highlight on it, which is what makes it
+	// look wet and therefore alive at thirty paces.
+	mats.ravenEye = pbr(scene, "ravenEye", { roughness: 0.12, environmentalIntensity: 1 });
+	mats.ravenEye.albedoColor = paint([13, 13, 14]);
+	mats.ravenEye.emissiveColor = new Color3(0.014, 0.014, 0.016);
+	mats.ravenEye.specularIntensity = 1.1;
+	// The coin (`src/raven.js`). Real gold, which means metal: it has no colour of its own to scatter, it takes
+	// the colour of whatever it is reflecting, and a yellow plastic with a painted shine on it is the one way to
+	// make a gold coin look worthless. The stamp does the rest — the same canvas is laid down as a bump so the
+	// crown, the wheel and the beads are struck and not printed.
+	mats.royalGold = pbr(scene, "royalGold", { roughness: 0.28, metalness: 1, environmentalIntensity: 1.5 });
+	mats.royalGold.albedoTexture = texture(scene, royalCoinCanvas(320), { name: "royal coin", scale: 1 });
+	mats.royalGold.bumpTexture = texture(scene, bumpFromCanvas(royalCoinCanvas(256), 1.6), { name: "royal coin strike", scale: 1, gamma: false });
+	mats.royalGold.emissiveColor = new Color3(0.028, 0.02, 0.004);
+	mats.royalGold.specularIntensity = 1.1;
 	// The blood (`src/blood.js`). Unlit on purpose, like the pond's ripple rings: the cloud lies under a
 	// sheet of water that is already painting everything under it half-cyan, and a lambert surface down there
 	// is a surface that has been asked to be a shape when all it is asked to be is a stain. Two materials so

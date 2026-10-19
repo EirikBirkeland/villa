@@ -145,6 +145,66 @@ async function measure(key, ms) {
 	return Math.hypot(after.x - before.x, after.z - before.z);
 }
 
+/**
+ * Look round the way a person does, and say whether the mouse is obeyed when it should be and ignored when it
+ * should not be. Three things are weighed, all of them about the mouse and none about the shark:
+ *
+ * 1. A drag with the button down turns the sight, and by about the amount the hand moved.
+ * 2. The same movement with the button UP must not turn it at all. This is the one that used to fail: the first
+ *    click took pointer lock from the browser, after which the sight followed the mouse for ever and the
+ *    visitor's "restoring" was a matter of luck and of pressing escape.
+ * 3. A drag that resumes after a long gap — an alt-tab, a stall, a lock taken back — must not slam the sight
+ *    round by the whole distance the cursor drifted while nobody was looking.
+ */
+async function lookTest(label) {
+	const read = () => page.evaluate(() => {
+		const c = window.__villa.camera.rotation;
+		return { yaw: c.y, pitch: c.x, roll: c.z, locked: document.pointerLockElement !== null };
+	});
+	const away = async (dx, dy, steps = 6) => {
+		await page.mouse.move(500, 300, { steps: 2 });
+		await page.mouse.down();
+		await page.mouse.move(500 + dx, 300 + dy, { steps });
+		await new Promise((resolve) => setTimeout(resolve, 140));
+		const during = await read();
+		await page.mouse.up();
+		return during;
+	};
+	const start = await read();
+	const dragged = await away(140, 70);
+	// The same sweep with nothing held down.
+	await page.mouse.move(500, 300, { steps: 2 });
+	await page.mouse.move(300, 180, { steps: 10 });
+	await new Promise((resolve) => setTimeout(resolve, 140));
+	const free = await read();
+	// And the same sweep again, but after the mouse has been left alone long enough to be a stranger.
+	await page.mouse.move(660, 200, { steps: 2 });
+	await page.mouse.down();
+	await new Promise((resolve) => setTimeout(resolve, 420));
+	await page.mouse.move(240, 470, { steps: 1 });
+	await new Promise((resolve) => setTimeout(resolve, 140));
+	const stale = await read();
+	await page.mouse.up();
+	const deg = (r) => (r * 57.2958).toFixed(1);
+	const want = 140 * 0.0026 * 57.2958;
+	const dragTurn = (dragged.yaw - start.yaw) * 57.2958;
+	const freeTurn = (free.yaw - dragged.yaw) * 57.2958;
+	const staleTurn = (stale.yaw - free.yaw) * 57.2958;
+	const staleDip = (stale.pitch - free.pitch) * 57.2958;
+	console.log(
+		`${label} : drag turned ${deg(dragged.yaw - start.yaw)}° against the ${want.toFixed(1)}° the hand moved, ` +
+		`mouse up turned ${deg(freeTurn)}°, a stale drag turned ${deg(staleTurn)}° and dipped ${deg(staleDip)}°, ` +
+		`pointer lock ${free.locked ? "HELD — the browser's mouse is gone" : "free"}, roll ${stale.roll}`
+	);
+	return {
+		dragWorks: Math.abs(dragTurn - want) < want * 0.35,
+		mouseUpIgnored: Math.abs(freeTurn) < 0.4,
+		staleIgnored: Math.abs(staleTurn) < 0.4 && Math.abs(staleDip) < 0.4,
+		noLock: !free.locked,
+		roll: stale.roll,
+	};
+}
+
 const first = await walk("before   ");
 if (first.gone < 1) console.log("NOTE: the first walk is short — the visitor is against something, so this run measures nothing. Move --view.");
 // The jolt, caught in the act. A shake at forty-four radians a second is too quick for a picture to be evidence
@@ -199,6 +259,9 @@ if (noWalk) {
 }
 
 await backToTheEdge();
+// The mouse, weighed before the animal is even involved: a baseline for what a drag is worth and what the mouse
+// must NOT be able to do.
+const lookFirst = argv.includes("--drag") ? await lookTest("before   ") : null;
 
 // Now wait for the animal to bite of its own accord, watching its own state so the wait can be reported.
 const bitten = await page.evaluate(async (seconds) => {
@@ -240,13 +303,16 @@ const mid = await page.evaluate(() => +window.__villa.camera.rotation.z.toFixed(
 console.log(`during    : camera roll ${mid} between frames while the bite was still knocking — the jolt lives inside the drawn frame, and the --jolt run is what weighs it`);
 
 await new Promise((resolve) => setTimeout(resolve, 6000));
+const lookAfter = argv.includes("--drag") ? await lookTest("after bite") : null;
 const after = await walk("after    ");
 
 const back = after.gone >= first.gone * 0.85;
+const sightClean = !lookFirst || !lookAfter || (lookAfter.dragWorks && lookAfter.mouseUpIgnored && lookAfter.staleIgnored && lookAfter.noLock);
 console.log(
 	`verdict: ${after.state.rollExactlyZero ? "camera straight again" : "CAMERA LEFT TILLED"}; ` +
 	`${Math.abs(after.state.footing) < 0.02 ? "standing on the ground like before" : "NOT ON THE GROUND"}; ` +
-	`${back ? "walks as far as before" : `WALKS SHORT — ${after.gone.toFixed(2)} m against ${first.gone.toFixed(2)} m`}`
+	`${back ? "walks as far as before" : `WALKS SHORT — ${after.gone.toFixed(2)} m against ${first.gone.toFixed(2)} m`}; ` +
+	`${argv.includes("--drag") ? (sightClean ? "and the sight is the mouse's servant and no more" : "AND THE SIGHT IS NOT THE MOUSE'S SERVANT") : ""}`
 );
 
 // The harsher case, and the one a visitor actually lives: standing at the coping, pressing against the wall of

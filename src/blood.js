@@ -24,10 +24,10 @@
 //
 // THE ORDERING, which is the one thing here that cannot be seen from the code: the blood is UNDER the
 // water's film, so it must be DRAWN before it or it will sit on top of the surface like a sticker. The
-// engine sorts transparent things by distance and the water sheet's distance is the middle of the pool, so
-// a puff near the visitor would be nearer than the sheet and be drawn after it — and the water writes
-// depth, so the puff would fail the depth test and vanish. Therefore: blood in `renderingGroupId` 1 and the
-// water's own sheet in 2 (`src/pool.js`), which says plainly what is under what and settles it for good.
+// distance sort does that on its own once the film does not write depth, which is said where the film is
+// made (src/pool.js). This used to be forced with render groups, and that was wrong: a later group is drawn
+// over an earlier one whatever is in the way, and the villa is mostly glass, so the pool was being painted
+// across the house, dry deck and all.
 
 const { Mesh, VertexData } = BABYLON;
 
@@ -80,7 +80,6 @@ export function buildBlood(scene, mats, pool) {
 		mesh.material = mats[slick ? "bloodB" : "blood"];
 		mesh.isVisible = false;
 		mesh.isPickable = false;
-		mesh.renderingGroupId = 1;
 		if (!slick) mesh.billboardMode = Mesh.BILLBOARDMODE_ALL;
 		puffs.push({
 			mesh,
