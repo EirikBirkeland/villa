@@ -9903,3 +9903,46 @@ swings. `garden` probe set in the tool is a starting guess; it needs real points
 RELEASED v0.99.1. Its preview measures mean 112.6 against v0.99.0's 112.7, no white, no black, which
 is the start view unchanged, as it should be: the fix is inside the house and the menu picture is
 outside it.
+
+## Session eighty-three (the flicker hunt, measured to a dead end, and the tools it left behind)
+
+I could not make the owner's panel flicker, and I have now measured enough to say what it is NOT.
+
+WHERE THE OWNER'S PICTURE IS. `tools/matchowner.js` squeezes the owner's picture and a picture of the
+Villa to the same 12x8 grid of average colours and scores stands against it. Sixty-nine candidates,
+two orientations, hours 9 to 18: the closest is `backstore` at hour 10, score 27.3, which is the
+store's face on the lawn behind the house — the face whose band of glass reads as a dark panel in a
+grey cement frame. Mirroring the owner's picture makes everything worse (46 against 27), so the
+orientation is right. Standing further back and aiming higher makes it worse (38.8), so the owner was
+at about that stand and no further off than that. Where it still disagrees, and this is the honest
+part: the owner's picture has a bright sunlit patch at row 4 col 9 (205,175,134) where the Villa
+draws (49,90,18) — grass. The Villa has nothing there that the sun would light like that.
+
+WHAT IT IS NOT. `tools/shadowcrawl.js` follows named surfaces while a visitor walks 2 m sideways:
+the store's glass swings 12 and its mullion 18 (which is the angle at which the pane throws the
+lamp behind it, and it moves one way: a drift, not a flicker), the cement around it 2 to 9, the roof
+6. The room's back plaster 5, the new door leaf 2, its shadow gap 1. `tools/flicker.js` at
+`backstore`, hour 10, six frames: 235 pixels of 230400 moved, and every one of them named
+skyDome, palmLeaves, lawn or grassTufts — leaves and the edge of the sky, which are meant to move.
+`tools/coplanar.js` with the threshold down at 0.05 m2 found only linings pressed against the walls
+they line, and `deckWalk` against `terrace`, which is a paving rectangle lying against the underside
+of the terrace slab: two faces at y = 0 that face away from each other, so no sight ever sees both.
+
+SHADOW MAP, TESTED AND LEFT ALONE. The sun's map is 2048 with PCF at MEDIUM. I raised it to 4096 with
+PCF at HIGH and measured with `tools/shadowgrain.js` — the mean difference between a pixel and the
+5x5 around it, in shade: 7.23 and 6.47 before, 7.23 and 6.46 after. Not at all. So the map is back
+exactly as it was, and the test stands in the repo as the reason, so nobody spends an afternoon on it
+again.
+
+WALK TESTS, TWO OF WHICH WERE LYING. `tools/walk.js` reported "onto the sala 0.0 m" and "along the
+west hedge 0.0 m" for years. Both were standing in the wrong grass: the sala test started an arm's
+width inside the sala's own side table, and the west test started in the watercourse. `ground` has a
+`free(x,z)` and I used it: started in front of the sala's steps the visitor climbs the deck (eye 1.74
+to 2.26), and moved to free lawn the west walk goes 3.4 m. All eight walk now.
+
+WHAT WOULD FINISH IT. One of: (a) the owner's stand and the hour, since I cannot match a camera from
+a picture alone; (b) a still from the owner's own machine, since the Villa's drawing here is Chromium
+on a CPU and their graphics card may be doing something to edges that this sandbox cannot; or (c) the
+owner's word on whether the panel is the store's band of glass, which my scoring points at and which
+I can then treat on purpose — the pane is dark by day because the room's shelf lamp only burns after
+sunset, and there is a defensible fix for a dark panel, but I will not apply it to a guess.
