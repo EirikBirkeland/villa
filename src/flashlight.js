@@ -36,7 +36,6 @@ const { Color3, MeshBuilder, SpotLight, TransformNode, Vector3 } = BABYLON;
 const LAMP = 4; // the lamp's strength when lit
 const DUST = 0.03; // how much of the filament's warm white the air hands back
 const REACH = 8; // metres the cone is drawn for: it is dust, not a laser
-
 export function buildFlashlight(scene, mats) {
 	const api = {
 		// Written by `toggle()`, read every frame. A tool may write these too, which is the only honest way to
@@ -60,6 +59,8 @@ export function buildFlashlight(scene, mats) {
 	light.specular = new Color3(0.7, 0.66, 0.6);
 	light.range = 26;
 	light.intensity = 0;
+	// Out of the shader until it is wanted. See `toggle`.
+	light.setEnabled(false);
 
 	// The cone. A tube that starts thin at the eye and opens to a little over half a metre across at the end of
 	// its nine metres, which at the angles involved is about the width of the pool of light on the ground. It is
@@ -110,6 +111,13 @@ export function buildFlashlight(scene, mats) {
 	api.toggle = () => {
 		api.lit = !api.lit;
 		beam.setEnabled(api.lit);
+		// The lamp is switched off at the wall and not merely turned down to nothing. Babylon keeps six lights for
+		// any one surface and picks among the dozen this garden carries, and a lamp that is enabled at zero still
+		// takes one of those six: measured on the plaster lining of the back wall, the unlit torch was wearing a
+		// slot that the sky's own fill light wanted. Outward-facing surfaces hardly notice; a room seen through a
+		// window notices, because which six lights a surface gets depends on where the visitor is standing, and a
+		// surface that keeps swapping a lamp for the sky is a surface that flickers as you walk past it.
+		light.setEnabled(api.lit);
 		return api.lit;
 	};
 	api.on = () => {
