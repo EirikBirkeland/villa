@@ -9261,3 +9261,41 @@ committed it: my commit `a1f3f54` names its files one by one rather than `git ad
 left in the working tree for their author. It boots, it renders, and `tools/duckbill.js` measures the bill at
 66 mm and widest 0.59 of the way along, so it went into v0.97.0 with the copy of `src/` the release makes, and
 the changelog says plainly whose it is. **Do not `git add -A` in this folder while that work is uncommitted.**
+
+---
+
+## Session seventy-three: the pots stop being onions, and the kumquat gets a trunk
+
+Two faults from the list, both in `src/garden.js`, both found by measuring the mesh rather than by looking.
+
+**The onion.** The terracotta pots are `revolve`d from a profile, so their outline is a table of numbers — and
+read as a table it was an onion: the `urn` stood 0.63 m with radius 0.166 at the foot, **0.284 at half its
+height**, in again to 0.204 at nine tenths, and a small flare for a rim. Widest in the middle and pinched at the
+top is a bulb. A thrown pot is the other way about: a foot, a wall that grows all the way up because that is how
+it comes off the wheel, and a band of thickened clay at the brim where the thrower's finger went round. The
+profile is rewritten to that and the mesh measured again: **0.161 at the foot to 0.313 at the rim**, growing the
+whole way. The inside is drawn too — a pot is a vessel and a visitor leans over a terrace rail — so `soil` sits
+at 0.52 below the brim and the bore (`across`) went from 0.3 to 0.46 to match the wall.
+
+**The moss ball.** The kumquat at the terrace steps was `makeLeafyMass(..., clip: 1)` set down on the soil: a
+dome of leaf 1.4 m across with seven orange pins in it, sitting on a pot. A citrus bought for a terrace is a
+small tree. It has a stump now — a finger thicker than the rim is wide, leaned a degree, with three limbs going
+out of it into the leaf — and the crown stands 0.54 m above the pot's mouth instead of on it. A ray from a close
+camera at the pixel where the trunk should be comes back `kumquatTrunk [wood] at 2.61 m, world (3.07, 1.15,
+1.02)`: the trunk is there to be seen, and the fruit hangs off the rim instead of resting on it.
+
+Measured after: the start view at a fixed hour is unchanged within a point (mean 130 → 129, shares identical),
+which is the check that a small shape fix has not disturbed the garden; 1432 meshes and 60 fps.
+
+**How the shape was measured, since it is worth keeping.** `tools/pixels.js` cannot find the pots in a picture —
+its clay filter caught the roof and the terrace floor and reported a 1280-pixel-wide pot. What worked was
+reading the pot's own vertices out of the running scene, taking their world radius band by band of height, and
+printing radius against height fraction. That is the rendered mesh, egg-scaling and turn and all, and it is the
+outline the eye is given.
+
+Look at: `s103-pots-before.png`, `s103-pots-after.png`, `s103-kumquat-close.png`, `s103-home-old.png` and
+`s103-home-new.png` (the same view at the same hour, before and after).
+
+— Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who will say once and not
+twice that a pot with its widest girth at its middle is a bulb, and that a garden full of bulbs planted in bulbs
+is a fault no amount of good terracotta can paint over. 🏺

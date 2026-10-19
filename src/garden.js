@@ -1071,14 +1071,27 @@ function mergeParts(scene, groups, crown, keepColours = false) {
  * stood in the ground and not on the rim or floating in the middle of a hollow.
  */
 const POT_SHAPES = {
+	// The common terracotta flower pot, and it is called an urn no longer in look, whatever the name says.
+	// The profile used to be widest at half its height, pinching in to a neck two thirds up and flaring a little
+	// for a rim: measured on the mesh, radius 0.166 at the foot, 0.284 at half, 0.204 at nine tenths. That is an
+	// onion, and every pot of that shape in this garden was one. A thrown pot is the other way about: a foot,
+	// a wall that grows all the way up because that is how it is turned, and a band of thickened clay at the
+	// brim where the thrower's finger went round. So the widest point is the rim, and the neck is gone.
+	//
+	// The inside is drawn too, because a pot is a vessel and a visitor leans over a terrace rail: the wall
+	// comes back down on the inside to the floor of the hollow, and `soil` sits in it below the brim.
+	// `across` is the bore's DIAMETER at `soil`.
 	urn: {
 		profile: [
-			[0.0, 0.0], [0.155, 0.0], [0.15, 0.035], [0.185, 0.075], [0.235, 0.185], [0.265, 0.315],
-			[0.25, 0.43], [0.2, 0.5], [0.19, 0.56], [0.215, 0.575], [0.215, 0.615], [0.196, 0.625],
-			[0.175, 0.61], [0.165, 0.52], [0.15, 0.42], [0.13, 0.33], [0.0, 0.3],
+			[0.0, 0.0], [0.15, 0.0], [0.152, 0.022], [0.168, 0.06], [0.186, 0.13], [0.206, 0.22], [0.226, 0.32],
+			[0.244, 0.42], [0.258, 0.5], [0.268, 0.555],
+			// the brim: thickened, standing out from the wall, and flat across where the finger left it
+			[0.286, 0.568], [0.292, 0.585], [0.292, 0.622], [0.278, 0.632], [0.262, 0.62],
+			// and back down the inside, to the floor of the hollow
+			[0.248, 0.55], [0.232, 0.44], [0.214, 0.32], [0.196, 0.2], [0.18, 0.11], [0.0, 0.09],
 		],
-		soil: 0.5,
-		across: 0.3,
+		soil: 0.52,
+		across: 0.46,
 	},
 	basin: {
 		profile: [
@@ -1175,8 +1188,14 @@ function makePotGreenery(scene, mats, { kind = "mass", x, z, y, size = 1, seed =
 	// Set all of them at the mouth, and the low ones read as a lid laid on a jar; set all of them sunk, and
 	// the tall ones were drowned in the pot (`pictures/tmp-pots2.png`).
 	const sink = kind === "marigold" || kind === "basil" ? 0.05 : 0.0;
-	const parts = [...makeLeafyMass(scene, mats, { x, z, size: crownSize * size, seed, y: y - size * sink, name: `${name}Bush`, clip: 1 })];
-	const middle = y - size * sink + crownSize * size * 0.72;
+	// A kumquat in a pot is a small TREE. Its crown used to sit down on the soil with its skirt at the rim, and
+	// a picture said what that is: a green ball laid on a pot, a moss ball with orange pins in it. A citrus
+	// bought for a terrace has a trunk you can see the top span of, and limbs that come out of it and are
+	// hidden again by leaf. So the crown is lifted on a stump, and three limbs go out from the stump into it —
+	// which also lifts the fruit off the rim, where a kumquat hangs it.
+	const rise = kind === "kumquat" ? size * 0.22 : 0;
+	const parts = [...makeLeafyMass(scene, mats, { x, z, size: crownSize * size, seed, y: y - size * sink + rise, name: `${name}Bush`, clip: 1 })];
+	const middle = y - size * sink + rise + crownSize * size * 0.72;
 	const reach = crownSize * size * 0.82;
 	/** `count` things scattered over the crown's own width, at `height` above its middle. */
 	const sow = (count, height, make) => {
@@ -1186,6 +1205,35 @@ function makePotGreenery(scene, mats, { kind = "mass", x, z, y, size = 1, seed =
 			make(x + Math.sin(a) * out, middle + height + (rand() - 0.5) * crownSize * size * 0.22, z + Math.cos(a) * out, a);
 		}
 	};
+	// The stump and its limbs, for the one pot plant that is a tree. The stump is a finger thicker than the
+	// pot's rim is wide and it is leaned a degree or two, because nothing that grew is plumb.
+	if (rise) {
+		const stump = rise + crownSize * size * 0.3;
+		const trunk = cylinder(scene, "kumquatTrunk", {
+			diameter: size * 0.062, height: stump, tessellation: 9,
+			px: x, py: y + stump * 0.5 - crownSize * size * 0.14, pz: z,
+			mat: mats.wood,
+		});
+		trunk.rotation.z = (rand() - 0.5) * 0.07;
+		trunk.rotation.x = (rand() - 0.5) * 0.05;
+		parts.push(trunk);
+		for (let i = 0; i < 3; i++) {
+			const a = rand() * Math.PI * 2;
+			const lean = 0.7 + rand() * 0.35;
+			const length = crownSize * size * (0.42 + rand() * 0.16);
+			const root = y + rise * 0.72;
+			const limb = cylinder(scene, "kumquatLimb", {
+				diameter: size * 0.026, height: length, tessellation: 6,
+				px: x + Math.sin(a) * length * 0.5 * Math.sin(lean),
+				py: root + length * 0.5 * Math.cos(lean),
+				pz: z + Math.cos(a) * length * 0.5 * Math.sin(lean),
+				mat: mats.wood,
+			});
+			limb.rotation.y = a;
+			limb.rotation.x = lean;
+			parts.push(limb);
+		}
+	}
 	if (kind === "marigold") {
 		// The heads ride the TOP of the cushion of leaf, where a marigold holds them. Scattered through the
 		// crown they were buried in their own leaves and the pot read as a green shrub with nothing on it.
