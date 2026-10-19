@@ -91,6 +91,8 @@ function boot() {
 	//   ?still=1               the butterflies and the cockroach hold still, so a moving thing can be
 	//                          photographed: their clock is stopped, not the Villa's
 	//   ?sky=0.12  ?sun=3  ?hemi=1  ?env=1.1  ?exposure=1.15   dial the light from the address bar; each one
+	//   ?grain=1.1  ?grainmove=1  ?envpx=64   the film grain's strength and whether it moves, and how many pixels
+	//     across the reflected sky is. Measured numbers for all three are in NOTES.md, session eighty-four.
 	//                          of these that is written wins over the day's table (see `locks` below), or a
 	//                          tool that weighs a lamp by switching it off would be weighing the table
 	//   ?room=20                 the lamps inside the house, seen through the front glass
