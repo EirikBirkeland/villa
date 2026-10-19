@@ -9493,3 +9493,14 @@ none either. And the trickle's recording is a test the master has not yet passed
 
 — Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who laid a canal, was told it
 ran the wrong way, and has now dug 34 metres of mud with stones in it. The horse kneighs; the anvil stays. 🐎
+
+**A fault in my own hand, recorded where it happened.** At 15:2x I committed with `git add <my paths> && git
+commit`. The duck worker's work was already **staged in the index** by that hand (`src/duck.js`, `src/materials.js`
+— the bill's material — and `tools/duckbill.js`), and a plain `git commit` commits the whole index, not just what
+I added. So commit `96ac6c2` carries their duck work under my message: 166 lines of `src/duck.js`, 8 of
+`src/materials.js`, and `tools/duckbill.js`. Nothing is lost and nothing is broken — their work is in the history
+and still walkable — but it is mislabelled, and it is the thing the master specifically said not to do. The
+history will not be rewritten to fix it (no rebase, no reset). **The rule for next time: in this folder, commit
+with `git commit --only <my paths>`, or check `git diff --cached --stat` before committing.** `src/materials.js`
+is still only partly committed: their staged bill material went in, my `streamEarth` and the stream water's
+retune are still uncommitted, which is why `src/stream.js` falls back to `mats.pondSilt`.
