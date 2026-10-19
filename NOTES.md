@@ -10139,3 +10139,48 @@ before anyone raises the light budget on the strength of a measured gain: the bo
 GPU can say what it costs. Everything above stands as the shipped state — the bollard lamps were reverted, and
 the eight glowing bulbs by the terrace stay unlit until someone answers why a lamp made after the first compile
 paints nothing even when Babylon lists it among the mesh's light sources.
+
+## Session eighty-four, sixth stretch (THE EYES ARE OPEN — and the flickering panel is real)
+
+The edict says vision is on, and it is: `read` on a picture now shows the picture. Everything below was seen,
+not inferred. Three keepsakes are in `pictures/` — `s84-start-vision.png`, `s84-store-panel-5m.png`,
+`s84-store-panel-close.png`.
+
+The flickering panel is found and it is not a shadow. The stand the numbers picked (`5.6,1.6,-19,0,-0.14`,
+hour 10) shows the same corner the master photographed, and at 1280 px the panel — `storeWallNorthPart1` in
+`plasterDark`, in the grey cement frame of the store — carries two things a plain wall should not:
+
+* a **hard diagonal** across the face, one half dark olive, the other half a shade lighter, the edge straight as
+  a ruled line from top-left to bottom-right;
+* a **comb of level stripes**, about 20 cm apart, across the lit side and across the frame beside it.
+
+Up close (2.3 m) the same face is perfectly smooth: row means swing 1.3 and no sharp step anywhere. So both
+marks arrive with distance, which is why every numeric hunt so far — `tools/flicker.js`, `tools/shadowcrawl.js`,
+`tools/shadowgrain.js`, all at 480 or 640 px — reported nothing. This is the fault the master has watched for a
+long time, and it is on the surface of a plain wall, which means one of the meshes out there is painting it.
+
+Four causes were killed, each with a number, and one of them was killed with a source edit after live writes
+proved unreliable (`receiveShadows` and `castShadow` set in the page do not change this picture at all):
+
+| suspected cause | test | result |
+|---|---|---|
+| 8-bit banding from tone mapping and contrast | `pipeline.imageProcessing.ditheringEnabled` off then on (`tools/grades.js`) | shades 56 → 59, row swing 29.7 → 29.3, steps unchanged. Nothing. Reverted. |
+| shadow-map dither on the panel | `receiveShadows = false` on the whole store shell, in source | row swing 29.3, stripes still there. Reverted. |
+| the plaster pattern's own coarse mottling (6 noise cells across a 1.2 m tile = 20 cm plates) | tile 1.2 → 0.8 m and the wash spread 1.35 → 0.95 | hard steps halved (0.31% → 0.16%) but row swing went up (29.7 → 32.8) and the plates stayed. Reverted. |
+| tile seams in the plaster canvas | read the noise: `valueNoise` wraps modulo the cell count, and `metricUVs` lays UVs in metres of world position, so both tile and continue across parts | seams impossible. |
+
+`tools/cover.js` at that stand says `plasterDark` paints 30.6% of the frame at (61,57,39) — the dark field is
+the store's own cement, roof included. So the next hand should not theorise: **hide one mesh at a time and look
+again**, which `tools/cover.js --js` does in one line —
+
+```
+node tools/cover.js --view "5.6,1.6,-19,0,-0.14" --js "for (const m of scene.meshes) if (/storeWallNorth|storeRoof|storeLining|backBand/.test(m.name)) m.setEnabled(false)" --label "store shell hidden"
+```
+
+— and the diagonal belongs to whichever hiding makes it vanish. My guess, unproven and written down as such, is
+`storeRoof`: it is plasterDark too, it lies directly above the panel, and `cover.js` picked it as the sample
+behind a plasterDark point.
+
+Also learned the hard way: **live in-page writes to `receiveShadows` / `castShadow` do not alter the rendered
+picture in this build**, so a shadow hypothesis can only be tested in the source and measured — the same lesson
+the lamp hunt taught about `setEnabled`, one class wider.
