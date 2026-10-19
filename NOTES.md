@@ -10450,3 +10450,24 @@ Now: `grain.intensity` is 1.1 and **the grain is not animated by default**, with
 identical between frames — mean 0.00, worst 0 — while the still picture keeps its grain. The remaining marks (the
 diagonal and the comb) are the un-convolved sky cube's diffuse light and are for the HDRI, which is still the right
 cure and still not done.
+
+## Session eighty-four, fourteenth stretch: nothing broke when the grain came down, and the dusk sky is smooth
+
+Three loose ends tied off after the grain fix, all measured.
+
+**The grain reduction revealed no banding.** Grain masks quantisation steps, so dropping it from 3.5 to 1.1 could
+have let flat gradients posterise. It did not: on the store's panel `tools/grades.js` reports 31 shades against 32,
+row swing 14.4 either way and hard steps 0.08% either way, and Babylon's dither still buys nothing (0.08% both
+ways). The dusk sky over the pool is likewise clean — 55 shades across a 640-pixel band whose whole swing is 2.9
+units, and 56 with the old grain. I stretched that band to four times its brightness and looked at it: a smooth
+teal ramp, no steps the eye can find. The "2.5% hard steps" the tool reported there are one- and two-level changes
+that are invisible at any distance.
+
+**`albedoTexture = null` is not a valid diagnostic here, and I nearly read a fault into it.** Stripping the plaster
+picture from `plasterDark` sends the panel from mean 49.4 to **139.6** with a row swing of 152 — the material's
+colour lives in the canvas, not in `albedoColor`, so removing the texture does not isolate the texture, it changes
+the material into something else. Worth writing down because it is exactly the kind of clean-looking test that
+lies.
+
+`tools/grades.js` now takes `EXTRA` the way `tools/surface.js` does, so any address-bar switch can be A/B'd against
+a material experiment run through `PRE`.

@@ -22,7 +22,7 @@ const b = await chromium.launch({
 const page = await b.newPage({ viewport: { width: 1280, height: 960 } });
 
 const read = async (dial, tag) => {
-	await page.goto(`http://localhost:8090/villa/index.html?view=${VIEW}&hour=${HOUR}&still=1&dither=${dial}`, { waitUntil: "domcontentloaded" });
+	await page.goto(`http://localhost:8090/villa/index.html?view=${VIEW}&hour=${HOUR}&still=1&dither=${dial}${process.env.EXTRA || ""}`, { waitUntil: "domcontentloaded" });
 	await page.waitForFunction(() => window.__villa && window.__villa.scene.isReady(), null, { timeout: 180000 });
 	await page.waitForTimeout(11000);
 	const f = `/tmp/grades-${tag}.png`;

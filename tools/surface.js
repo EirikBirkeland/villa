@@ -25,6 +25,9 @@ const page = await b.newPage({ viewport: { width: 1280, height: 960 } });
 await page.goto(`http://localhost:8090/villa/index.html?view=${VIEW}&hour=${HOUR}&still=1${process.env.EXTRA || ""}`, { waitUntil: "domcontentloaded" });
 await page.waitForFunction(() => window.__villa && window.__villa.scene.isReady(), null, { timeout: 180000 });
 await page.waitForTimeout(10000);
+// `PRE` runs in the page before anything is measured, so a material property can be tried without touching
+// the source: PRE='window.__villa.mats.plasterDark.reflectionIntensity = 0' node tools/surface.js ...
+if (process.env.PRE) await page.evaluate(process.env.PRE);
 
 const rect = await page.evaluate(([name, tag]) => {
 	const V = window.__villa, S = V.scene;
