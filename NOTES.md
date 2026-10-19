@@ -9954,3 +9954,51 @@ varied surface. `mats.streamWater` stands at roughness 0.06 with environmentalIn
 mirror colour of its own, which is the same trick the pool plays (this Villa has no mirror texture
 anywhere; every reflection in it is the environment seen in a smooth material, and the pool's shader
 note says why). Nothing to build.
+
+## Session eighty-four (the master's frogs come home, and the back door gets two real lamps)
+
+**The frogs.** The master came back with "really f***ing weird sounds around the lake, i nearly have
+to turn this off", then "high-pitched f***ing sounds", then, when I started taking the croaking out
+as well: "RESTORE THE CROAKING I CREATED … v0.98.3/ has the original frogs. That sound is holy."
+That is the whole story of the fault: I moved the chosen recording out of the way behind two new
+ones. `src/sound.js` now reads `frog: { file: "sounds/frogs-night.mp3", slice: [1.0, 2.1], trim:
+0.34 }` — byte for byte what v0.98.3 shipped — and the held `frogChorus` bed is out of
+`RECORDINGS`, out of `LEVEL`, and out of `startBeds` in `src/main.js`. `sounds/frog-croak.mp3` and
+`sounds/frogs-pond.mp3` are deleted and their credit lines are replaced by a note of why they are
+not here. `tools/held.js` now reports one held bed at the water, the trickle, and nothing else.
+
+What I actually got wrong is not "picked a bad file". It was a theory: that one frog on a stone
+should not open a whole pond in its throat. The theory is defensible and the master's ear is the
+instrument that decides, and the same ear had already condemned the synthesised stream hiss and the
+borrowed crickets. Two rules for the next session, both learned the same way: **never replace a
+sound the master chose without being asked**, and **a sound is shipped by ear and not by numbers**.
+Also noted for my own benefit: "the lake" is the pond.
+
+**The lanterns.** Chased a different black-board fault with the new `tools/whowlights.js`, which
+names the lights Babylon actually assigns to a named mesh instead of the list a person believes they
+switched on. From the lawn behind the house at hour 22 the villa's plaster was painted (8,7,3) over
+a third of the frame and the brightest pixel in the whole picture was (9,9,4): the two
+`backLantern` boxes were emissive glass throwing nothing at all, while the two pool fill lamps —
+14 m away, behind a wall — were being handed slots on the same material for nothing.
+
+So the cases hold real lights now (`src/villa.js`, `scene.wallLamps`, range 5 m, warm, intensity 11)
+and `src/daylight.js` drives them off the same night number as every other bulb, with one addition
+worth keeping in mind: a light at zero intensity still stands in the queue for the six slots any one
+surface is given, so a dark lantern is `setEnabled(false)`, exactly as the torch learned. Left
+enabled at zero, those two dark lanterns took the room at ten in the morning from a mean of 120
+down to 117 and nothing else in the garden moved at all.
+
+Measured, `tools/shadowgrain.js` over the five standard views: rear at hour 22 mean 12 to 29, pure
+black 19.03% to 2.55%; rear at 20 mean 31 to 41 and its black gone; westwall at 22 black 7.9% (it
+was 12.7%). Every daylight view is where it was, to one unit: front 86, rear 94, westwall 98, grass
+97, room 120. The night is not bright — a moonless garden should not be — but it is now a garden
+with light in it rather than a silhouette with dots.
+
+**Released as v0.99.2**, preview mean 106.9, no white and no black crushed. `releases/v0.99.2/sounds/`
+holds `frogs-night.mp3` and nothing else of the frog kind.
+
+**Next.** The midnight `westwall` view is still the darkest of the five at 7.9% pure black; the
+lanterns are on the back face and the west wall has no lamp of its own, so that is the next thing
+looked at — and the same `whowlights.js` question asked of it: what is Babylon lighting, and what is
+only painted. The flickering panel from `owner-flickering-wall.png` still wants the hour and the
+standing place from the master, and nothing has been guessed at in its name.
