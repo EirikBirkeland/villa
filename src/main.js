@@ -634,6 +634,20 @@ function boot() {
 	const day = buildDayCycle(scene, {
 		sky, light, hemi, bounce, mats,
 		water: mats.water,
+		// Materials whose emissive colour stands for daylight — on the water, in the damp earth of the
+		// watercourse's banks, and coming through the garden's leaves. None of them has a lamp of its own, so the
+		// day cycle takes the borrowed light back when the sun goes; see `sunGlow` in `src/daylight.js`.
+		sunGlow: [
+			{ mat: mats.pondWater, amount: 0.92 },
+			{ mat: mats.streamWater, amount: 0.92 },
+			{ mat: mats.streamEarth, amount: 0.92 },
+			// The veil is the one surface in the garden that draws all its light from itself (`disableLighting`),
+			// so its emissive is not a nudge but the whole of it: taken down to a fifth, it is a dim silver thread
+			// under the moon instead of a lit sheet at midnight.
+			{ mat: mats.streamFall, amount: 0.8 },
+			...["bush", "bushEdge", "bushLeaf", "palmLeaf", "bananaLeaf", "jungle", "jungleFar", "tuft", "hedge", "hedgeCrest", "lilyHeart"]
+				.map((name) => ({ mat: mats[name], amount: 0.62 })),
+		].filter((entry) => entry.mat),
 		roomLamps: scene.roomLamps,
 		poolLights: pool.lights,
 		start: dial("hour", 17.5),

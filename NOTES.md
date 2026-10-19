@@ -9581,3 +9581,105 @@ ribbon — 1.6 m of channel seen end-on at thirty metres — and it is only at t
 which is how a stream behaves and not a fault to fix. A balloon view was tried three times and each time a palm
 stood in the way (palmLeaf 15-18% at 5-6 m): the garden's palms are between the house and the watercourse, and
 that is where the master put them for the shade.
+
+**Addendum, same session, after the master went away.** He had said the fish were cuter but looked like mini
+sperm whales and their tailfins were "kinda disconnected". Both were true, and one of them was a second bug.
+
+- **The whale was the head's slope, not its width.** Tapering gradually from the nape to the snout makes a
+  dolphin with fins on it (`pictures/tmp-koi-live2-f4.png`). A carp's head is a **plateau with a cliff at the
+  end of it**: broad and flat across the crown from behind the eye to the front, dropping only in the last
+  tenth where the mouth hangs. The last three stations of all three tables now say so.
+- **Two of my own new fins were hung in the wrong local frame.** `z(t)` measures from the fore node at
+  t = 0.6; I used it for fins parented to `mid` (node at 0.3) and to `rear` (node at the tail tip, t = 0), so
+  the anal fin sat forty-odd centimetres behind the tail and the ventrals floated out through the narrow
+  tail like broken paddles — visible as pale quads adrift in `pictures/tmp-koi-live.png`. There are now
+  three rulers, `z`, `zm` and `zr`, one per segment, and each says which node it is measured from.
+- **The tool was lying, which is why I did not see it at once.** `tools/koishot.js` printed each piece's
+  *origin*, and a fin built by `fin` sits at the origin of the node it hangs from and carries its shape in
+  its own vertices: the anal fin printed as if it were on the tail, next to it, at the same coordinates. It
+  now prints the world middle of the piece's box, and a new `t=` column that says where it falls along the
+  fish — 0 at the tail tip, 1 at the snout, and anything outside 0..1.3 is a piece floating in the water.
+  That column is the check; it now reads TailFin -0.05, Anal 0.19, Ventrals 0.47, Dorsal 0.67, Pecs 0.71,
+  Eyes 0.84, Mouth 1.00 — every piece on the animal.
+- **A live frame is a different instrument from a frozen one.** `--live` leaves the animal running and
+  re-aims the eye at it every frame; `--shots N` takes N frames a third of a second apart. Both bugs above
+  were invisible in the frozen pose and obvious in the swim, which is the whole reason it was worth building.
+- **The wake was already built.** `src/pond.js` has six rings lying on the water, and `splash(x, z, shape)`
+  with a shape for a koi — wide, faint, slow — which `src/koi.js` already spends when the back comes within
+  4 mm of the surface. I came to invent a dimple and found the door already open. Nothing added.
+- **What it costs.** Each fish went from 1098 to 1500 triangles (four fish: +1.6k triangles, and `girth` 11 →
+  13 is most of it). `node tools/fps.js` reads 60.0 fps here and 60.1 on the last release, so the frame rate
+  is not where this change shows; the triangle count is the honest number, and it is small.
+- **The releases have already eaten my work, unasked.** `releases/v0.98.0/src/loft.js` contains my `capStart`
+  and `releases/v0.98.1/src/koi.js` contains my tail-fin fix: the stream hand's `release.sh` copies the
+  working tree, and my files were sitting in it uncommitted, so two published releases carry a mid-work
+  carp without a line in `CHANGELOG.md`. Nothing is broken — release.sh checks the syntax and a preview was
+  drawn — but it is the mirror image of the mistake recorded above, and it is the reason I am not releasing
+  or staging anything of mine from this session while another hand is working in the same tree. The master
+  can release when he wants the carp published with a line of his own saying so.
+
+**Scratch cleared.** The `pictures/tmp-koi-*` that no file or comment points at are gone; the ones the code
+cites as evidence (`tmp-koi-front`, `-side5`, `-measure`, `-qtr7`, `-live`, `-live2-f4`) stayed, and the
+record set is `pictures/koi-before-{3m,top,side}.png`, `koi-side.png`, `koi-face.png`,
+`koi-three-metres.png` and `koi-from-the-bank.png`.
+
+**Still open, in order of what a visitor would notice.** The body seams still show as two faint shading bands
+at the joints at half a metre (gone by three). The caudal is a single zero-thickness sheet, so it is at its
+best moving and its worst frozen. Seen from straight above a fish is still a pale spindle — honest, dull, and
+the wake now does more for that view than any geometry would. And the koi have never been looked at in the
+evening or under the lamp: every picture in this session is at half past five.
+
+---
+
+## Session seventy-seven: the night takes back the light it lent (and the head of the stream becomes a hill)
+
+Worked AFK, two things, both from looking at pictures and not from numbers in the code.
+
+**1. The head of the watercourse.** The first hummock was a pancake — a 0.4 m sphere sunk 0.14, so its crown
+stood 12 cm over the lawn while the water's surface stood at 15: a flat dirt disc lying BEHIND the end of the
+channel, which is a lid on a table and not a spring. It is now a proper hill: 1.7 m across the course, 1.1 m
+along it, its crown 0.54 m over the lawn, its centre pulled 35 cm downstream so the water is buried for the
+first three quarters of a metre and comes out where the hill's own surface meets the water. That is what a
+spring looks like — not an edge, a coming-out. Three changes follow from the height:
+  - the stone that sits on the hill is settled on `moundAt(x,z)` — the hill's own surface at that spot — and not
+    on 0.02, which is the lawn: settled to the lawn it would have stood under half a metre of earth;
+  - the hill is added to `blockers`, because `makeGround` knows nothing about it and a visitor would have walked
+    through a hill at lawn height;
+  - the hill goes into the same "no planting here" list the stones are in: it is bare, damp, newly-washed ground.
+Measured: mound crown 0.54, head stones' crowns 0.20/0.21/0.57, blockers 9 → 10, walk along either bank and
+along the hedge unchanged, 60 fps, 1475 meshes.
+
+**2. The garden at night was glowing.** Measured at midnight from the bank: lawn (8,20,2), stones (16,17,10),
+sky (5,31,51) — and the water (41,44,23), the earth banks (44,33,14). A dark garden with a luminous ditch
+through it. The same fault was worse in the trees: palm leaves (26,67,5) and banana leaves (26,65,3) at midnight
+against a lawn of (4,21,6). The cause is the same in both cases and it is a trick I use on purpose by day — a
+little `emissiveColor` standing in for light bouncing off the lawn and the sky — and nobody had ever asked what
+happens to the borrowing when the lender goes away.
+
+`src/daylight.js` now owns it. `rig.sunGlow` is a list of `{ mat, amount }`; the day cycle saves each material's
+own `emissiveIntensity` at boot and writes `at * (1 - amount * night)` every frame, in the same place it already
+rides the pool's water and the mirrors. Water, damp earth and the veil go down to about a tenth (they have no
+lamps); the leaves go down 62%, which keeps palm (16,44,4) clear of the lawn (4,21,6) under the moon — a frond
+still has shape at midnight, which is the difference between a night garden and a photograph of a lamp.
+
+`amount` was set from a picture and not from a theory: at 0.78 the leaves went to (13,35,3) and the whole view
+went 22% pure black, which is a black picture with some green in it. At 0.62 it is 20.9% black, which is what
+v0.98.1 already was. Measured against v0.98.1 at the same hour on the arrival view: mean 102 against 103, so the
+day costs nothing — at `night = 0` the multiplier is exactly 1 and nothing has moved.
+
+The pool's water is deliberately NOT in the list: it has two fittings in its far wall that are real lamps, and
+`waterEm` already takes it only halfway down because half of what it shows is electric.
+
+**Note to the next session.** `tools/cover.js` takes its URL as the first bare argument
+(`node tools/cover.js "http://localhost:8090/villa/index.html?hour=23.4" --view ...`); `--case` is a label
+only and changes nothing. And the day runs while a tool waits, so two runs of two different builds are only
+comparable at a stated hour — always pass `?hour=` when comparing a night.
+
+Look at: `s109-head.png`, `s109-head2.png`, `s109-mouth.png`, `s109-night-bank.png`, `s109-night-palms.png`,
+`s109-night-home.png`, `s109-dusk-bank.png`.
+
+Still owed, and unchanged: the stream and its veil have no mirror of their own; the raven still has no coin
+photographed on the ground; the dawn chorus and the cicada are still synthesised.
+
+— Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who dug a hill in the dark and
+took the garden's borrowed glow back at midnight. The horse kneighs; the anvil stays. 🐎🌙

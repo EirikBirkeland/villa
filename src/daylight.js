@@ -245,6 +245,22 @@ export function buildDayCycle(scene, rig) {
 		room: (rig.roomLamps || []).map((l) => l.intensity),
 		mirror: rig.water && rig.water.reflectionTexture ? rig.water.reflectionTexture.level : 1,
 	};
+	/**
+	 * Materials whose own glow is borrowed daylight: the pond's water, the watercourse's water, and the damp
+	 * earth of its banks. Each was given a little emissive colour to stand in for the light coming back off the
+	 * lawn and the sky, which is honest at noon and a lie at midnight — measured at midnight on the bank view,
+	 * where the lawn had fallen to (8,20,2) and the stones to (16,17,10) while the water sat at (41,44,23) and
+	 * the bank at (44,33,14): a garden gone dark with a luminous ditch through it.
+	 *
+	 * The pool's water is NOT in this list. It has two fittings in its far wall that are lamps, and it is
+	 * handled by `waterEm` above, which takes it down only halfway because half of what it shows is electric.
+	 * The pond and the watercourse have no lamps at all, so their borrowed daylight goes almost all the way.
+	 */
+	const sunGlow = (rig.sunGlow || []).map((e) => ({
+		mat: e.mat,
+		at: e.mat.emissiveIntensity,
+		amount: e.amount === undefined ? 0.92 : e.amount,
+	}));
 	// What they look like burning: garden bulbs a warm amber loud enough to trip the bloom (its threshold
 	// is 1.6, so a bulb under that is a grey bead and over it is a lamp), and the pool's two fittings
 	// turned back into the lamps they are shaped like.
@@ -330,6 +346,13 @@ export function buildDayCycle(scene, rig) {
 		// bright band at that end and dark blue everywhere else. Left whole, the whole plate glowed like a
 		// shampoo bottle in a hotel advertisement.
 		if (rig.water) rig.water.emissiveIntensity = off.waterEm * (1 - 0.5 * n);
+		// The pond's and the watercourse's glow is daylight bouncing off grass, and when the daylight goes the
+		// borrowing has to stop with it. Kept a little short of zero: a moon exists, and water under a moon is
+		// not invisible.
+		// Borrowed daylight going back to the day that lent it. `amount` is how much of it is taken away at the
+		// darkest: water and damp earth almost all the way, leaves rather less, because a frond under a moon and
+		// a garden lamp still shows its shape.
+		for (const g of sunGlow) g.mat.emissiveIntensity = g.at * (1 - g.amount * n);
 
 		const night = n > 0.5;
 		if (night !== wasNight) {
