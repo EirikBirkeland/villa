@@ -10530,3 +10530,14 @@ recorded here rather than trusted to survive.
 * **One face, one name.** `tools/surface.js` already ties a measurement to a mesh the picker answers, and now
   takes `PRE` for a live material write and `EXTRA` for any address-bar switch — that pair is how the grain, the
   environment, the fog and the environment-cube size were each killed one at a time.
+
+## Session eighty-four, twentieth stretch: the edict's simple-settings list, checked line by line
+
+The edict asks for a list of plain render settings and says to check each one in a picture. All of them are in the
+build and were found in the source rather than assumed: full pixel ratio (`src/main.js:124`,
+`setHardwareScalingLevel(1 / min(1, devicePixelRatio))`), FXAA (`:368`), four samples of multisampling with
+`?msaa=1` as the way back (`:375`), anisotropic filtering at sixteen (`src/textures.js`, measured in v0.99.3),
+tone mapping switched on (`:391`) and bloom on (`:376`). What the edict asks for beyond that is the heavier end —
+SSAO2, larger soft shadow maps, and the image-based lighting from a Poly Haven HDRI, which is where the block and
+the measurements already written above live. So a next hand should not re-litigate the simple settings: they are
+done, measured, and shipped.
