@@ -10370,3 +10370,28 @@ cut in its light with a twentieth of the change is sitting on the flat top of th
 dim the way light dims. The lever is the exposure and the tone curve in `src/tone.js` and the pipeline, and that
 is calibration of the whole Villa — it is the master's eye, not my arithmetic. It is written here so the next
 hand does not rediscover it from the beginning.
+
+## Session eighty-four, eleventh stretch: four fifths of the daylight was fill, so the fill was halved
+
+The tone curve turned out to be innocent. I measured how the front of the house answers its sun, at noon and at
+dusk, by dialling the sun down from the address bar: **the two answers were the same** (relative response 1.00,
+1.57, 2.82, 5.22 at noon against 1.00, 1.57, 2.87, 5.42 at dusk). No bend, no ceiling difference — the surface
+behaves the same at every hour. What the numbers were really telling me is in the first pair: at noon, cutting the
+sun from 61 to 9 — a seventh of what it was — only took the sunlit strip from 142.5 to 109.7. **The sun carries
+barely a fifth of the daylight.** The hemisphere, the bounce and the sky's own fill carry the other four fifths,
+and that is the flatness and the un-dimmable dusk in one fact: take the sun away and the garden hardly notices.
+
+So the daylight fill was halved and the sun lifted to pay part of it back, in `src/daylight.js`, at the one place
+the day writes its numbers: fill (hemi and bounce) by `1 - 0.5*w`, the environment by the same, the sun by
+`1 + 0.28*w`, where `w` is one minus the day's own `night` factor. **All three ease back to one as night comes
+on**, because the moon's fill was tuned on its own numbers and the night was measured carefully and is left alone
+— hour 21 still reports hemi 1.25, env 0.07 and the same night it always had. Measured over the day from the
+front stand: no hour shows black crush (worst is 0.41% at nine at night), noon sits at 131.7 against the 138.2 it
+was, the sky-over-ground ratio runs 1.17 to 1.25 through the daylight hours, and the dusk ratio that started this
+at 0.49 now reads 0.92 in the same framing as the trial. Seen with the eyes at one o'clock: shadow under the eaves
+with a floor in it, a roof with relief, a pot that is round, and a shark under the water. Seen at six it is dusk.
+
+Honest about the risk: this is a global light change and it moves the midday brightness by five per cent, which
+is the kind of thing I have been leaving for the master's eye. It goes in because the fault is measured, the
+direction is the edict's own — fidelity across the board — and the whole thing is four numbers in one file with
+the address-bar dials still on top of it: anyone who disagrees says so and the factors go back to one. `pictures/s84-fill-noon.png`.

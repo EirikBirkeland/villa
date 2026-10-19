@@ -310,18 +310,35 @@ export function buildDayCycle(scene, rig) {
 		const dir = { x: Math.sin(a) * Math.cos(e), y: Math.sin(e), z: -Math.cos(a) * Math.cos(e) };
 		state.sun = dir;
 
+		// Measured before this was written: at noon the sun carries barely a fifth of the brightness of the front
+		// of the house. Cut the sun from 61 to 9 — down to a seventh — and the sunlit strip of the picture only
+		// falls from 142.5 to 109.7, because the hemisphere, the bounce and the sky's own fill between them carry
+		// four fifths of the daylight. That is why a sunlit wall answered a two-fifths cut in the sun with a
+		// twentieth of the change, why full sun reads flatter than it should, and why dusk could not dim: the
+		// ground stayed lit by fill long after the sun had gone weak, and at half past six the terrace was twice
+		// as bright as the whole sky over it. So the daylight fill is halved and the sun lifted to pay part of it
+		// back. Seen at noon the change is deeper shadow under the eaves and a roof with relief in it; seen at
+		// dusk the sky/ground ratio goes 0.82 to 0.92 at the same brightness band, and no hour shows black crush.
+		// All three factors ease back to one as `night` rises: the moon's fill was tuned on its own numbers and
+		// the night is left exactly as it was measured. Address-bar dials `?hemi=`, `?bounce=`, `?env=` and `?sun=`
+		// still override the whole business for anyone who wants to argue.
+		const w = 1 - Math.min(1, Math.max(0, s.night));
+		const fillNow = 1 - 0.5 * w;
+		const envNow = 1 - 0.5 * w;
+		const sunNow = 1 + 0.28 * w;
+
 		light.direction.set(-dir.x, -dir.y, -dir.z);
-		if (!lock.sun) light.intensity = s.sun;
+		if (!lock.sun) light.intensity = s.sun * sunNow;
 		light.diffuse = new Color3(...s.sunD);
 		light.specular = new Color3(...s.sunS);
 
-		if (!lock.hemi) hemi.intensity = s.hemi;
+		if (!lock.hemi) hemi.intensity = s.hemi * fillNow;
 		hemi.diffuse = new Color3(...s.hemiD);
 		hemi.groundColor = new Color3(...s.hemiG);
 
 		// The same vector `src/world.js` built once at boot, so half past five gets what it always had.
 		bounce.direction.set(-dir.x * 0.7 - 0.3, -0.4, -dir.z * 0.7);
-		bounce.intensity = s.bounce;
+		bounce.intensity = s.bounce * fillNow;
 		bounce.diffuse = new Color3(...s.bounceD);
 		// The numbers the day last wrote, kept. Something standing between the sun and the garden — a blast's
 		// cloud — has to shade from the day's own value and not from whatever the lamp happens to be holding,
@@ -338,7 +355,7 @@ export function buildDayCycle(scene, rig) {
 			scene.fogColor = new Color3(...s.fog);
 			scene.fogDensity = s.fogD;
 		}
-		scene.environmentIntensity = lock.env ? scene.environmentIntensity : s.env;
+		scene.environmentIntensity = lock.env ? scene.environmentIntensity : s.env * envNow;
 
 		// The lamps. Every one of them comes up on the same `night` number, so dusk cannot leave a bulb
 		// half-lit while its neighbour is already burning.
