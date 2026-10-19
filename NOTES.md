@@ -9782,3 +9782,66 @@ synthesised.
 
 Look at: `s111-raven-coin.png`, `s111-raven-both.png`, `s109-head.png`, `s109-head2.png`,
 `s109-night-bank.png`, `s109-night-palms.png`, `releases/v0.98.3/preview.png`.
+
+## Session eighty-one (torch made honest, and what is really wrong with the light budget)
+
+WHAT I DID. Went after the master's two "fix first" faults and, on the way, found that the
+flashlight I had just added was not working at all. Three faults in it, none of them visible
+in a single picture, all of them found by reading pixels:
+
+  It imported Babylon as a package. The Villa loads Babylon as a global script with no import
+  map, so the whole page failed to boot and every measurement I took afterwards was a
+  measurement of nothing.
+
+  The SpotLight constructor's sixth argument is the spread within the cone, not the
+  brightness; nine there narrows a spotlight to a pinprick. Written by name afterwards: with
+  the cone of dust hidden, the lamp at the old number moved the middle of a night frame by one
+  point of luma; at two it moves the paving under the sight from 11 to 15 and its brightest
+  part from 14 to 30.
+
+  The cone of dust was a PBR material with transparencyMode 3, and on a PBR material 3 is a
+  DECAL and not an additive blend: it painted a black wedge over the garden. Plain
+  StandardMaterial with ALPHA_ADD now.
+
+  Switched off, the lamp was still enabled at zero intensity. Babylon gives any one surface six
+  lights out of the twelve this garden carries, and the unlit torch was wearing a slot the
+  sky's own fill wanted — measured on the plaster lining of the back wall. It is disabled now.
+
+THE THING THE MASTER SHOULD DECIDE. Six lights is not enough for this house, and it is not a
+matter of taste alone: the interior's six slots are a contest whose order depends on where the
+visitor stands, so which lamps a wall wears changes as you walk. Raising every material to
+thirteen costs nothing in frames — 60 fps before and after — but it repaints the garden:
+
+  view                     six lights   thirteen lights
+  inside the house            136            146
+  the house from the pool      96             85
+  the lawn by the pond         53             43
+
+Those are the master's calibrated colours and I will not change them on my own authority. My
+own opinion, offered but not pressed: six is why the interior goes dark at dusk at all, and
+thirteen is the honest number. If the master says so, the garden needs repainting afterwards.
+
+THE FLICKERING PANEL, WHERE I GOT. The owner picture (2283x1729) reads, by colour, as: a dark
+panel (45,43,28), a grey frame band (92,86,63), a red-brown band on its right (131,120,94),
+plain plaster (139,127,89) and blue sky above. I could not match a camera to it by eye, so I
+asked every mesh in the Villa for its six faces and reported pairs lying in the same plane.
+The suspects, with the overlap between them:
+
+  wallBackPart0 / liningBackPart0    at z = -11.625    45.94 m2
+  storeWallWest / storeLiningWest    at x =   4.35      4.76 m2
+  backPlinth / interiorFloor         at y =   0.5     106.4  m2
+  deckWalk / terrace                 at y =   0       18.02 m2
+
+A note in villa.js already admits this class of fault: the store threshold was left out because
+a threshold piece "would lie a second skin of floor on top of the ones that are already there
+and flicker against them". tools/flicker.js photographs one unmoving view repeatedly and names
+the cells that will not settle; run on the back store it found only 0.11% of pixels moving,
+which is leaves and water. I need the master's camera, or one more look at the picture, to
+finish this one.
+
+THE DOOR FROM INSIDE. The doorway into the store is cut through the back wall at x 4.9 to 6.3,
+from the floor to 2.85 m, and the interior lining is cut with the same opening, so the hole
+itself is right on both sides. What sits high in the store's rear wall is a band of glass at
+y 2.92 to 3.30 with a teak frame and mullion, and the store's fittings are deliberately left
+out of the room's lamp list — which is what I think the master is describing: the door reads
+well and the only thing that catches the eye above it is a small framed panel. NOT FIXED YET.
