@@ -1416,27 +1416,23 @@ export function createMaterials(scene) {
 	mats.pondWater.roughness = 0.05;
 
 	// The stream (`src/stream.js`): the same law as the pond's surface — see-through looking down, a mirror at
-	// a graze (`src/water.js`) — in a shallower and brighter key. Twenty centimetres of moving water over a
-	// stone bed is not a pond: there is less of it, so less of what lies under it is hidden, and what lies
-	// under it is pale stone and not black silt. The film is therefore stronger and the alpha weaker than the
-	// pond's, and the chop is livelier, because a stream is a surface being dragged along its bed.
-	mats.streamWater = pbr(scene, "streamWater", { roughness: 0.06, alpha: 0.46, environmentalIntensity: 0.9, pattern: 2.0 });
+	// a graze (`src/water.js`) — in a shallower and livelier key. It used to be BLUE, and the blue was honest for
+	// what the channel then was: twenty centimetres of clean water over a pale stone bed, which is a blue-green
+	// and nothing else. The channel is dirt now — earth banks, an earth bed, stones at the edge — and water over
+	// mud is not blue. It is the pond's tannin, lighter, because there is a tenth as much of it and it is being
+	// dragged along its bed: a shallow run of muddy water, the colour of what lies under it.
+	mats.streamWater = pbr(scene, "streamWater", { roughness: 0.06, alpha: 0.5, environmentalIntensity: 0.85, pattern: 2.0 });
 	mats.streamWater.transparencyMode = 2;
-	mats.streamWater.albedoColor = new Color3(0.02, 0.032, 0.03);
-	// The colour of twenty centimetres of clean water over pale stone: a blue-green, and brighter than the
-	// pond's tannin because there is nothing rotting in this channel.
-	mats.streamWater.emissiveColor = new Color3(0.05, 0.14, 0.2);
-	// The blue is put in the FILM and in the BED, and nowhere else: weighed against the whole frame of the
-	// path view, the surface paints (105,108,104) with the film at (0.04,0.095,0.135) and (108,106,100) with a
-	// dark bed under it, and the sun's glints along a channel seen end-on are (209,193,174) whatever the
-	// material is told. Loud as those glints are, they are the truth for twenty centimetres of moving water in
-	// open sun; what the eye needs to call the band water is the blue-green between them.
-	// What it mirrors: the hedge and the palms on one side and the open sky on the other, so a mid-way grey-
-	// green, brighter than the pond's leaf shade because the stream runs in the open lawn and not under them.
-	// Leaning blue and not green: measured across the path view, a mirror of [126,148,138] painted the surface
-	// (101,101,92) — red and green equal and the blue behind them, which against olive grass is a wet band of
-	// anything at all (`tools/cover.js`). With the blue put in front the surface reads as water.
-	mats.streamWater.mirrorColor = paint([100, 140, 162]);
+	mats.streamWater.albedoColor = new Color3(0.014, 0.026, 0.018);
+	// The colour of fifteen centimetres of moving water over damp silt: a green with a breath of brown in it,
+	// and stronger than the pond's (0.02,0.045,0.026) because a shallow sheet lets more of the bottom through
+	// and the bottom here is soil at its lightest, not a metre of dark water over a basin.
+	mats.streamWater.emissiveColor = new Color3(0.055, 0.075, 0.045);
+	// What it mirrors: the hedge behind, the palms leaning over from the east, and open lawn — a grey-green, a
+	// little brighter than the pond's leaf shade because the watercourse runs in the open and not under the
+	// palms. The blue is gone from here too: a blue mirror over an olive bed paints a wet band of anything at
+	// all, and the eye is not fooled by that.
+	mats.streamWater.mirrorColor = paint([112, 130, 106]);
 	// Its OWN ripple pattern, and it has to be its own: `animate` slides this texture's offsets downstream at
 	// eight centimetres a second, and sharing it with the pond would set the pond's surface running too.
 	mats.streamWater.bumpTexture = texture(scene, rippleCanvas(256, { strength: 11, seed: 671 }), {
@@ -1480,6 +1476,20 @@ export function createMaterials(scene) {
 	// the emissive above, which is the same lie the pool's tiles tell in the opposite direction.
 	mats.pondSilt.specularIntensity = 0.04;
 	mats.pondSilt.roughness = 1;
+
+	// The earth the watercourse is cut in (`src/stream.js`). It began by wearing the pond's silt, which is
+	// honest — both are damp soil — and came out of a browser the same olive as the grass it sits in: the bank
+	// measured (43,50,15) against the lawn's (62,84,19), so it had the right difference in brightness and none
+	// in colour, and a bank that is the colour of its grass is a bald patch and not a bank of earth. A stream's
+	// bank is dug, wet, clayey ground: warmer than the lawn, and a little browner than the pond's gravel.
+	mats.streamEarth = pbr(scene, "streamEarth", { roughness: 1, environmentalIntensity: 0.5, pattern: 0.55 });
+	mats.streamEarth.albedoColor = paint([158, 130, 94]);
+	mats.streamEarth.albedoTexture = texture(scene, soilCanvas(256, [88, 62, 40]), { name: "streamEarth skin", scale: 1 });
+	// A breath of its own light, warm: the banks stand in their own shade and in the grass's, and without this
+	// the soil goes the grey-green of a wet pavement.
+	mats.streamEarth.emissiveColor = new Color3(0.062, 0.046, 0.028);
+	// Damp clay, not dry dust: almost no specular, and what there is comes from the water film on it.
+	mats.streamEarth.specularIntensity = 0.05;
 
 	// A lily pad: a waxy disc lying on the water. It keeps a little of the water's own glass — a bead of
 	// rain sits on a pad for a whole morning — but not much, and none of it in the middle of the pad.
