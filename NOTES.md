@@ -10281,3 +10281,31 @@ and neither the specular term nor the roughness that should blur it has any say.
 small, un-convolved picture of a sky to hang as the whole Villa's image-based lighting. The edict's line
 *"image-based lighting from a Poly Haven HDRI"* is the cure; nothing short of it will do, and it moves the light
 of the entire Villa, so it is the master's decision and not a patch.
+
+## Session eighty-four, eighth stretch: a retraction about the HDRI, and what was really measured
+
+I told the master the Poly Haven sky "kills the marks". **That was wrong and it is retracted here.** The switch
+I wrote did not pour a real sky into the Villa; it took the environment away. Proof: with the swap in place the
+front of the house settled at mean **104.6** against **127.2** as released, and `scene.environmentIntensity`
+answered 0.40, 2.5 and 6.0 while the picture stayed the same to a tenth of a point — a sky that is in the scene
+does not behave like that. The store's panel going to mean 12.5 with hard steps at 0.18% was the panel in almost
+no light at all, not a panel cured. Reverted: `src/main.js` is back, and `vendor/polyhaven/` is deleted rather
+than left as a dead 1.4 MB in every release copy.
+
+What stands from the attempt, and it is what the attempt was really for:
+
+* A `CubeTexture` built from a `.hdr` in this vendored Babylon UMD **does not act as the scene's environment at
+  all** — no light, no reflection, and no response to the intensity, with the texture reporting itself ready and
+  no page error. That is the obstacle between the Villa and the edict's IBL line, and it is worth writing plainly
+  because it will waste an afternoon otherwise.
+* Poly Haven has no `.env` (their Babylon-prefiltered format) at 1k for the sky tried: the CDN answers
+  `{"code":"not_found"}`. The next attempt should ask their API which formats exist for a chosen sky and take the
+  `.env`, which arrives with the levels of detail already generated — or build the cube and blit the sky into it,
+  which is more work but stays inside the vendored library.
+* `scene.environmentIntensity` is rewritten every frame by `src/daylight.js:335` unless the `?env=` switch is
+  present, which is why an experiment that sets it in the page appears to do nothing. Measured both ways: 0.40
+  with the switch and 3.00 with the switch at 3, and the day's own value without.
+
+The marks themselves are still explained by the environment — zeroing the material's environment took hard steps
+from 3.13% to 0.47% and took most of the light with it — and the cure is still a properly convolved sky. It is
+simply not done, and no picture of mine says it is.

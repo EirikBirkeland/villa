@@ -22,7 +22,7 @@ const b = await chromium.launch({
 	args: ["--no-sandbox", "--use-gl=swiftshader", "--enable-unsafe-swiftshader", "--disable-dev-shm-usage"],
 });
 const page = await b.newPage({ viewport: { width: 1280, height: 960 } });
-await page.goto(`http://localhost:8090/villa/index.html?view=${VIEW}&hour=${HOUR}&still=1`, { waitUntil: "domcontentloaded" });
+await page.goto(`http://localhost:8090/villa/index.html?view=${VIEW}&hour=${HOUR}&still=1${process.env.EXTRA || ""}`, { waitUntil: "domcontentloaded" });
 await page.waitForFunction(() => window.__villa && window.__villa.scene.isReady(), null, { timeout: 180000 });
 await page.waitForTimeout(10000);
 
