@@ -564,6 +564,12 @@ sense, so they are set down here:
 - **settle** (a stone): to sink a worked stone into the ground it stands on until its crown is the height asked
   for (`settle` in `src/stream.js`). It has to happen after the stone is tilted and crumpled, because both move
   the crown: setting the middle first left eight of thirty-one edging stones under their own bank.
+- **borrowed daylight**: a material's `emissiveColor` standing in for light coming back off the lawn and the
+  sky — grass and earth are not lamps, but a garden lit only by one lamp and a hemi light reads flat, so a great
+  many materials here are given a little light of their own (`src/materials.js`). The phrase is used wherever the
+  night has to take it back again: `rig.sunGlow` in `src/main.js` is the list of materials whose glow is borrowed
+  in that sense and has no lamp behind it, and the day cycle dims them in `src/daylight.js`. The pool's water is
+  not borrowed daylight and is not in the list: it has two real fittings in its far wall.
 - **the veil** (of the fall): the sheet of water going over the lip into the pond — `streamFall`, wearing
   `mats.streamFall`, whose pattern `animate` slides downwards. Called a veil and not a sheet because it is
   water you can see through in one place and not in another, which is what `streakCanvas` in `src/textures.js`

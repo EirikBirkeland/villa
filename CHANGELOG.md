@@ -1,6 +1,23 @@
 # Changelog
 
 
+## 0.98.2 — 2026-10-19
+
+- **The head of the watercourse is a hill now, not a lid.** The earthen hummock where the water comes in was a
+  flat disc 12 centimetres tall lying behind the end of the channel; it is now half a metre high, straddles the
+  start of the course, and buries the water for its first three quarters of a metre, so the stream comes out of
+  the hillside instead of out from behind a plate. The stone on top is settled on the hill's own surface, the
+  hill keeps walkers off it, and nothing plants on it.
+- **The night takes back the light it lent.** A great many materials here carry a little `emissiveColor`
+  standing in for daylight bouncing off the lawn, which is honest at noon and a lie at midnight: measured at
+  midnight the water sat at (41,44,23) and its banks at (44,33,14) against a lawn of (8,20,2) — a dark garden
+  with a luminous ditch through it — and palm and banana leaves were at (26,67,5) and (26,65,3). The day cycle
+  now owns that glow and dims it with the hour, water and earth almost all the way and the leaves 62%, which
+  keeps a frond readable against the lawn under the moon. The pool's water is left alone: it has two real lamps
+  in its far wall.
+- **At the same hour in daylight the change costs one point of luminance** (102 against 103 measured against
+  v0.98.1 on the arrival view), because the multiplier is exactly 1 while it is day.
+
 ## 0.98.1 — 2026-10-19
 
 - **The trickle no longer turns itself up as you lean in.** Inside the bank distance the held-sound gain kept
