@@ -10341,3 +10341,32 @@ Freezing someone's mid-flight file into an immutable version folder is not this 
 committed and will ride with the next release; if the next session finds `src/koi.js` and `src/loft.js` settled,
 release then and the kumquat goes out with them. `src/loft.js` is not imported by `src/main.js`, so it cannot
 affect what a visitor sees either way.
+
+## Session eighty-four, tenth stretch: dusk was lit like noon, and the ratio that says so
+
+I looked at the front of the house at half past six with my own eyes and something was wrong, and this time there
+was a number for it before I touched anything. **The ground of the frame was twice as bright as the whole sky
+above it**: strip means 109.5 against 53.3, a ratio of 0.49. Dawn was the same story the other way round, 0.68.
+At noon the same measurement reads 1.30 — the sky brighter than the ground, as it must be.
+
+The cause sits in the day's own table. The sun's strength hardly falls as it goes down the sky: 60 at 24 degrees
+of altitude and **44 at five degrees**, when light that has crossed seven times the air it crossed at noon can
+keep perhaps half its strength. The morning key was the same fault mirrored (40 at eight degrees). So two keys
+were cut — 18.6 from `sun: 44` to 26, 6.6 from `sun: 40` to 27 — and the sky's own luminance at those hours was
+lifted with them (`lum` 0.15 to 0.24 in the evening, 0.17 to 0.21 in the morning) so that the sky stops reading as
+midnight while the terrace is still in copper. Measured after: dusk ratio **0.49 → 0.60**, dawn **0.68 → 0.84**,
+noon untouched — the midday keys were not edited and hour 17 still measures 111.2 exactly as it did before, which
+is the proof I wanted that nothing the master matched to photographs between nine and four has moved. No hour in
+the sweep shows black crush; hour 19 went 53.1 → 49.7, which is the point (the afterglow is dimmer now, and the
+string bulbs carry it).
+
+**`tools/hoursweep.js` now carries the ratio as a standing column** — `sky/ground`, with a flag when the ground
+beats the whole sky in daylight hours — because the sweep used to report the top strip alone and could not see
+this fault at all. It is the same trap as the frame mean: a number from one part of the picture.
+
+**What is still wrong, and it is an exposure question rather than a colour one.** Cutting the sun by forty-one
+per cent moved the sunlit ground strip only five per cent (109.5 → 104.0). A surface that answers a two-fifths
+cut in its light with a twentieth of the change is sitting on the flat top of the tone curve, so dusk cannot
+dim the way light dims. The lever is the exposure and the tone curve in `src/tone.js` and the pipeline, and that
+is calibration of the whole Villa — it is the master's eye, not my arithmetic. It is written here so the next
+hand does not rediscover it from the beginning.

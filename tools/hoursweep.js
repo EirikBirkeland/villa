@@ -74,7 +74,8 @@ for (let hour = FROM; hour <= TO; hour += STEP) {
 	const img = PNG.sync.read(fs.readFileSync(file));
 	const skyIsUp = (ask.tally.open || 0) >= 10;
 	const topRows = Math.max(2, Math.round(img.height * 0.13));
-	let sum = 0, black = 0, white = 0, warm = 0, cool = 0, skyR = 0, skyG = 0, skyB = 0, skyN = 0;
+	let sum = 0, black = 0, white = 0, warm = 0, cool = 0, skyR = 0, skyG = 0, skyB = 0, skyN = 0, skyL = 0, grL = 0, grN = 0;
+	const groundRows = Math.round(img.height * 0.66);
 	for (let r = 0; r < img.height; r++) {
 		for (let c = 0; c < img.width; c++) {
 			const i = (r * img.width + c) * 4;
@@ -85,7 +86,8 @@ for (let hour = FROM; hour <= TO; hour += STEP) {
 			if (R > 250 && G > 250 && B > 250) white++;
 			if (R > B + 12) warm++;
 			else if (B > R + 12) cool++;
-			if (skyIsUp && r < topRows) { skyR += R; skyG += G; skyB += B; skyN++; }
+			if (skyIsUp && r < topRows) { skyR += R; skyG += G; skyB += B; skyN++; skyL += L; }
+			if (r >= groundRows) { grL += L; grN++; }
 		}
 	}
 	const n = img.width * img.height;
@@ -95,10 +97,11 @@ for (let hour = FROM; hour <= TO; hour += STEP) {
 		black: +((100 * black) / n).toFixed(2),
 		white: +((100 * white) / n).toFixed(2),
 		sky, lean: +((100 * (warm - cool)) / n).toFixed(0),
+		over: skyN && grN ? +((skyL / skyN) / (grL / grN)).toFixed(2) : null,
 	});
 	const what = sky ? `rgb(${sky.join(",")})` : "n/a";
 	const named = skyIsUp ? "sky" : Object.keys(ask.tally).sort((a, b) => ask.tally[b] - ask.tally[a])[0];
-	console.log(`hour ${String(hour).padEnd(5)} mean ${String(rows.at(-1).mean).padEnd(5)} black ${String(rows.at(-1).black).padEnd(5)}% white ${String(rows.at(-1).white).padEnd(5)}% top ${what.padEnd(14)} (${named}) lean ${String(rows.at(-1).lean).padEnd(4)} | sun ${ask.sun} hemi ${ask.hemi} night ${ask.night} env ${ask.env}`);
+	console.log(`hour ${String(hour).padEnd(5)} mean ${String(rows.at(-1).mean).padEnd(5)} black ${String(rows.at(-1).black).padEnd(5)}% white ${String(rows.at(-1).white).padEnd(5)}% top ${what.padEnd(14)} (${named}) lean ${String(rows.at(-1).lean).padEnd(4)} sky/ground ${String(rows.at(-1).over).padEnd(5)} | sun ${ask.sun} hemi ${ask.hemi} night ${ask.night} env ${ask.env}`);
 }
 await browser.close();
 
@@ -114,6 +117,13 @@ for (let i = 0; i < rows.length; i++) {
 		if (sr > 200 && sg > 200 && sb > 200) flags.push(`hour ${r.hour}: the sky is white rgb(${r.sky.join(",")})`);
 		if (sg > sb + 25) flags.push(`hour ${r.hour}: the sky is green, not blue — rgb(${r.sky.join(",")})`);
 		if (sb < 30 && r.hour > 7 && r.hour < 18) flags.push(`hour ${r.hour}: the midday sky carries no blue at all — rgb(${r.sky.join(",")})`);
+	}
+	// The whole sky over the whole ground, in daylight hours. A garden lit by a low sun can make a wall brighter
+	// than the patch of sky beside it, and that is fine; it is not fine when the ground beats the ENTIRE sky, and
+	// that is what a dusk looks wrong for: the sun has crossed a long path of air and is still flooding the terrace
+	// as though it were noon. Measured at 18:12 as 0.49 before the near-horizon keys were cut.
+	if (r.over !== null && r.hour > 6 && r.hour < 19 && r.over < 0.6) {
+		flags.push(`hour ${r.hour}: the ground is brighter than the whole sky over it (${r.over})`);
 	}
 }
 console.log(flags.length ? flags.map((f) => `  ${f}`).join("\n") : "  none: every hour is a picture and not a fault");
