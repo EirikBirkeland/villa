@@ -10314,3 +10314,30 @@ Asked the Poly Haven API directly (`api.polyhaven.com/files/<name>`): this sky s
 16k and a tonemapped jpg — **no `.env`**, and the CDN 404s any `.env` name. So the Babylon-prefiltered file is
 not on offer, and the route must be the `.hdr` (1k is 1.4 MB, CC0) coaxed into a real cube texture by hand, since
 `new CubeTexture("....hdr")` is the part that silently does nothing in this build.
+
+## Session eighty-four, ninth stretch: the potted kumquat, the koi seen at last, and a release held back
+
+The eyes were turned on the small things, and the small things were not all well.
+
+**The potted kumquat by the pool.** `pictures/s84-kumquat.png` is the tree as it stands now. It used to carry
+seven spheres nearly a fist across, and they sat out on top of the crown against the open sky, which read as
+tennis balls laid on a hedge; the first fix threw them too wide and a browser showed fruit hanging in the air
+beside the tree, which is worse still. The tree now carries nineteen small round ones — 6 cm, twelve segments
+so the sun has somewhere to go — set inside the crown's own width, so leaves are always in front of some of them,
+which is how a citrus fruits. Measured: meshes 1483 → 1495, no page errors, seen from 2.3 m and from the start
+view. Commit `c55424b`.
+
+**The koi are in the water and they show.** Someone (not this hand) put the six into the pond, and the question
+in the air was whether they would do what the back-door lanterns did — exist, and paint nothing. They do not.
+From `-20.3,1.60,17.8` looking at the pond the picker answers `pondWater` at 4.6 m and the picture shows four
+fish — white-and-red, orange, deep red — under lily pads and among the flowers, and their whites come back
+grey-green, which is what fifty per cent water over them ought to do. Their bodies sit at y −0.15 to −0.20 and
+the surface is at −0.035, so they swim eleven to seventeen centimetres down, which is the right side of the
+water and not a decal lying on top of it.
+
+**No release was made, and here is the reason written down.** The working tree holds another hand's uncommitted
+`src/koi.js` — good work, it runs, I have just looked at it — and `release.sh` copies the tree as it finds it.
+Freezing someone's mid-flight file into an immutable version folder is not this hand's to do. The kumquat fix is
+committed and will ride with the next release; if the next session finds `src/koi.js` and `src/loft.js` settled,
+release then and the kumquat goes out with them. `src/loft.js` is not imported by `src/main.js`, so it cannot
+affect what a visitor sees either way.
