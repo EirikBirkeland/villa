@@ -34,10 +34,23 @@ const PERCHES = [
 ];
 
 // Where a coin may fall: paving and lawn in front of the house and along the pool side, all of it ground a
-// person walks, none of it water and none of it under a lounger. [x, z]
+// person walks, none of it water and none of it under a lounger.
+//
+// THAT SECOND HALF WAS A PROMISE THE FIRST SET DID NOT KEEP, and `tools/dropcheck.js` — which reads these ten
+// places back out of the source and lets a ray fall on each of them — is what found it out. Two of them,
+// [3.6, 4.8] and [-3.0, 6.4], stand IN THE POOL: the coin fell through the water and lay on the bottom of the
+// basin, under a film, which is not "still lying there the next time you come back" but gone. Three more were
+// no better: [6.6, -4.6] is INSIDE the house, on the room floor behind glass, and [5.4, -0.2] and [-7.8, -2.2]
+// are on the terrace under a lounger, where `ground.free` says you cannot even stand. Half the bird's purse was
+// being dropped where nobody could find it.
+//
+// The ten below were picked by `tools/dropfind.js`, which walks a grid over the front of the garden and keeps a
+// place only if the ground is walkable there, what lies under it is paving or lawn, and NOTHING hangs over it
+// from two and a half metres up. Re-check them after any move of the pool, the terrace or the furniture: the
+// ground here is built by other modules and it moves.
 const DROPS = [
-	[-3.4, -0.6], [2.8, -1.4], [0.2, 1.1], [-6.2, 1.4], [5.4, -0.2],
-	[-1.2, 1.7], [6.6, -4.6], [-7.8, -2.2], [3.6, 4.8], [-3.0, 6.4],
+	[-3.4, -0.6], [2.8, -1.4], [0.2, 1.1], [-6.2, 1.4], [5.4, 2.4],
+	[-1.2, 1.7], [-6.0, 6.0], [-3.6, 9.6], [0.0, 9.6], [5.4, 8.4],
 ];
 
 const KEY = "villa.raven";
@@ -196,17 +209,28 @@ export function buildRaven(scene, mats, { ground = null, sound = null, store = n
 
 	/** A coin lying where it fell. The ones from earlier visits are put back before the visitor wakes up. */
 	const coins = [];
+	// How far a coin's centre has to sit over the ground it lies on. The piece is 26 mm across and it stands on
+	// its edge (`rotation.x` below), so its rim reaches 13 mm above and below its centre: laid with its centre at
+	// the ground's own height plus four millimetres — which is what this did, and what `tools/ravencoin.js` then
+	// spent a long while failing to photograph — nine millimetres of a gold coin was under the paving and the
+	// part above was a sliver. A coin has to be lifted by its own radius, and by `cos` of its lean because a coin
+	// leaning over reaches lower than an upright one.
+	const RIM = 0.013;
+	/** The height a coin's centre has to rest at on ground standing at `y`, given how far it is leaning over. */
+	const centreAt = (y, spin) => y + RIM * Math.cos((spin - 0.5) * 0.25) + 0.001;
 	const lay = (x, z, y, spin) => {
 		const coin = cylinder(scene, "royalCoin", {
 			diameter: 0.026, height: 0.0022, tessellation: 30,
 			mat: mats.royalGold,
 		});
-		// A coin does not lie face up on rough paving; it lies on its edge or half over. Lying it flat on the
-		// ground's own height, with a tilt, is what makes it a thing that fell and not a thing placed.
-		coin.rotation.x = Math.PI / 2 + (spin - 0.5) * 0.25;
+		// A coin does not lie face up on rough paving; it lies on its edge or half over. Lying it on its edge,
+		// lifted by its own radius so the rim just touches the ground it fell on, is what makes it a thing that
+		// fell and not a thing placed — and what keeps it out of the ground it is lying on.
+		const lean = (spin - 0.5) * 0.25;
+		coin.rotation.x = Math.PI / 2 + lean;
 		coin.rotation.y = spin * 6.28;
-		coin.position.set(x, y, z);
-		coins.push({ mesh: coin, x, z, spin, falling: false, y });
+		coin.position.set(x, centreAt(y, spin), z);
+		coins.push({ mesh: coin, x, z, spin, falling: false, y: centreAt(y, spin) });
 		return coin;
 	};
 	for (const left of note.coins) {
@@ -276,10 +300,13 @@ export function buildRaven(scene, mats, { ground = null, sound = null, store = n
 					const at = DROPS[Math.floor(rand() * DROPS.length)];
 					const y = ground ? ground.heightAt(at[0], at[1]) + 0.004 : 0.3;
 					const coin = lay(at[0], at[1], y, rand());
-					coin.position.y = perch[1] - 0.4;
-					coins[coins.length - 1].y = perch[1] - 0.4;
-					coins[coins.length - 1].falling = true;
-					coins[coins.length - 1].rest = y;
+					const c = coins[coins.length - 1];
+					// Where it will come to rest is kept before the coin is lifted to the ridge to be dropped, so the
+					// fall ends on the paving and not nine millimetres under it.
+					c.rest = c.y;
+					c.y = perch[1] - 0.4;
+					coin.position.y = c.y;
+					c.falling = true;
 					save();
 				}
 				save();
