@@ -6,6 +6,7 @@ import { makeGround } from "./ground.js";
 import { courtBeds, bedTop, courtEdge } from "./court.js";
 import { lawnTone } from "./lawn.js";
 import { inPond, inPondStone, pondRect } from "./pond.js";
+import { inStream } from "./stream.js";
 import { bushAtlas, tuftAtlas } from "./textures.js";
 import { randomGenerator } from "./noise.js";
 
@@ -1645,7 +1646,13 @@ function makeTuftPlan(scene, feet = []) {
 	// `tools/tuftfoot.js` asks the same question from outside, for when this filter is broken.
 	const soil = makeGround(scene);
 	return spots.filter(
-		(s) => soil.heightAt(s.x, s.z) <= 0.05 && !inPond(s.x, s.z) && !inPondStone(s.x, s.z),
+		(s) =>
+			soil.heightAt(s.x, s.z) <= 0.05 &&
+			!inPond(s.x, s.z) &&
+			!inPondStone(s.x, s.z) &&
+			// And nothing is planted in the watercourse or its banks: a clump of sedge standing inside a
+			// channel is grass growing out of water (`src/stream.js`).
+			!inStream(s.x, s.z),
 	);
 }
 
@@ -1744,8 +1751,8 @@ export function buildGarden(scene, mats, shadows, { clip = SHRUB_CLIP } = {}) {	
 		{ x: 17.2, z: 11.4, height: 8.2, lean: 0.8, twist: 1.2, seed: 8, scale: 1.15 },
 		{ x: 13.4, z: -2.5, height: 6.6, lean: 0.6, twist: 3.4, seed: 12, scale: 1 },
 		{ x: -9.5, z: -6.5, height: 7, lean: 0.55, twist: 5.1, seed: 15, scale: 1.05 },
-		{ x: 9.4, z: 18.2, height: 5.8, lean: 0.65, twist: 0.9, seed: 19, scale: 0.9 },
-		{ x: -6.6, z: 18.4, height: 6.4, lean: 0.45, twist: 2.6, seed: 23, scale: 1 },
+		{ x: 7.6, z: 21.4, height: 5.8, lean: 0.65, twist: 0.9, seed: 19, scale: 0.9 },
+		{ x: -2.8, z: 15.2, height: 6.4, lean: 0.45, twist: 2.6, seed: 23, scale: 1 },
 		{ x: 15.5, z: 5.5, height: 7.2, lean: 0.7, twist: 4.2, seed: 27, scale: 1.05 },
 	];
 	for (const spec of palms) add(...makePalm(scene, mats, spec));
@@ -1853,7 +1860,7 @@ export function buildGarden(scene, mats, shadows, { clip = SHRUB_CLIP } = {}) {	
 	southBorder.forEach((s, i) => add(...makeShrub(scene, mats, { x: s[0], z: s[1], size: s[2], seed: 120 + i, clip: s[3] })));
 	add(...makePalm(scene, mats, { x: -11, z: 21.4, height: 7.4, lean: 0.6, twist: 1.7, seed: 31, scale: 1.05 }));
 	add(...makePalm(scene, mats, { x: 11.2, z: 22, height: 6.8, lean: 0.7, twist: 4.6, seed: 34, scale: 1 }));
-	add(...makePalm(scene, mats, { x: 18.2, z: 16.6, height: 6, lean: 0.5, twist: 2.9, seed: 37, scale: 0.95 }));
+	add(...makePalm(scene, mats, { x: 24.6, z: 19.4, height: 6, lean: 0.5, twist: 2.9, seed: 37, scale: 0.95 }));
 	add(...makeBanana(scene, mats, { x: -5.6, z: 20.8, seed: 66 }));
 	add(...makeBanana(scene, mats, { x: 5.6, z: 21.2, seed: 67, scale: 1.05 }));
 
@@ -1901,7 +1908,7 @@ export function buildGarden(scene, mats, shadows, { clip = SHRUB_CLIP } = {}) {	
 	// a garden lamp belongs and where the string of bulbs already reaches.
 	const lampSpots = [
 		[-8.4, 12.6, 0.14], [8.4, 12.6, 0.14], [-11.1, 5.4, 0.14], [11.1, 3.4, 0.14],
-		[-2.7, 19.6, 0.12], [2.7, 19.6, 0.12], // the path out is 0.12 up, not 0.14
+		[-2.7, 22.4, 0.12], [2.7, 22.4, 0.12], // the path out is 0.12 up, not 0.14
 		[-6.9, 1.6, bedTop], [6.9, 1.6, bedTop], // the head of each border
 	];
 	lampSpots.forEach(([x, z, y], i) => {

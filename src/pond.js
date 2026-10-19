@@ -26,6 +26,7 @@
 
 import { box, blocker, cylinder, facet, fracture, plane, poly, slab, sphere, crumple, skinTint, groundUVs } from "./mesh.js";
 import { randomGenerator } from "./noise.js";
+import { streamMouth, mouthGap } from "./stream.js";
 
 /** Where the pond is, and how big. Everything else in this file is built off these numbers. */
 const CX = -20.3; // east-west: as far west of the court as the palm is north of the bananas
@@ -132,6 +133,11 @@ function makePad(scene, mats, { x, z, across, y, seed, name = "pondLily" }) {
 	pad.rotation.x = (rand() - 0.5) * 0.16;
 	pad.rotation.z = (rand() - 0.5) * 0.16;
 	return pad;
+}
+
+/** Whether a point on the pond's edge lies where the stream's mouth comes in, and so wears no stone. */
+function inStreamMouth(p) {
+	return Math.abs(p.x - streamMouth.x) < mouthGap / 2 + 0.35 && Math.abs(p.z - streamMouth.z) < 1.5;
 }
 
 export function buildPond(scene, mats, shadows) {
@@ -258,6 +264,10 @@ export function buildPond(scene, mats, shadows) {
 			if (i > 0 && i < count - 1 && rand() < 0.1) continue;
 			const t = (i + 0.2 + rand() * 0.6) / count;
 			const along = { x: from.x + (to.x - from.x) * t, z: from.z + (to.z - from.z) * t };
+			// And no stone where the stream's mouth comes in (`src/stream.js`): the veil of water going over the
+			// lip has to pass through this band, and a rim stone standing in it is water falling on a rock, and a
+			// rim that stops halfway round for no reason a visitor can see.
+			if (inStreamMouth(along)) continue;
 			// Outward normal of this edge, so the stone sits half on the bank and half over the water.
 			const out = { x: along.x === WATER.x0 ? -1 : along.x === WATER.x1 ? 1 : 0, z: along.z === WATER.z0 ? -1 : along.z === WATER.z1 ? 1 : 0 };
 			// Three levers, all wider than they look, because the eye averages a row: what it judges is whether
@@ -343,6 +353,7 @@ export function buildPond(scene, mats, shadows) {
 			const gap = Math.hypot(b.x - a.x, b.z - a.z);
 			if (gap < 0.3) continue; // the big stones already touch: nothing to chink
 			const mid = { x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 };
+			if (inStreamMouth(mid)) continue; // and no chink wedging shut the gap the water comes through
 			const out = { x: mid.x === WATER.x0 ? -1 : mid.x === WATER.x1 ? 1 : 0, z: mid.z === WATER.z0 ? -1 : mid.z === WATER.z1 ? 1 : 0 };
 			const long = Math.min(gap * 0.85, 0.42);
 			const across = 0.26 + rand() * 0.24;

@@ -542,3 +542,18 @@ sense, so they are set down here:
   `src/shark.js`.
 - **dread**: the seconds during which a shark that has been hit keeps clear of the visitor's boots — the
   number that stops a shot animal coming back for more at once. `dread` and `SPEC.patience` in `src/shark.js`.
+- **the watercourse, the channel, the banks and the mouth**: the stream that comes in at the north-east hedge
+  and ends in the pond (`src/stream.js`). The **channel** is the lined trough the water runs in — coping, two
+  walls and a bed, 1.76 m of water between the coping stones; the **banks** are the grass slopes that fall away
+  from under the coping to the lawn; the **mouth** is where the water leaves the channel and falls into the
+  pond, and the **head** is where it comes in over the hedge. `course` is the centre line, `stations()` lays it
+  out at 1.4 m to a station, and `streamReach` is how far the works spread from the line — which is what may
+  not be planted and what the walk keeps off. Ordinary watercourse English, written down because the mesh names
+  (`streamWallSouth`, `streamBankNorth`, `streamBed`) and the exports (`streamMouth`, `mouthGap`) depend on
+  which side of the water is meant: `south` and `north` here are the two sides of the channel, named for the way
+  the water runs westward, and the south wall is the one on the garden's near side wherever the stream turns.
+- **the veil** (of the fall): the sheet of water going over the lip into the pond — `streamFall`, wearing
+  `mats.streamFall`, whose pattern `animate` slides downwards. Called a veil and not a sheet because it is
+  water you can see through in one place and not in another, which is what `streakCanvas` in `src/textures.js`
+  paints; `sheet` in this folder already means a flat piece of geometry with no thickness and no face of its
+  own, and the fall is not that — it has a front, and the pond's splash rings go out from where its foot lands.

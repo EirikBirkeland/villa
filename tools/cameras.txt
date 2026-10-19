@@ -17,18 +17,22 @@
 #
 # Keep the two tools on these cameras: a browser picture and a drawing of the same place are the only
 # way to tell a fault in the Villa from a fault in the drawing.
+#
+# Three of these stood in the watercourse when it was laid (`src/stream.js`) and were moved to dry ground:
+# `path` to the south end of the path where it looks north over the bridge, `pondbank` off the pond's bank
+# and across the stream to it, and `eastlawn` out into the lawn east of the channel.
 home        2.4,1.74,10.5,3.2,0.06        -
 rear        0,1.6,-19,0,0.06              -
 rearup      0,1.6,-21,0,-0.35             -
 rearcorner  -15,1.6,-20,0.66,0.05         -
 sala        3.5,1.6,11,2.25,-0.02         -
-path        -3,1.7,19,2.9,0.02            -
+path        -3,1.7,21.6,2.9,0.02          -
 west        -11,1.7,6.8,1.57,-0.02        -
 pool        0,2.1,-1.5,0,0.1              -
 westlawn    -20,1.6,10,1.57,-0.02         -
-pondbank    -15.6,1.62,17.4,-2.11,0.14  -
+pondbank    -14.4,1.62,20.9,-2.11,0.02  -
 pondlawn    -25,1.62,20,2.54,0.12      -
-eastlawn    20,1.6,-14,-1.57,0            -
+eastlawn    24,1.6,-14,-1.57,0            -
 colonnade   2.2,1.6,9,3.1416,-0.14        0.45
 frontcorner 6.34,1.6,6,3.1416,-0.02       0.45
 salaroof    16,1.6,-2,-0.63,-0.1          -

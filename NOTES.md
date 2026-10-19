@@ -9026,3 +9026,82 @@ Next after this, in order:
 without eyes to see with, and who measured a gun at 8.3% of the frame and a step at 229 cm before calling it
 fit. A garden gun that costs sixty frames a second or leaves a dead animal under a sunlounger is no better
 than a coffee with an unmeasured spoon of sugar in it: both are adulteration, and neither can be defended.
+
+---
+
+## Session seventy: a stream from the north-east hedge to the pond (v0.95.0)
+
+The master asked for water running into the pond from the other end of the property. It is there: **62 metres
+of stone-lined channel** (`src/stream.js`), from the north-east hedge at (22.6,-21.6), down the east side of
+the house, across the garden at z 18.8 over a plank bridge where the path goes out to the gate, and into the
+pond's south edge between its two corner boulders.
+
+**How it is built.** Five strips along one centre line (`course`, resampled at 1.4 m by `stations()`): two
+walls with a 16 cm coping, a bed, two grass banks, and the water. 988 vertices for the four of them, and one
+`blockers` rectangle to each stretch of the course handed to `makeGround` beside the pool's and the pond's —
+the meshes themselves say nothing about collisions, because a bounding box round 62 m of snake would be one
+wall across the garden. The water's pattern is laid in metres of ground along the course, so `vOffset` slides
+it downstream at 8.5 cm a second; the bed's silt does not move, because the bottom of a stream stays where it
+is. At the mouth a veil of water (`mats.streamFall`, painted by `streakCanvas`) goes over a lip stone, falls
+1.35 m and lands on a stone in the pond, and the pond is handed the splash, so a ring goes out from the mouth
+every couple of seconds.
+
+**What the pictures caught, and what it cost.**
+
+1. **The channel had a lid on it.** The first drawing laid the whole section — bank, coping, wall, bed, wall,
+   coping, bank — as ONE strip, and a strip joins its section points in order, so it carried a band of grass
+   across the top of the water at coping height. `tools/pickat.js` answered `streamBanks` at every pixel that
+   should have been water, and a scan of the whole frame found **zero** blue pixels. Five strips now, each
+   stopping where the next begins.
+2. **Boxes turned the wrong way.** `ry` turns a box's local +z to (sin ry, cos ry), so a stone laid across the
+   channel needs `atan2(nx, nz)` and not `atan2(nz, nx)`. The lip stone, the landing stone and the head wall
+   stood end-on in the grass, and the bridge planks lay along the water instead of across it. One helper,
+   `normalYaw`, and the bridge now uses its OWN station's bearing and not the mouth's — the course turns
+   between the two.
+3. **The bridge was walled shut.** The blockers were padded by `reach` on every side, which closed the opening
+   the deck stands in: `free()` said `false` at the middle of the bridge and the path was cut. The padding is
+   now along the stretch only at the ends that join the next stretch, and never past a cut (`pieceSeg`).
+   `tools/walk.js` after that: from the gate, 11.3 m north over the deck at eye height; against the bank,
+   1.1 m and stopped; up the east lawn, 11.1 m unimpeded.
+4. **The water was a grey band.** Over the pond's near-black silt bed, 46% water paints (98,99,93) — red and
+   green level, which is a wet gutter. The bed went to the coping's pale stone and the film's blue came up:
+   (105,108,104) mean, running (39,55,58) to (209,193,174). The pool's lesson again — the colour lives in the
+   floor under the film, not in the film.
+5. **Three standing cameras stood in the water.** `path` (0.2 m off the line), `pondbank` (0.86) and
+   `eastlawn` (1.37) were inside the banks. Moved in `tools/cameras.txt` to dry ground, and `path` now looks
+   north over the bridge, which is the best view of the thing: `streamWater` 7.5% of the frame, `coping` 3.6%.
+6. **Five plants and a pair of lamps were in the way**, and the pond's rim stones stood in the mouth. Palms to
+   (7.6,21.4), (-2.8,15.2) and (24.6,19.4); lamps back to z 22.4; and `inStreamMouth` in `src/pond.js` leaves a
+   gap in the rim and the chinking where the veil comes through, so the water has a hole to pass by and the rim
+   does not stop half way round for no reason a visitor can see.
+
+**Numbers.** 1310 meshes with the stream, 1292 with `?stream=0`; 60.0 fps either way. The watercourse covers
+7.5% of the frame from the path camera and 7.6% from the pond bank. Nothing is planted inside `streamReach`
+(1.9 m from the line) — `inStream` is in the garden's soil filter, and the check is a scene query against
+`stream.distanceTo`, which any tool can ask.
+
+Look at: `s100-path-new.png` (the path, the bridge, the channel crossing), `s100-stream-mouth.png` (the mouth
+from the pond bank), `s100-stream-bridge.png` (standing on the bank looking east along it),
+`s100-stream-high.png` (the whole course from 10 m up — a pale line and a bend), `s100-stream-off.png`
+(the same path view with `?stream=0`).
+
+Next after this, in order:
+
+1. **The stream is silent.** Sixty-two metres of moving water and not one noise. The ear has a `VOICES` table
+   and a `play(what, at, loud)` that places a sound at a place; what it does not have is a sound that goes on.
+   A brook is a held noise, not a one-shot: it wants its own looping source, a gain that rises as the visitor
+   comes near the line and falls as they leave, and a filter that opens when they stand on the bridge. That is
+   the work, and it is a session's work, not a garnish.
+2. **The rocket, which the master asked for and this session put off.** The smoke, the shock ring, the scorch
+   and the blast's sound are already in (`smokeCanvas`, `ringCanvas`, `mats.smoke`, `mats.blastFire`,
+   `mats.shockRing`, `mats.scorch`, `VOICES.launch`, `VOICES.boom` — the last measured at peak 1.01 and
+   turned down from 0.95 to 0.5 gain because it clipped past full scale). What is missing is the rocket
+   itself: number `5` while the gun is armed, a projectile down the sight, and the villa coming apart into
+   polygons that fly and land. The debris wants `fracture` and a simple velocity and gravity; the reset wants
+   a decision (reload, or `R`).
+3. **The pots are onions with moss balls on them** — still owed from session sixty-nine.
+4. **The raven still has no coin photographed on the ground.**
+
+— Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who laid sixty-two metres of
+watercourse with a lid over it and then took the lid off, and who says that a stream you cannot hear is a
+picture of a stream, which is the same complaint as a coffee whose sweetness cannot be measured and defended.

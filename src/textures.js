@@ -3888,6 +3888,50 @@ export function smokeCanvas(size = 256, { seed = 77, lobes = 17, rings = 3 } = {
 }
 
 /**
+ * The sheet of water going over a lip: streaks, and not ripples.
+ *
+ * Water that has just left a channel is a veil, and a veil's texture is vertical — a hundred threads of
+ * different thickness running down, with the light coming through the thin ones. Ripples laid on a fall look
+ * like a corrugated roof; streaks laid on it look like water you cannot see through. The streaks are drawn
+ * full height and deliberately broken at intervals, because a real veil keeps starting and stopping as the
+ * lip's edge varies by a millimetre.
+ */
+export function streakCanvas(size = 256, { threads = 46, seed = 611, breaks = 5 } = {}) {
+	const canvas = canvasOfSize(size);
+	const ctx = context2d(canvas);
+	const rand = randomGenerator(seed);
+	ctx.clearRect(0, 0, size, size);
+	for (let i = 0; i < threads; i++) {
+		const x = rand() * size;
+		const w = size * (0.004 + rand() * rand() * 0.035);
+		const strength = 0.25 + rand() * 0.7;
+		// Three to six lengths of thread, with a bare gap between them: the thread does not run the whole
+		// height of the veil in one piece.
+		const parts = 3 + Math.floor(rand() * breaks);
+		let y = -rand() * size * 0.3;
+		while (y < size) {
+			const len = size * (0.12 + rand() * 0.4);
+			const band = ctx.createLinearGradient(x, y, x, y + len);
+			band.addColorStop(0, "rgba(255,255,255,0)");
+			band.addColorStop(0.25, `rgba(255,255,255,${strength})`);
+			band.addColorStop(0.7, `rgba(255,255,255,${strength * 0.85})`);
+			band.addColorStop(1, "rgba(255,255,255,0)");
+			ctx.fillStyle = band;
+			ctx.fillRect(x - w / 2, y, w, len);
+			y += len + size * (0.02 + rand() * 0.09);
+		}
+	}
+	// The haze between the threads, so the veil is not a comb.
+	const haze = ctx.createLinearGradient(0, 0, 0, size);
+	haze.addColorStop(0, "rgba(255,255,255,0.34)");
+	haze.addColorStop(0.6, "rgba(255,255,255,0.2)");
+	haze.addColorStop(1, "rgba(255,255,255,0.42)");
+	ctx.fillStyle = haze;
+	ctx.fillRect(0, 0, size, size);
+	return canvas;
+}
+
+/**
  * The ring a blast pushes out along the ground: a band of light with nothing inside it and nothing outside it.
  *
  * Drawn as a band across the whole canvas rather than a circle in the middle of one, because the mesh it is

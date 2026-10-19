@@ -2,7 +2,7 @@
 // Each one is a physically based material built from a painted canvas pattern, so no surface
 // in the Villa is a single flat colour.
 
-import { texture, grassCanvas, paverCanvas, poolTileCanvas, plasterCanvas, teakCanvas, roofTileCanvas, palmBarkCanvas, palmBladeCanvas, bananaBladeCanvas, stalkCanvas, bushCanvas, bushEdgeCanvas, bushClusterCanvas, tuftAtlasCanvas, clothCanvas, cushionCanvas, copingCanvas, poolWaterCanvas, causticsCanvas, rippleCanvas, hedgeCanvas, canopyClusterCanvas, canopyAtlas, farCanopyCanvas, distanceCanvas, greyNoiseCanvas, bumpFromCanvas, timberCanvas, terracottaCanvas, rockCanvas, soilCanvas, rugCanvas, butterflyWingCanvas, cockroachCanvas, frogSkinCanvas, lilyPadCanvas, rippleRingCanvas, koiCanvas, sharkSkinCanvas, bloodCanvas, geckoSkinCanvas, royalCoinCanvas, puffCanvas, flashCanvas, smokeCanvas, ringCanvas } from "./textures.js";
+import { texture, grassCanvas, paverCanvas, poolTileCanvas, plasterCanvas, teakCanvas, roofTileCanvas, palmBarkCanvas, palmBladeCanvas, bananaBladeCanvas, stalkCanvas, bushCanvas, bushEdgeCanvas, bushClusterCanvas, tuftAtlasCanvas, clothCanvas, cushionCanvas, copingCanvas, poolWaterCanvas, causticsCanvas, rippleCanvas, hedgeCanvas, canopyClusterCanvas, canopyAtlas, farCanopyCanvas, distanceCanvas, greyNoiseCanvas, bumpFromCanvas, timberCanvas, terracottaCanvas, rockCanvas, soilCanvas, rugCanvas, butterflyWingCanvas, cockroachCanvas, frogSkinCanvas, lilyPadCanvas, rippleRingCanvas, koiCanvas, sharkSkinCanvas, bloodCanvas, geckoSkinCanvas, royalCoinCanvas, puffCanvas, flashCanvas, smokeCanvas, ringCanvas, streakCanvas } from "./textures.js";
 
 const { PBRMaterial, Color3, Color4, Texture, ImageProcessingConfiguration } = BABYLON;
 
@@ -1414,6 +1414,53 @@ export function createMaterials(scene) {
 	// window the pond came back as a plate of pale foil (pictures/s80-pond-foil.png). A tight glint on a
 	// dark sheet is the truth; a broad one is a sheet of milk.
 	mats.pondWater.roughness = 0.05;
+
+	// The stream (`src/stream.js`): the same law as the pond's surface — see-through looking down, a mirror at
+	// a graze (`src/water.js`) — in a shallower and brighter key. Twenty centimetres of moving water over a
+	// stone bed is not a pond: there is less of it, so less of what lies under it is hidden, and what lies
+	// under it is pale stone and not black silt. The film is therefore stronger and the alpha weaker than the
+	// pond's, and the chop is livelier, because a stream is a surface being dragged along its bed.
+	mats.streamWater = pbr(scene, "streamWater", { roughness: 0.06, alpha: 0.46, environmentalIntensity: 0.9, pattern: 2.0 });
+	mats.streamWater.transparencyMode = 2;
+	mats.streamWater.albedoColor = new Color3(0.02, 0.032, 0.03);
+	// The colour of twenty centimetres of clean water over pale stone: a blue-green, and brighter than the
+	// pond's tannin because there is nothing rotting in this channel.
+	mats.streamWater.emissiveColor = new Color3(0.05, 0.14, 0.2);
+	// The blue is put in the FILM and in the BED, and nowhere else: weighed against the whole frame of the
+	// path view, the surface paints (105,108,104) with the film at (0.04,0.095,0.135) and (108,106,100) with a
+	// dark bed under it, and the sun's glints along a channel seen end-on are (209,193,174) whatever the
+	// material is told. Loud as those glints are, they are the truth for twenty centimetres of moving water in
+	// open sun; what the eye needs to call the band water is the blue-green between them.
+	// What it mirrors: the hedge and the palms on one side and the open sky on the other, so a mid-way grey-
+	// green, brighter than the pond's leaf shade because the stream runs in the open lawn and not under them.
+	// Leaning blue and not green: measured across the path view, a mirror of [126,148,138] painted the surface
+	// (101,101,92) — red and green equal and the blue behind them, which against olive grass is a wet band of
+	// anything at all (`tools/cover.js`). With the blue put in front the surface reads as water.
+	mats.streamWater.mirrorColor = paint([100, 140, 162]);
+	// Its OWN ripple pattern, and it has to be its own: `animate` slides this texture's offsets downstream at
+	// eight centimetres a second, and sharing it with the pond would set the pond's surface running too.
+	mats.streamWater.bumpTexture = texture(scene, rippleCanvas(256, { strength: 11, seed: 671 }), {
+		name: "streamRipple",
+		scale: 1,
+		gamma: false,
+	});
+	// More chop than the pond's 0.2 and less than the pool's 0.7: a shallow channel is rougher than a still
+	// basin, and a stream this narrow never gets the long swell a wide pool does.
+	mats.streamWater.bumpTexture.level = 0.34;
+	// The veil at the mouth: the sheet of water going over the lip into the pond. Added rather than blended,
+	// because a fall is a great deal of small bright water with the light straight through it, and a fall
+	// painted opaque is a plank. Its pattern runs: `animate` slides the streaks down a metre a second, which
+	// is the one thing that makes a still quad read as water falling.
+	mats.streamFall = pbr(scene, "streamFall", { roughness: 1, environmentalIntensity: 0 });
+	mats.streamFall.disableLighting = true;
+	mats.streamFall.emissiveColor = new Color3(0.86, 0.94, 1.0);
+	mats.streamFall.opacityTexture = texture(scene, streakCanvas(256, { threads: 52, seed: 611 }), {
+		name: "stream fall",
+		scale: 1,
+	});
+	mats.streamFall.transparencyMode = 3; // add
+	mats.streamFall.backFaceCulling = false;
+	mats.streamFall.specularIntensity = 0;
 
 	// The basin: a liner of damp silt and stone, dark, and it wants nothing of the sky's mirror.
 	mats.pondSilt = pbr(scene, "pondSilt", { roughness: 0.92, environmentalIntensity: 0.55, pattern: 0.55 });

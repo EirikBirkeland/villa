@@ -4,7 +4,9 @@
 import { createMaterials } from "./materials.js";
 import { sunDirection, buildSky, buildLights, buildFog, buildGround, buildBoundary, buildDistance } from "./world.js";
 import { buildVilla } from "./villa.js";
-import { buildPool } from "./pool.js";import { buildPond } from "./pond.js";
+import { buildPool } from "./pool.js";
+import { buildPond } from "./pond.js";
+import { buildStream } from "./stream.js";
 import { buildGarden, SHRUB_CLIP } from "./garden.js";
 import { buildProps } from "./props.js";
 import { makeGround } from "./ground.js";
@@ -107,8 +109,9 @@ function boot() {
 	//                               is what `?still=1` does — which is how a picture can be drawn twice and
 	//                               mean the same thing
 	//   ?duck=0                     take the toy duck out of the pool (see src/duck.js)
-//   ?shark=0                    take the shark out of the pool, and its blood with it (see src/shark.js)
-//   ?gun=0                      leave the gun out of the build (see src/weapon.js)
+	//   ?shark=0                    take the shark out of the pool, and its blood with it (see src/shark.js)
+	//   ?gun=0                      leave the gun out of the build (see src/weapon.js)
+	//   ?stream=0                   take the watercourse out of the garden (see src/stream.js)
 	const switches = new URLSearchParams(window.location.search);
 	const dial = (name, value) => (switches.has(name) ? Number(switches.get(name)) : value);
 
@@ -168,6 +171,17 @@ function boot() {
 			mirrorColor: mats.pondWater.mirrorColor || [0.23, 0.31, 0.24],
 		});
 		if (!pondSkin.ok) console.error(`the pond's shader did not go in: ${pondSkin.why}`);
+		// And the stream's, a third patched shader for a third sheet of water, mirroring the hedge on one bank
+		// and the open sky on the other. Same reason the pond needed its own: the mirrored colour is baked into
+		// the text (`src/water.js`).
+		const streamSkin = installWaterAlpha(BABYLON, mats.streamWater, {
+			name: "villaStreamWater",
+			power: dial("wfp", 4),
+			filmAngle: !switches.has("nofilmangle"),
+			mirror: dial("wsky", 1),
+			mirrorColor: mats.streamWater.mirrorColor || [0.35, 0.42, 0.38],
+		});
+		if (!streamSkin.ok) console.error(`the stream's shader did not go in: ${streamSkin.why}`);
 	}
 	// The strength of the film the water paints over whatever lies under it. The library's own knob.
 	mats.water.emissiveIntensity = dial("wem", mats.water.emissiveIntensity);
@@ -229,6 +243,10 @@ function boot() {
 	// The pond in the west lawn, built before the garden and before the walk is read: its rim stones are
 	// something to stand on, and the water is a place to keep off (`src/pond.js` has the whole account).
 	const pond = buildPond(scene, mats, shadows);
+	// The stream: water running in from the north-east hedge and ending in the pond, built straight after the
+	// pond because its mouth is handed the pond's own splash rings and the two must agree about where the
+	// water lands (`src/stream.js`).
+	const stream = dial("stream", 1) > 0 ? buildStream(scene, mats, shadows, { pond }) : null;
 
 	// ---- the waterline ---------------------------------------------------------------
 	// Off, and the two wet materials are painted back to the numbers of the dry ones they copy: same bytes, same
@@ -274,7 +292,7 @@ function boot() {
 	// Where the visitor's feet go, read off the meshes that were just built. The pool hands over the
 	// places to keep off: the pit, less the strip the front steps come down through. The pond hands over
 	// its water, which is a place to keep off too, and stops a person wading.
-	const ground = makeGround(scene, pool.walkBlocks.concat(pond.walkBlocks));
+	const ground = makeGround(scene, pool.walkBlocks.concat(pond.walkBlocks, stream ? stream.blockers : []));
 
 	// What the water mirrors: a second cube, taken from the pool's own surface, of everything standing
 	// round about it — the house, the palms, the hedge, the far wood — and not of the sky alone.
@@ -627,6 +645,7 @@ function boot() {
 		// The pond wants the delta as well as the clock: its ripple rings are spent over a span of seconds,
 		// and a ring that is never given a delta is a ring that sits on the water for the rest of the day.
 		pond.animate(time, delta);
+		if (stream) stream.animate(time, delta);
 		if (creatures) creatures.animate(still ? 0 : time, still ? 0 : delta);
 		// The ear goes where the eye goes, and the geckos are told where the boots are so they can be shy of
 		// them. Both are cheap and both are wrong without the frame they live in.
@@ -691,7 +710,7 @@ function boot() {
 		}
 	});
 	document.body.classList.add("ready");
-	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, duck, fireflies, day, sound, geckos, raven, gun };
+	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, stream, duck, fireflies, day, sound, geckos, raven, gun };
 	// The two numbers a bite leaves, for the tools. Read them to see what the animal left behind; write them to
 	// pose a flinch, because a jolt that lasts a third of a second is not something a picture can wait for.
 	window.__villa.bite = {
