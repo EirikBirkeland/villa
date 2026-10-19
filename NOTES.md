@@ -8905,3 +8905,105 @@ before believing it. A stride that shortens when you look down is an insult to t
 4. **The garden lamps burn white.** The little solar bollards and the string's bulbs come out as blown
    white discs in `2914-sala` and `2922-colonnade`. They are meant to be a warm glow at half past five, not
    holes in the picture.
+
+## A gun for the shark, and the pool measured (v0.94.0)
+
+**This session's model could not be shown a picture.** `read pictures/x.png` came back omitted — the model in
+the room has no eyes. Everything below was therefore judged with the number tools and not with the view:
+`tools/cover.js` (which mesh and which colour sits at each point of a grid), `tools/pixels.js --patch`
+(whether a stretch has large shapes in it at all), `tools/diffgrid.js` (where two pictures of one view
+differ), and picks asked of a live page. That is enough to build and to measure; it is NOT enough to say a
+thing looks beautiful, and the colour calls below are marked as measurements and not as taste. If the next
+session has eyes, look at `pictures/s98-gun-armed.png`, `s98-gun-water.png` and `s98-gun-shark.png` before
+believing any of it.
+
+**The gun (`src/weapon.js`) is finished and wired.** It arrived in the folder half-built from the last
+session and unwired: it called `box("gunBody", …)` where `box` wants `box(scene, "gunBody", …)`, it asked for
+six materials that did not exist, it called `pool.splash(x, z, 0.55)` where the pool's own call is
+`pool.splash(x, z, {across, span, show, life})`, and it was keyed `L, I, M` — and `M` is the ear's mute key,
+so arming the gun would have silenced the garden. All four are put right. The word is now `g u n`, typed, and
+the same three letters put the gun away; nothing new is added to the plate but one line.
+
+What the numbers say, all of it measured in a browser:
+
+- **The word works as a control.** `tools/shoot.js` types `g`, `u`, `n` at the page with the keyboard and
+  reads `armed: true`; types them again and reads `armed: false`. That is the honest test of a typed control —
+  calling `arm(true)` from the page would have tested the wiring and not the keypresses.
+- **A round finds what it is pointed at.** Standing at the coping and looking at the pool, the line stops on
+  `water` at 5.37 m, at `0.00,-0.20,4.60` — the middle of the basin, which is where the sight was put.
+- **The marks are cheap and they go away.** Six rounds: 6 spurts out, **1305 meshes before the burst and 1305
+  after** (nothing is built per round; six cards are reused), and a second later `spurts: 0`. **60 fps idle,
+  60 fps with the button held for two and a half seconds.**
+- **The animal answers.** Nine rounds at a shark held near the surface: `state: hit`, `hits: 9`, 26 blood
+  lumps out, and the blood is drawn — 769 pixels of the pool's patch warmed by more than twelve points of
+  red-against-blue where the cloud lies, at `0.00,-0.25,4.58`, three to seven centimetres under the film.
+- **How much of the picture the gun takes: 8.3%.** Asked by picking a 16-pixel grid over the whole frame with
+  the gun out (299 of 3600 points) and with it away (0 of 3600). It is a corner of the frame and not a wall.
+- **What it is made of, read back as colour.** barrel mean (75,81,82) L80 running to L156; body (54,71,75)
+  L68; magazine (96,140,146) L131 — that one is the metal taking the sky, which is the whole reason the
+  material is `metalness 0.85, roughness 0.36`; stock (24,18,10) L19, which was a hole in the corner of the
+  picture, so the polymer was lifted from (44,38,33) to (66,57,48) and its sheen from 0.35 to 0.45.
+- **The muzzle flash is seen and not merely built**: the brightest pixel in the gun's corner is (240,214,193)
+  L218 at 864,442, which is the flash card, and its emissive (2.3,1.25,0.4) sits above the bloom's 1.6
+  threshold so it glows like the night lamps do.
+
+**`getDirectionToRef` in this Babylon build writes into the vector you hand it and hands back NOTHING.**
+`const f = camera.getDirectionToRef(Vector3.Forward(), new Vector3())` is an `f` of `undefined`, and a ray
+built on it has no direction. Measured: hand it `new Vector3(9,9,9)` and read the vector afterwards —
+`-0.058,-0.060,-0.996`. The half-built gun did exactly this and would have fired thirty shapeless rounds a
+second. Put in the same family as the note that a `Vector3` does not survive spreading.
+
+**Only a shallow shark can be hit, and that is the rule, not a bug.** A line from the eye stops on the
+water's sheet: the animal is under it. So `hitIfNear` in `src/shark.js` asks whether the struck mark is
+inside the animal's own length and girth AND whether its back lies within `SPEC.deep*0.5 + 0.3` = 0.395 m of
+the surface. A shark cruising a metre down cannot be shot from the bank, which is why the animal goes deep
+when it is annoyed and why the fin is the warning. Three good hits and it gives up on the visitor: `sulk` for
+14-22 seconds, `dread` for 22-32, and it goes to `farCorner` — the corner of the basin away from whoever is
+standing there. Nothing dies in this Villa; that was decided and not fallen into.
+
+**The pool, measured at last, since the note said to measure before touching.** Start view, 2602 water
+points picked, split at 6.4 m:
+
+```
+as it is        near half (97,146,149) L136   far half (102,151,154) L141   0% blown, 3% over L200
+?wsky=0         near (79,129,132) L119        far  (78,129,131) L118        the sky's mirror costs 22 points
+?wem=0          near (93,127,128) L120        far  (99,136,136) L128        the cyan film costs 13-16
+?nofilmangle=1  near (98,152,157) L141        far  (104,161,166) L150       the painted lid, and worse
+?net=0          near (95,146,150) L135        far  (103,161,163) L149       the caustic net, and no help
+```
+
+So the water is **not blown out** (0% of it is white) and the near half is not brighter than the far half —
+the old complaint's "one blown band of glare" is gone. What is left is a **colour** fault and it starts
+under the water: the basin's own tile is painted (76..120, 150..196, 168..206) with grout at (172,190,186)
+and an emissive cheat of (0.07,0.14,0.15) on top (`poolTileCanvas` in `src/textures.js`, `mats.poolTile` in
+`src/materials.js`), and the water over it is alpha 0.48. A pale cyan floor under a half-transparent film is
+a pale cyan pool, whatever the film does. **Next session: take the cyan out of the TILE** — a real pool
+mosaic is off-white and cream with a few blue glass tiles and grey grout, and the turquoise belongs to the
+water's film, which already owns it. Weigh it with `?wem=` and these same 2602 points, and do not touch
+`?wsky=` first: the mirror is what makes the far half a mirror.
+
+**Also measured and found already fixed**, so nobody chases them again: the lounger cushions in the west view
+are `cushion` at mean (97,86,65) L88 running from (55,50,33) to (211,168,126) — a lit mattress, not a board
+of bitumen. The garden lamps at hour 21 paint `lampGlow` at (234,202,140): warm gold, not a white hole.
+
+Standing stone after this: the walk is a walk (one step level 229 cm, the same step looking down at the water
+229 cm, 100% of it, `tools/recover.js --steep`), the ear is silent until touched, and the gun costs the
+visitor one line on the plate.
+
+Look at: `s98-gun-armed.png`, `s98-gun-water.png`, `s98-gun-shark.png`, `s98-cover-home.png`.
+
+Next after this, in order:
+
+1. **The pool's tile, as measured above.** The biggest single colour in the frame's middle and the one thing
+   the numbers say is wrong.
+2. **The pots are onions with moss balls on them** — six in the start view. Still owed, and it wants eyes or
+   the `clip`/size treatment the shrub beds got in v0.83.4.
+3. **The raven still has no coin photographed on the ground.** `tools/perch.js` puts the bird up and opens its
+   purse; nobody has yet looked at a coin lying on paving at 26 mm and said whether the strike reads.
+4. The shark follow-ups still owed: a dorsal swept back a little more, and `tools/where.js` does not know
+   sharks exist.
+
+— Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who armed the visitor
+without eyes to see with, and who measured a gun at 8.3% of the frame and a step at 229 cm before calling it
+fit. A garden gun that costs sixty frames a second or leaves a dead animal under a sunlounger is no better
+than a coffee with an unmeasured spoon of sugar in it: both are adulteration, and neither can be defended.

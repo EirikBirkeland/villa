@@ -2,7 +2,7 @@
 // Each one is a physically based material built from a painted canvas pattern, so no surface
 // in the Villa is a single flat colour.
 
-import { texture, grassCanvas, paverCanvas, poolTileCanvas, plasterCanvas, teakCanvas, roofTileCanvas, palmBarkCanvas, palmBladeCanvas, bananaBladeCanvas, stalkCanvas, bushCanvas, bushEdgeCanvas, bushClusterCanvas, tuftAtlasCanvas, clothCanvas, cushionCanvas, copingCanvas, poolWaterCanvas, causticsCanvas, rippleCanvas, hedgeCanvas, canopyClusterCanvas, canopyAtlas, farCanopyCanvas, distanceCanvas, greyNoiseCanvas, bumpFromCanvas, timberCanvas, terracottaCanvas, rockCanvas, soilCanvas, rugCanvas, butterflyWingCanvas, cockroachCanvas, frogSkinCanvas, lilyPadCanvas, rippleRingCanvas, koiCanvas, sharkSkinCanvas, bloodCanvas, geckoSkinCanvas, royalCoinCanvas } from "./textures.js";
+import { texture, grassCanvas, paverCanvas, poolTileCanvas, plasterCanvas, teakCanvas, roofTileCanvas, palmBarkCanvas, palmBladeCanvas, bananaBladeCanvas, stalkCanvas, bushCanvas, bushEdgeCanvas, bushClusterCanvas, tuftAtlasCanvas, clothCanvas, cushionCanvas, copingCanvas, poolWaterCanvas, causticsCanvas, rippleCanvas, hedgeCanvas, canopyClusterCanvas, canopyAtlas, farCanopyCanvas, distanceCanvas, greyNoiseCanvas, bumpFromCanvas, timberCanvas, terracottaCanvas, rockCanvas, soilCanvas, rugCanvas, butterflyWingCanvas, cockroachCanvas, frogSkinCanvas, lilyPadCanvas, rippleRingCanvas, koiCanvas, sharkSkinCanvas, bloodCanvas, geckoSkinCanvas, royalCoinCanvas, puffCanvas, flashCanvas } from "./textures.js";
 
 const { PBRMaterial, Color3, Color4, Texture, ImageProcessingConfiguration } = BABYLON;
 
@@ -1712,6 +1712,48 @@ export function createMaterials(scene) {
 	mats.fireflyHalo.backFaceCulling = false;
 	mats.fireflyHalo.specularIntensity = 0;
 	mats.fireflyHalo.emissiveColor = new Color3(0, 0, 0);
+
+	// The gun the visitor may ask for (`src/weapon.js`). Blued steel and black polymer, and nothing painted on
+	// either: at forty centimetres from the eye a gun is a silhouette with a few hard highlights on it, and the
+	// only thing that makes those highlights read as metal is a low roughness and a high metalness — a grey
+	// plastic gun with a painted stripe on it is a toy, and a toy in a garden full of animals is a sticker.
+	mats.weaponSteel = pbr(scene, "weaponSteel", { roughness: 0.36, metalness: 0.85, environmentalIntensity: 1.2 });
+	mats.weaponSteel.albedoColor = paint([58, 60, 66]);
+	mats.weaponSteel.specularIntensity = 1;
+	// The grip, the stock and the forend: black polymer, which takes almost no shine and has a little of its
+	// own warmth in it. Pure black here would be a hole in the picture, so it is soot with brown in it.
+	mats.weaponGrip = pbr(scene, "weaponGrip", { roughness: 0.62, environmentalIntensity: 0.5 });
+	mats.weaponGrip.albedoColor = paint([66, 57, 48]);
+	mats.weaponGrip.specularIntensity = 0.45;
+	// The muzzle flash: a self-lit star at the end of the barrel, ADDED to what is behind it rather than
+	// blended over it, because a flash is light and not paint. Its emissive sits above the bloom's threshold
+	// (1.6 — see src/main.js) on purpose, so the one bright thing the visitor makes in this garden glows the
+	// way the night lamps do.
+	mats.muzzleFlash = pbr(scene, "muzzleFlash", { roughness: 1, environmentalIntensity: 0 });
+	mats.muzzleFlash.disableLighting = true;
+	mats.muzzleFlash.emissiveColor = new Color3(2.3, 1.25, 0.4);
+	mats.muzzleFlash.opacityTexture = texture(scene, flashCanvas(128), { name: "muzzle flash", scale: 1 });
+	mats.muzzleFlash.transparencyMode = 3; // add
+	mats.muzzleFlash.backFaceCulling = false;
+	mats.muzzleFlash.disableDepthWrite = true;
+	// Where a round lands: three puffs out of one painted cloud, differing only in their colour, because a
+	// spurt the wrong colour is the fastest way to make a hit look pasted onto the picture. All three are
+	// self-lit and added or blended the same way the pond's ripples are: the mark has to be visible against a
+	// sunlit deck and against dark water at the same hour.
+	for (const [name, glow, mode] of [
+		["spurtWater", [1.15, 1.3, 1.35], 3],
+		["spurtDust", [0.62, 0.5, 0.36], 2],
+		["spurtBlood", [0.5, 0.07, 0.08], 2],
+	]) {
+		const mat = pbr(scene, name, { roughness: 1, environmentalIntensity: 0 });
+		mat.disableLighting = true;
+		mat.emissiveColor = new Color3(glow[0], glow[1], glow[2]);
+		mat.opacityTexture = texture(scene, puffCanvas(128, { seed: name.length * 7 + 3 }), { name: `${name} puff`, scale: 1 });
+		mat.transparencyMode = mode; // 3 adds light, 2 blends over
+		mat.backFaceCulling = false;
+		mat.disableDepthWrite = true;
+		mats[name] = mat;
+	}
 	return mats;
 }
 

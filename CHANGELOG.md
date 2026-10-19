@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.94.0 — 2026-10-19
+
+- **The visitor may arm themselves against the shark.** Type `g u n` and a gun is in your hands; type it again
+  and it goes away. The left mouse button sprays. It is not on the plate's list of keys beyond one line, it has
+  no ammo and no modes, and nothing in the garden dies: a shark that is hit three times gives up on you and
+  goes to lie at the dark end of the pool for a quarter of an hour. A round that finds the water throws a ring
+  and a crown; one that finds stone or soil throws dust; one that finds the animal throws the animal — it is
+  shoved along the line the round came in on, and it bleeds into the pool.
+- **Only a shark you can see the top of can be hit.** A line from the eye stops on the water's sheet, so the
+  rule is the animal's own shape plus how far its back lies under the surface. A shark cruising a metre down is
+  safe, which is why it goes deep when it is annoyed and why the fin cutting the surface is the warning.
+- **The gun costs nothing you can feel**: 60 fps with the button held, 1305 meshes before a burst and 1305
+  after (six marks are reused rather than built), and 8.3% of the frame with the gun out against 0% with it
+  away — a corner of the picture, not a wall across it.
+- **New tool: `tools/shoot.js`**, which types the word at the page, aims, fires, and reports what the line
+  stopped on, how many marks are in the air, what the animal's state and hit count are, and what the frame
+  rate and mesh count did. It found a real fault on the way: in this library `getDirectionToRef` writes into
+  the vector you hand it and hands back nothing, so the half-built gun was throwing rounds with no direction.
+- **The pool was measured before anything was touched**, and the old complaint is half gone: none of the water
+  is blown out and the near half is no brighter than the far half. What is left is a colour fault under the
+  water — the basin's tile is painted pale cyan and the film over it is half transparent, so the pool is pale
+  cyan whatever the water does. `NOTES.md` has the numbers and the fix, which is the tile and not the water.
+
 ## 0.93.2 — 2026-10-19
 
 - **The pool is inside the pool again.** The master noticed that the water could be seen through the walls of the

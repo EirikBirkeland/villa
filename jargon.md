@@ -527,3 +527,18 @@ sense, so they are set down here:
 - **abroad** (of a night animal): out and about. A gecko, a firefly or a cockroach is `abroad` after dark and
   put away by daylight; `tools/ears.js` prints `abroad: true` to say the night ones are actually awake, since
   a sound nobody can hear can also be a sound nobody switched on.
+- **round**: one charge of a gun — what is thrown when the trigger is pulled. Ordinary gun English, written
+  here because "bullet" would be wrong: what travels is the whole charge, and what the Villa draws is where
+  it lands. Used in `src/weapon.js` (`fire()` throws one round) and in the notes.
+- **spurt**: the mark left in the air where a round landed — a puff of water off the pool, of dust off stone
+  or soil, of blood off the shark. Made by `spurt()` in `src/weapon.js` out of six reused cards, painted by
+  `puffCanvas` in `src/textures.js`. Not a splash (which is the ring on the water, `splash` in `src/pool.js`)
+  and not a puff (which is the blood's cloud under the surface, `src/blood.js`).
+- **the word**: the three letters `g`, `u`, `n` typed one after another, which arm the gun and put it away
+  again. `WORD` in `src/weapon.js`. It is a typed word and not a key because every single key on this page is
+  already spent, and a word cannot be struck by accident by anybody whose hands are where they belong.
+- **shove**: the momentum a round drives through the shark's body, which is not the animal's own swimming and
+  is applied to its position separately from its steering. `shoveX`/`shoveZ` and `SPEC.shove` in
+  `src/shark.js`.
+- **dread**: the seconds during which a shark that has been hit keeps clear of the visitor's boots — the
+  number that stops a shot animal coming back for more at once. `dread` and `SPEC.patience` in `src/shark.js`.

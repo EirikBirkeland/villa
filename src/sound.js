@@ -339,12 +339,12 @@ export const VOICES = {
 	/**
 	 * A gunshot: a crack of noise and a thump underneath it, and it is over in a fifth of a second.
 	 *
-	 * There is no weapon in the garden and nothing about it is a bird, so this is built the way a pistol is
-	 * actually heard rather than the way a bird is: a hard pressure wave, which is a burst of noise with every
-	 * frequency in it opened at once and shut again in ten milliseconds, and a low thump from the powder, which
-	 * is where the sound is felt rather than heard. The noise is band-limited on purpose — raw white noise at
-	 * this length is a torn sheet of paper, and a real report from the far side of a yard has lost its very
-	 * highest and very lowest before it arrives.
+	 * Nothing in this garden makes one, so it is built the way a pistol is actually heard rather than the way
+	 * a bird is: a hard pressure wave, which is a burst of noise with every frequency in it opened at once and
+	 * shut again in ten milliseconds, and a low thump from the powder, which is where the sound is felt rather
+	 * than heard. The noise is band-limited on purpose — raw white noise at this length is a torn sheet of
+	 * paper, and a real report from the far side of a yard has lost its very highest and very lowest before it
+	 * arrives.
 	 */
 	shot(ctx, out, rand) {
 		const t0 = ctx.currentTime + 0.005;

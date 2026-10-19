@@ -3789,3 +3789,99 @@ export function royalCoinCanvas(size = 320) {
 	g.fillRect(0, 0, size, size);
 	return canvas;
 }
+
+/**
+ * A puff thrown into the air where something was struck: a round of soft cloud with a few specks
+ * thrown out past it. Painted in white on nothing, because it is used as an OPACITY pattern — the
+ * colour comes from the material, so the same canvas serves for water, dust and blood.
+ *
+ * WHY IT IS SOFT AND NOT SHAPED. A spurt from a round is a hundredth of a second of spray, and at
+ * that speed nothing has a shape yet: what a person actually sees is a bright smudge with a ragged
+ * edge and a handful of dots round it. A shaped puff (a star, a crown, a mushroom) is a drawing of an
+ * idea of an explosion, and it is the shape that makes a hit look pasted on. The raggedness here comes
+ * from overlapping lobes at random, the same way `bloodCanvas` makes a cloud of dye.
+ */
+export function puffCanvas(size = 128, { seed = 31, lobes = 11 } = {}) {
+	const canvas = canvasOfSize(size);
+	const ctx = context2d(canvas);
+	const rand = randomGenerator(seed);
+	ctx.clearRect(0, 0, size, size);
+	const mid = size / 2;
+	const lobe = (x, y, r, strength) => {
+		const skin = ctx.createRadialGradient(x, y, 0, x, y, r);
+		skin.addColorStop(0, `rgba(255,255,255,${strength})`);
+		skin.addColorStop(0.5, `rgba(240,240,240,${strength * 0.7})`);
+		skin.addColorStop(1, "rgba(0,0,0,0)");
+		ctx.fillStyle = skin;
+		ctx.beginPath();
+		ctx.arc(x, y, r, 0, Math.PI * 2);
+		ctx.fill();
+	};
+	// The body: one big lobe in the middle and a ring of smaller ones against it, so the mass has a
+	// dense heart and a broken edge rather than one clean circle.
+	lobe(mid, mid, mid * 0.5, 0.95);
+	for (let i = 0; i < lobes; i++) {
+		const th = rand() * Math.PI * 2;
+		const out = mid * (0.2 + rand() * 0.28);
+		lobe(mid + Math.cos(th) * out, mid + Math.sin(th) * out, mid * (0.12 + rand() * 0.2), 0.4 + rand() * 0.45);
+	}
+	// The spray: small dots outside the mass, which is the part that says "this was thrown" rather than
+	// "this is a cloud". They are hard-edged on purpose; the smoke is soft and the drops are not.
+	for (let i = 0; i < 14; i++) {
+		const th = rand() * Math.PI * 2;
+		const out = mid * (0.5 + rand() * 0.42);
+		const x = mid + Math.cos(th) * out;
+		const y = mid + Math.sin(th) * out;
+		ctx.fillStyle = `rgba(255,255,255,${0.3 + rand() * 0.6})`;
+		ctx.beginPath();
+		ctx.arc(x, y, size * (0.004 + rand() * 0.014), 0, Math.PI * 2);
+		ctx.fill();
+	}
+	return canvas;
+}
+
+/**
+ * The flash at a gun's muzzle: a hot core with a handful of spikes out of it.
+ *
+ * A real muzzle flash is a ball of burning gas with the unburnt powder jetting out in front of it, and
+ * at a twentieth of a second it reads as a star and nothing else. It is painted white because it goes on
+ * as an OPACITY pattern over a self-lit orange material, exactly as the blood and the ripples are
+ * painted — the material owns the colour, the canvas owns the shape.
+ */
+export function flashCanvas(size = 128) {
+	const canvas = canvasOfSize(size);
+	const ctx = context2d(canvas);
+	const rand = randomGenerator(0x7f3);
+	const mid = size / 2;
+	const ball = ctx.createRadialGradient(mid, mid, 0, mid, mid, mid * 0.34);
+	ball.addColorStop(0, "rgba(255,255,255,1)");
+	ball.addColorStop(0.55, "rgba(255,255,255,0.72)");
+	ball.addColorStop(1, "rgba(0,0,0,0)");
+	ctx.fillStyle = ball;
+	ctx.beginPath();
+	ctx.arc(mid, mid, mid * 0.34, 0, Math.PI * 2);
+	ctx.fill();
+	// Six spikes of uneven length out of the core. Even spikes make a snowflake, and a snowflake is the
+	// thing a bad muzzle flash always looks like.
+	for (let i = 0; i < 6; i++) {
+		const th = (i / 6) * Math.PI * 2 + rand() * 0.5;
+		const len = mid * (0.42 + rand() * 0.42);
+		const half = size * (0.02 + rand() * 0.03);
+		ctx.save();
+		ctx.translate(mid, mid);
+		ctx.rotate(th);
+		const spike = ctx.createLinearGradient(0, 0, len, 0);
+		spike.addColorStop(0, "rgba(255,255,255,0.9)");
+		spike.addColorStop(0.6, "rgba(255,255,255,0.4)");
+		spike.addColorStop(1, "rgba(0,0,0,0)");
+		ctx.fillStyle = spike;
+		ctx.beginPath();
+		ctx.moveTo(0, -half);
+		ctx.lineTo(len, 0);
+		ctx.lineTo(0, half);
+		ctx.closePath();
+		ctx.fill();
+		ctx.restore();
+	}
+	return canvas;
+}

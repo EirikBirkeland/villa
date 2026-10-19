@@ -68,6 +68,12 @@ const SPEC = {
 	// How close you have to be before it starts coming at all.
 	close: 1.6,
 	near: 4.2,
+	// What a round does to it: how far the animal is shoved (metres a second, spent over its own second),
+	// and how many good hits it will stand before it gives up on the visitor entirely and goes to lie at the
+	// far end of the pool. Three, because a shark that is merely annoyed by the fifth shot is not an animal
+	// and a shark that is defeated by the first is not either.
+	shove: 2.4,
+	patience: 3,
 };
 
 // The girth tables, read at `t`: 0 is the tail tip and 1 is the snout. `flank` is a fraction of the full
@@ -457,6 +463,12 @@ export function buildShark(scene, mats, pool, { onBite = null, seed = 19 } = {})
 		wakeLeft: rand(),
 		bites: 0,
 		knocks: 0,
+		// What the gun leaves behind: the count of good hits, the shove a round is still driving through the
+		// body, and the number of seconds it will keep clear of your boots for.
+		hits: 0,
+		shoveX: 0,
+		shoveZ: 0,
+		dread: 0,
 	};
 
 	return {
@@ -464,6 +476,47 @@ export function buildShark(scene, mats, pool, { onBite = null, seed = 19 } = {})
 		blood,
 		get state() {
 			return s.state;
+		},
+		get hits() {
+			return s.hits;
+		},
+		/**
+		 * A round has landed at `(x, y, z)`. The animal is thrown, it bleeds, the surface is broken, and it
+		 * stops whatever it was in the middle of doing — which is the whole point of the thing: a shark that
+		 * carries on with a lunge while being shot at is a machine and not a fish.
+		 *
+		 * Nothing dies. That was decided and not fallen into: this is a villa with a duck, some koi and a
+		 * shark with a grievance, and a dead animal under a sunlounger is not a garden. What a hit costs the
+		 * animal is the use of its own temper, and after `SPEC.patience` good hits it has had enough of the
+		 * visitor and goes to the deep end to think about the matter.
+		 */
+		takeHit(power, at) {
+			hit(s, power, at);
+		},
+		/**
+		 * A round struck the SURFACE at `(x, y, z)`. Did it go on to strike the animal?
+		 *
+		 * The honest answer is "only if it was near the top", and that is the rule written here. A line thrown
+		 * from the eye stops on the water's sheet — the sheet is a surface and the animal is under it — so the
+		 * only animal a visitor can shoot is one they can see the top of: the fin cutting the surface, the snout
+		 * coming up for a bite. An animal cruising a metre down is not hit by a round that stopped at the skin
+		 * of the pool, and a visitor who cannot hit it there is the reason the animal goes deep when it is
+		 * annoyed. The plan is the animal's own length and girth, laid along its own heading.
+		 */
+		hitIfNear(at) {
+			const dx = at.x - s.x;
+			const dz = at.z - s.z;
+			// Along the animal and across it, in its own axes: a shark is a metre long and a quarter of one
+			// broad, and a circle round its middle would let a round a hand wide of the flank count as a hit.
+			const along = dx * Math.sin(s.yaw) + dz * Math.cos(s.yaw);
+			const across = Math.abs(dx * Math.cos(s.yaw) - dz * Math.sin(s.yaw));
+			if (Math.abs(along) > s.long * 0.52) return false;
+			if (across > SPEC.wide * 0.62) return false;
+			// How far the BACK is under the surface. `depth` is measured to the back already, so this is the
+			// whole of the question: is the top of the animal within reach of a round that entered the water?
+			if (s.depth > SPEC.deep * 0.5 + 0.3) return false;
+			hit(s, 1, { x: at.x, y: s.pool.waterY - 0.04, z: at.z });
+			return true;
 		},
 		animate(time, delta) {
 			prowl(s, time, delta);
@@ -473,6 +526,37 @@ export function buildShark(scene, mats, pool, { onBite = null, seed = 19 } = {})
 			blood.animate(time, delta);
 		},
 	};
+
+	/**
+	 * A round lands. `at` is where it struck, in metres of the garden.
+	 *
+	 * The shove is taken from the shooter to the animal and not from the animal's own heading, because that
+	 * is the direction the lead came from and the only one that makes the body move the way a picture of a
+	 * hit wants: the shark is driven away from whoever is standing at the coping.
+	 */
+	function hit(s, power, at) {
+		const cam = s.pool.visitor ? s.pool.visitor() : null;
+		const fromX = cam ? cam.x : at.x;
+		const fromZ = cam ? cam.z : at.z;
+		let dx = s.x - fromX;
+		let dz = s.z - fromZ;
+		const len = Math.hypot(dx, dz) || 1;
+		const force = SPEC.shove * (0.6 + power * 0.6);
+		s.shoveX = (dx / len) * force;
+		s.shoveZ = (dz / len) * force;
+		s.hits += 1;
+		s.state = "hit";
+		s.left = 0.4 + s.rand() * 0.3;
+		s.wantOpen = 0;
+		s.open = Math.min(s.open, 0.1);
+		s.cooldown = Math.max(s.cooldown, 1.5);
+		// The mark on the water and the mark under it. A round that misses the animal still makes both, and
+		// the animal answers the noise whether the line found it or not — see `src/weapon.js`.
+		s.blood.bleed(at.x, Math.min(s.pool.waterY - 0.03, at.y), at.z, 0.55 + power * 0.35);
+		if (s.pool.splash) {
+			s.pool.splash(at.x, at.z, { across: 0.24, span: 1.6, show: 0.5, life: 1.6 });
+		}
+	}
 
 	/** Everything the animal does with the water and the visitor, in one place. */
 	function prowl(s, time, delta) {
@@ -486,8 +570,12 @@ export function buildShark(scene, mats, pool, { onBite = null, seed = 19 } = {})
 		s.cooldown -= delta;
 		s.left -= delta;
 
+		if (s.dread > 0) s.dread -= delta;
+
 		if (s.state === "cruise") {
-			if (near < SPEC.near && s.cooldown <= 0) {
+			// A hit animal does not come again at once: `dread` is the reason, and it is the only difference
+			// in this file between a shark that has been shot at and a shark that has not.
+			if (near < SPEC.near && s.cooldown <= 0 && s.dread <= 0) {
 				// It has noticed you. The first thing it does is go DOWN and turn to face you, which is the
 				// middle beat of the three: the fin that was cutting the surface is not there any more, and
 				// that is when a person at the edge looks harder.
@@ -566,6 +654,31 @@ export function buildShark(scene, mats, pool, { onBite = null, seed = 19 } = {})
 				s.cooldown = 8 + s.rand() * 7;
 				s.target = inside(p, p.cx + (s.rand() - 0.5) * 2, p.cz + (s.rand() - 0.5) * 1.4);
 			}
+		} else if (s.state === "hit") {
+			// The half second a round takes to go through the animal: mouth shut, deep, and driven along the
+			// line the round came in on. The shove is applied below, with the steering, and not here.
+			s.wantOpen = 0;
+			s.wantDepth = Math.max(0.4, s.depth + 0.3);
+			s.going = SPEC.speed * 0.4;
+			if (s.left <= 0) {
+				if (s.hits >= SPEC.patience) {
+					// Enough. It goes to the far end of the pool and stays there: the deep, dark corner away
+					// from the coping the visitor stands at, which is what a beaten animal actually does.
+					s.state = "sulk";
+					s.left = 14 + s.rand() * 8;
+					s.cooldown = 26 + s.rand() * 14;
+					s.dread = 22 + s.rand() * 10;
+					s.wantDepth = 0.95 + s.rand() * 0.3;
+					s.going = SPEC.speed * 0.7;
+					s.target = farCorner(p, s);
+				} else {
+					s.state = "cruise";
+					s.left = 1.4 + s.rand() * 2;
+					s.cooldown = 3 + s.rand() * 3;
+					s.dread = 5 + s.rand() * 5;
+					s.wantDepth = 0.4 + s.rand() * 0.4;
+				}
+			}
 		} else if (s.state === "sulk") {
 			s.wantOpen = 0;
 			if (s.left <= 0) {
@@ -593,6 +706,18 @@ export function buildShark(scene, mats, pool, { onBite = null, seed = 19 } = {})
 		s.speed += (s.going - s.speed) * Math.min(1, delta * (s.state === "lunge" ? 7 : 2.2));
 		s.x += Math.sin(s.yaw) * s.speed * delta;
 		s.z += Math.cos(s.yaw) * s.speed * delta;
+		// The shove, which is not steering: it is the round's own momentum going through the animal, so it
+		// moves the shark along the line the round came in on whatever the head was doing. It is spent in a
+		// second, and the wall clamp below holds it inside the pool like everything else.
+		if (s.shoveX || s.shoveZ) {
+			s.x += s.shoveX * delta;
+			s.z += s.shoveZ * delta;
+			const spent = Math.min(1, delta * 3.2);
+			s.shoveX -= s.shoveX * spent;
+			s.shoveZ -= s.shoveZ * spent;
+			if (Math.abs(s.shoveX) < 0.01) s.shoveX = 0;
+			if (Math.abs(s.shoveZ) < 0.01) s.shoveZ = 0;
+		}
 		// And the wall, whatever the steering wanted. Held a hand inside, because a shark with its snout in
 		// the tile is a shark stuck in the tile.
 		const wanted = inside(p, s.x, s.z, 0.3);
@@ -685,6 +810,19 @@ export function buildShark(scene, mats, pool, { onBite = null, seed = 19 } = {})
 		}
 		if (onBite) onBite({ power, at: { x: at.x, y: at.y, z: at.z } });
 	}
+}
+
+/**
+ * The corner of the basin furthest from the visitor. A beaten animal does not pick a random point: it
+ * goes where nobody is standing, and in a ten-metre pool that is a corner.
+ */
+function farCorner(p, s) {
+	const cam = p.visitor ? p.visitor() : null;
+	const fromX = cam ? cam.x : p.cx;
+	const fromZ = cam ? cam.z : p.cz;
+	const x = Math.abs(p.x0 - fromX) > Math.abs(p.x1 - fromX) ? p.x0 + 0.5 : p.x1 - 0.5;
+	const z = Math.abs(p.z0 - fromZ) > Math.abs(p.z1 - fromZ) ? p.z0 + 0.5 : p.z1 - 0.5;
+	return inside(p, x, z, 0.5);
 }
 
 /** How far inside the basin a shark may go: the coping overhangs a little and a nose in the tile is ugly. */

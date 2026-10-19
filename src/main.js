@@ -17,6 +17,7 @@ import { buildRaven } from "./raven.js";
 import { buildCreatures } from "./creatures.js";
 import { buildKoi } from "./koi.js";
 import { buildShark } from "./shark.js";
+import { buildWeapon } from "./weapon.js";
 import { installWaterAlpha } from "./water.js";
 import { patchToneCurve } from "./tone.js";
 
@@ -106,6 +107,7 @@ function boot() {
 	//                               mean the same thing
 	//   ?duck=0                     take the toy duck out of the pool (see src/duck.js)
 //   ?shark=0                    take the shark out of the pool, and its blood with it (see src/shark.js)
+//   ?gun=0                      leave the gun out of the build (see src/weapon.js)
 	const switches = new URLSearchParams(window.location.search);
 	const dial = (name, value) => (switches.has(name) ? Number(switches.get(name)) : value);
 
@@ -551,6 +553,11 @@ function boot() {
 	// `localStorage`, and why `?raven=0` is here for anyone who wants the garden without the bird.
 	let raven = null;
 	if (dial("raven", 1) > 0) raven = buildRaven(scene, mats, { ground, sound });
+	// The gun (`src/weapon.js`). It is not on the plate and it is not offered: the Villa is a garden, and the
+	// first thing a visitor meets ought to be the garden. It is asked for by typing `g u n`, and the same three
+	// letters put it away. `?gun=0` leaves it out of the build for anyone photographing the place without it.
+	let gun = null;
+	if (dial("gun", 1) > 0) gun = buildWeapon(scene, mats, { camera, pool, shark, sound });
 	// The day has to be counted and not merely told, because "every few days" is the whole of the raven's bill and
 	// the day clock only knows the hour. It ticks when the hour goes past midnight, and so a page left open
 	// overnight gets its coin overnight, which is what a bird would have done.
@@ -642,6 +649,10 @@ function boot() {
 		if (!still) day.advance(delta);
 		if (koi) koi.animate(still ? 0 : time, still ? 0 : delta);
 		if (shark) shark.animate(still ? 0 : time, still ? 0 : delta);
+		// The gun is the visitor's own action and not one of the animals, so its clock is never stopped: a tool
+		// that photographs a spurt on the water does it in a still picture, and a mark that only appears when
+		// the day happens to be running would be a mark nobody could aim at.
+		if (gun) gun.animate(delta);
 		// What a bite leaves on the visitor: a roll of the sight that is gone in half a second, and a red
 		// ring at the edges of the sight that takes a second and a half to drain out of the picture.
 		//
@@ -679,7 +690,7 @@ function boot() {
 		}
 	});
 	document.body.classList.add("ready");
-	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, duck, fireflies, day, sound, geckos, raven };
+	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, duck, fireflies, day, sound, geckos, raven, gun };
 	// The two numbers a bite leaves, for the tools. Read them to see what the animal left behind; write them to
 	// pose a flinch, because a jolt that lasts a third of a second is not something a picture can wait for.
 	window.__villa.bite = {
