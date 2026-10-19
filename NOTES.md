@@ -10471,3 +10471,12 @@ lies.
 
 `tools/grades.js` now takes `EXTRA` the way `tools/surface.js` does, so any address-bar switch can be A/B'd against
 a material experiment run through `PRE`.
+
+## Session eighty-four, fifteenth stretch: the released copy was checked against the old one, in one harness
+
+A preview mean is a weak proof that a release contains what it claims, so the three builds were loaded in the same
+harness at the same stand, same hour, same picture size, and the panel was compared between two frames 0.8 seconds
+apart. v0.100.0: grain enabled, intensity 3.5, animated, and the panel moves a mean of **1.25** of 765 with its
+worst pixel moving 6 — the complaint, alive in the previous release. v0.100.1, the released one: intensity 1.1,
+not animated, panel **0.00, worst 0**. The working tree: the same 0.00. No page errors in any of the three. So the
+cure is in the version the master can walk into from the menu, and not only in my folder.
