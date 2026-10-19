@@ -20,6 +20,7 @@ import { buildCreatures } from "./creatures.js";
 import { buildKoi } from "./koi.js";
 import { buildShark } from "./shark.js";
 import { buildWeapon } from "./weapon.js";
+import { buildRocket } from "./rocket.js";
 import { installWaterAlpha } from "./water.js";
 import { patchToneCurve } from "./tone.js";
 
@@ -111,6 +112,7 @@ function boot() {
 	//   ?duck=0                     take the toy duck out of the pool (see src/duck.js)
 	//   ?shark=0                    take the shark out of the pool, and its blood with it (see src/shark.js)
 	//   ?gun=0                      leave the gun out of the build (see src/weapon.js)
+	//   ?rocket=0                   leave the launcher out, and keep the house standing (see src/rocket.js)
 	//   ?stream=0                   take the watercourse out of the garden (see src/stream.js)
 	const switches = new URLSearchParams(window.location.search);
 	const dial = (name, value) => (switches.has(name) ? Number(switches.get(name)) : value);
@@ -228,7 +230,7 @@ function boot() {
 	buildGround(scene, mats);
 	buildBoundary(scene, mats);
 	buildDistance(scene, mats);
-	buildVilla(scene, mats, shadows);
+	const villaParts = buildVilla(scene, mats, shadows);
 	// A dial for the lamps inside the house, so a room can be weighed in a picture and not guessed at.
 	// One number sets the pair over the room; the lamp in the floor lamp keeps its ratio to them.
 	if (switches.has("room")) {
@@ -576,7 +578,23 @@ function boot() {
 	// first thing a visitor meets ought to be the garden. It is asked for by typing `g u n`, and the same three
 	// letters put it away. `?gun=0` leaves it out of the build for anyone photographing the place without it.
 	let gun = null;
-	if (dial("gun", 1) > 0) gun = buildWeapon(scene, mats, { camera, pool, shark, sound });
+	let launcher = null;
+	if (dial("gun", 1) > 0) {
+		// The rocket launcher (`src/rocket.js`) is built with the gun and lives inside it: `5` while the gun is
+		// in your hands swaps the gun for the tube. One switch covers both, because a visitor who has no gun has
+		// no use for a launcher either.
+		launcher = dial("rocket", 1) > 0 ? buildRocket(scene, mats, { camera, sound, ground, villa: villaParts }) : null;
+		gun = buildWeapon(scene, mats, { camera, pool, shark, sound, launcher });
+		// `R` already brings the visitor back to where they started. It also puts the house back: the Villa is the
+		// work, and a visitor who can take the house apart and not put it back has lost the thing they came to
+		// walk in. The listener is a second one and not a line inside the walk's own, because the walk does not
+		// know that a launcher exists.
+		if (launcher) {
+			window.addEventListener("keydown", (event) => {
+				if (event.code === "KeyR") launcher.restore();
+			});
+		}
+	}
 	// The day has to be counted and not merely told, because "every few days" is the whole of the raven's bill and
 	// the day clock only knows the hour. It ticks when the hour goes past midnight, and so a page left open
 	// overnight gets its coin overnight, which is what a bird would have done.
@@ -673,6 +691,7 @@ function boot() {
 		// that photographs a spurt on the water does it in a still picture, and a mark that only appears when
 		// the day happens to be running would be a mark nobody could aim at.
 		if (gun) gun.animate(delta);
+		if (launcher) launcher.animate(time, delta);
 		// What a bite leaves on the visitor: a roll of the sight that is gone in half a second, and a red
 		// ring at the edges of the sight that takes a second and a half to drain out of the picture.
 		//
@@ -710,7 +729,7 @@ function boot() {
 		}
 	});
 	document.body.classList.add("ready");
-	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, stream, duck, fireflies, day, sound, geckos, raven, gun };
+	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, stream, duck, fireflies, day, sound, geckos, raven, gun, launcher };
 	// The two numbers a bite leaves, for the tools. Read them to see what the animal left behind; write them to
 	// pose a flinch, because a jolt that lasts a third of a second is not something a picture can wait for.
 	window.__villa.bite = {

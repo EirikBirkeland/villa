@@ -44,7 +44,7 @@ const SPURT = 0.34;
 /** The word that arms the gun, and puts it away again. */
 const WORD = ["g", "u", "n"];
 
-export function buildWeapon(scene, mats, { camera, pool, shark, sound } = {}) {
+export function buildWeapon(scene, mats, { camera, pool, shark, sound, launcher = null } = {}) {
 	let armed = false;
 	let firing = false;
 	let since = 0;
@@ -177,6 +177,9 @@ export function buildWeapon(scene, mats, { camera, pool, shark, sound } = {}) {
 		armed = on;
 		gun.setEnabled(on);
 		if (!on) firing = false;
+		// The launcher goes away with the gun: `5` is a choice made while a weapon is in your hands, and a tube
+		// left across the sight after the gun has been put away is a piece of machinery with no owner.
+		if (launcher) launcher.setMode(false);
 		// The bolt. There is no such sound in the garden, and the coin is the one voice in the ear that is
 		// metal — short and dry enough to pass for a bolt going home at a metre's distance.
 		if (on && sound) sound.play("coin", camera.position, 0.6);
@@ -184,6 +187,16 @@ export function buildWeapon(scene, mats, { camera, pool, shark, sound } = {}) {
 
 	window.addEventListener("keydown", (event) => {
 		const key = (event.key || "").toLowerCase();
+		// `5` while a weapon is in hand: the gun for the tube and the tube for the gun. One number, one swap, and
+		// nothing at all when the visitor is unarmed — a key that does something different depending on what is in
+		// your hands is only fair if it does nothing when your hands are empty.
+		if (launcher && armed && key === "5") {
+			launcher.setMode(launcher.mode !== "rocket");
+			// The two weapons do not share the sight: whichever is out is the one the eye sees.
+			gun.setEnabled(launcher.mode !== "rocket");
+			firing = false;
+			return;
+		}
 		if (key === WORD[step]) {
 			step++;
 			if (step === WORD.length) {
@@ -201,7 +214,14 @@ export function buildWeapon(scene, mats, { camera, pool, shark, sound } = {}) {
 	const canvas = scene.getEngine().getRenderingCanvas();
 	if (canvas) {
 		canvas.addEventListener("pointerdown", (event) => {
-			if (armed && event.button === 0) firing = true;
+			if (!armed || event.button !== 0) return;
+			if (launcher && launcher.rocketOut) {
+				// One rocket to a press, and holding the button does nothing further: a launcher that empties
+				// itself eight times a second like the gun is a firework display and not a weapon.
+				launcher.fire();
+				return;
+			}
+			firing = true;
 		});
 	}
 	// Let go is listened for on the window and not the canvas, for the same reason the drag is: a person who
@@ -230,6 +250,7 @@ export function buildWeapon(scene, mats, { camera, pool, shark, sound } = {}) {
 				if (s.left <= 0) s.mesh.isVisible = false;
 			}
 			if (!armed) return;
+			if (launcher && launcher.rocketOut) return; // the tube is fired by the press and not by the clock
 			since += delta;
 			const every = 1 / PER_SECOND;
 			while (firing && since >= every) {

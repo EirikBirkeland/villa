@@ -9105,3 +9105,71 @@ Next after this, in order:
 — Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who laid sixty-two metres of
 watercourse with a lid over it and then took the lid off, and who says that a stream you cannot hear is a
 picture of a stream, which is the same complaint as a coffee whose sweetness cannot be measured and defended.
+
+---
+
+## Session seventy-one: the rocket launcher (`5` while the gun is out) — v0.96.0
+
+The master asked for it at the start of the stream session and it waited. It is here: **`5` while the gun is in
+your hands** swaps the gun for a tube, and one rocket down the sight puts a mushroom cloud over the garden and
+takes the house apart. `src/rocket.js`, `tools/rocket.js`.
+
+**What one rocket does.** It leaves the tube at 30 m/s, drags a line of smoke behind it, and goes off when a ray
+along its step strikes anything, or after 3.5 s. The blast is nine cards of fire (added, above the bloom's
+threshold), a ring going out along the ground in three quarters of a second, a scorch that fades over
+26 seconds, forty cards of smoke, and the house: every mesh of it standing within 26 m of the blast is cut into
+pieces on a grid of about one metre and thrown.
+
+**The mushroom, and the two numbers that make it.** Each smoke card has a lift and a drag, so it rises fast out
+of the fire and cannot keep going; above thirteen metres it stops going up and goes out instead. That is the
+whole shape — a stem that runs out of lift and a head that has to go sideways. Measured after one blast:
+8 m wide and 16 m at 1.5 s, 17 m wide and 28 m at 5.5 s, **27 m wide and 26 m tall at 9.5 s**, with 21 of the
+32 cards still out. The head goes pale as it rises: a card changes from `mats.smoke` (warm soot) to
+`mats.smokeCap` (cool cloud) at thirteen metres, which is why the cap reads lighter than the stem without any
+card being touched twice.
+
+**The pieces.** 412 of them from one rocket at the front of the house, out of 106 meshes taken out of the
+picture, and the mesh count goes 1428 → 1840 at **60 fps**. They are `createInstance` of three master boxes —
+plaster, roof, timber — because four hundred separate meshes is four hundred sorts, and an instance carries its
+own place, turn and size and shares the rest. The masters are `isVisible = false` and NOT `setEnabled(false)`:
+an instance of a disabled master is hidden with it, which is the trap in this file.
+
+**What the first run caught.**
+1. `across`, `up` and `along` were `const` and were reassigned — the whole blast threw `Assignment to constant
+   variable` and left the house standing while the smoke went up cheerfully. Now `let`.
+2. **Floors are not smashed.** The first run left 129 pieces resting above a metre in the air, because
+   `makeGround` reads floors once when the Villa starts: a smashed slab leaves the pieces of the house sitting
+   on a floor that is no longer there. A blast now takes the walls and the roof and leaves anything with
+   `checkCollisions` — the floors and the steps — standing. The count came down to 33, and those are the pieces
+   that came to rest on the ground floor, which is still there to be rested on. A visitor who has blown the
+   house up can still walk through where it stood.
+3. **The sky went dark at nine seconds and it was not the smoke.** The top band measured (11,30,33) after the
+   blast against (27,61,74) before it, and the smoke was blamed. It is the day: the Villa's sun moves, nine
+   seconds of waiting is about an hour of afternoon, and the sky band is the sky. The smoke itself paints
+   (96,94,85) running (33,37,18) to (122,113,104) — a warm grey with a range, which is what it should be.
+   Measured with `?still=1` the cloud's own numbers are clean.
+4. The cloud was too tall and not wide enough — 8 m across against 37 m up, which is a chimney. The lift came
+   down and the sideways drift up: 27 m wide against 26 m tall.
+
+**Putting it back.** `R` already returns the visitor to where they started; it now also rebuilds the house and
+sweeps the pieces away, because the Villa is the work and a visitor who cannot put the house back has lost the
+thing they came to walk in. `?rocket=0` leaves the launcher out of the build.
+
+Look at: `s101-rocket-1-fireball.png` (the fire, one second after the press), `s101-rocket-2-column.png` (the
+stem going up), `s101-rocket-cloud.png` (the head spread at 27 m), `s101-rocket.png` (nine seconds later: the
+cloud, the scorch, and the pieces on the lawn), `s101-gun-check.png` (the gun still works after the change).
+
+Next after this, in order:
+
+1. **The stream is silent** — sixty-two metres of moving water and no noise. Still owed from session seventy,
+   and it wants a held looping source with a gain that rises as the visitor comes near the line, which the ear
+   (`src/sound.js`) does not have yet: every voice there is a one-shot.
+2. **The blast does not darken the garden.** The smoke hangs twenty-six metres up and the sun keeps shining on
+   the lawn at full strength, because the shadow lamp does not know the cloud is there. A dimming of the
+   hemisphere fill and the sun's intensity for the life of the cloud is a dozen lines and would sell it.
+3. **The pots are onions with moss balls on them** — still owed from session sixty-nine.
+4. **The raven still has no coin photographed on the ground.**
+
+— Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who put a mushroom twenty-seven
+metres across over a garden whose hedge is three, and who notes that the house came back whole at the tap of
+`R`, which is more than can be said for a coffee with an unmeasured spoon of sugar in it: that one is forever.

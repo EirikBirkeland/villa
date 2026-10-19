@@ -1814,6 +1814,17 @@ export function createMaterials(scene) {
 	mats.smoke.transparencyMode = 2; // blend
 	mats.smoke.backFaceCulling = false;
 	mats.smoke.disableDepthWrite = true;
+	// The same puff, in the colour it has at the top of the column. A cloud of hot dust is warm and dark at its
+	// root and pale and cool where it has thinned out and can see the sky again — and since every card in the
+	// column wears one of these two, and the card changes from one to the other as it passes thirteen metres,
+	// the head of a mushroom comes out paler than its stem without a single card being moved twice.
+	mats.smokeCap = pbr(scene, "smokeCap", { roughness: 1, environmentalIntensity: 0 });
+	mats.smokeCap.disableLighting = true;
+	mats.smokeCap.emissiveColor = new Color3(0.62, 0.63, 0.66);
+	mats.smokeCap.opacityTexture = texture(scene, smokeCanvas(256, { seed: 903, lobes: 21 }), { name: "smoke head", scale: 1 });
+	mats.smokeCap.transparencyMode = 2; // blend
+	mats.smokeCap.backFaceCulling = false;
+	mats.smokeCap.disableDepthWrite = true;
 	// The heart of the blast, which is added rather than blended because it is fire and not dust, and whose
 	// emissive sits above the bloom's threshold so the one explosion in this garden glows like the lamps do.
 	mats.blastFire = pbr(scene, "blastFire", { roughness: 1, environmentalIntensity: 0 });

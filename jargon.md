@@ -557,3 +557,13 @@ sense, so they are set down here:
   water you can see through in one place and not in another, which is what `streakCanvas` in `src/textures.js`
   paints; `sheet` in this folder already means a flat piece of geometry with no thickness and no face of its
   own, and the fall is not that — it has a front, and the pond's splash rings go out from where its foot lands.
+- **the column, the stem and the cap** (of a blast): what one rocket leaves in the sky (`src/rocket.js`). The
+  **column** is the whole of it — a pool of billboard cards, each rising and dragged down as it goes. The
+  **stem** is its lower part, where the cards are still going up and are warm and dark; the **cap** is where the
+  lift has run out and the cards can only go sideways, which is the whole of how a mushroom is made, and is why
+  a card turns from `mats.smoke` to `mats.smokeCap` as it passes thirteen metres. Nothing is simulated: the
+  shape comes out of three numbers per card — lift, drag, and outward drift.
+- **pieces** (of a house): what a blast leaves on the ground. Each piece is one instance of one of three boxes
+  (plaster, roof, timber), cut out of the bounding box of the wall or roof it came from, and each carries a
+  velocity that gravity and the lawn bring to an end. Not "debris", which is a mass noun: `chunks.length` counts
+  things, not a substance.
