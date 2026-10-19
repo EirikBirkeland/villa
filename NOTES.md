@@ -10232,3 +10232,38 @@ the pixels any further.
 that show the marks at 1280x960. The aspect is the same, so the same fraction of the frame should cover the same
 ground — but I have already been wrong once this session about a difference that turned out to be the instrument.
 Re-run the hide with both pictures at the same size before trusting that `storeRoof` is what carries the marks.
+
+## Session eighty-four, seventh stretch: the marks on the store's face are the SKY, reflected
+
+A trustworthy instrument finally came from `tools/surface.js`: it probes the picture on a grid, keeps only the
+points the picker answers with the named mesh, insets a fifth off that rectangle, and measures *only* the face
+in question — so the roof, the transom, the frame and the shrubs cannot pollute the numbers the way every patch
+I have used until today did. Measured inside `storeWallNorthPart1` — the dark panel of the master's picture —
+with the Villa exactly as released:
+
+| what was changed | mean | row swing | biggest row step | hard steps |
+|---|---|---|---|---|
+| nothing (as released) | 81.5 | 50.5 | 14.6 | 3.13% |
+| plaster wash spread 1.35 → 0.85 | 83.1 | 51.7 | 15.0 | 1.80% |
+| the store's whole shell out of the shadow map, in source | 81.5 | 50.5 | 14.6 | 3.13% |
+| mip maps regenerated for every texture once the scene is ready | 49.0 | 42.6 | 11.2 | 0.77% |
+| **`mats.plasterDark.environmentalIntensity = 0`** | **30.7** | **32.6** | **7.4** | **0.47%** |
+
+Only one line moves the marks, and it is the environment. The scene's sky cube, used as image-based lighting,
+is what lays a hard diagonal and a comb of level marks across a rough plaster face — and it is also carrying
+most of the light on that face, which is why switching it off is not a fix but a disaster (the panel goes from
+81.5 to 30.7, and the front of the house from 127.2 to 119.5 if it is done scene-wide by regenerating mip maps,
+which was tried and reverted). Everything else now has been measured out: shadows received, shadows cast, the
+wash's scale, the grain's scale, tile seams, missing mip maps, clamped anisotropy, tone-map banding, the camera
+stand, and — retracted — `storeRoof`, which the honest patch exonerates.
+
+So this is the fault the edict already asks to be fixed, by name: **"image-based lighting from a Poly Haven
+HDRI."** The Villa is doing IBL from a small, coarse, hand-painted sky cube whose horizon and cloud bands are
+still legible when a rough surface reflects it. A proper pre-filtered HDRI — or, short of that, a much blurrier
+and larger environment with a real mip chain — is what takes the marks off every shaded face at once. That is a
+piece of work of its own and it changes the light of the whole Villa, so it belongs in front of the master and
+not smuggled into a patch: it will move the calibrated tones far more than the six-light question does.
+
+Also settled: the mip-map regeneration on `scene.onReadyObservable` *does* change the picture (front view
+127.2 → 119.5, hard steps down), so unlike the shadow and light writes of earlier stretches it is not a no-op —
+it is simply the wrong direction on its own.
