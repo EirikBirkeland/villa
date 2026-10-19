@@ -10057,3 +10057,33 @@ reach the shader at all rather than arriving too weak. That is the same six-ligh
 master's ruling, and it should be asked there: raise the budget on a handful of materials (measured before:
 inside 136→146, house from the pool 96→85, lawn by the pond 53→43, still 60 fps) and the festoon question
 answers itself in one run of `tools/lamplight.js` and `tools/lampgain.js`.
+
+## Session eighty-four, third stretch (the whole day walked, and two faults that turned out to be mine)
+
+`tools/hoursweep.js` walks the clock from one stand and reads what the browser painted each hour. **The day
+cycle is sound**: over 0–23 at the front stand and a stand tilted at the sky, no hour exceeds 1.4% pure black,
+none blows a pixel white, and the sky reads blue at every hour sampled — rgb(96,153,165) at noon, rgb(102,154,169)
+mid-afternoon, rgb(18,43,42) at midnight. The only flags are the mean stepping at dawn (24.3 at six to 39.6 at
+seven) and at dusk (64.6 at eighteen to 32.7 at nineteen), which is a sun arriving and leaving.
+
+Two apparent faults, both mine and both recorded so they are not chased twice:
+
+- **"The sky is green all day."** It is not. A **positive pitch in the `view` switch looks DOWN** and a negative
+  looks up, so my "tilt at the sky" stand of `+0.45` was aimed at palm fronds. Aggravated by a second trap: a
+  ray aimed at the sky dome *always* hits it, because the dome is a shell turned inside out around the whole
+  garden, so a sky predicate says "sky" from every direction with trees and walls in the way. The honest test
+  for "that pixel is sky" is the ordinary pick finding *nothing there*, because the dome is not pickable.
+- **"Twenty-nine painted bulbs."** Still true and still unfixed, but my first readings of the festoon lamps were
+  taken from stands the walk controller refused and snapped back to the start (the deck top is 0.54 and free
+  only z −4.4 to 0), which is worth checking with `ground.free` before any picture is believed.
+
+`tools/throughwall.js` asked whether the new back-door lanterns shine through the plaster into the room, since
+lights here do not know about walls and these lamps cast no shadow map. Measured in the room at hour 22: frame
+mean 65.9 to 67.0 and pure black 2.79% to 1.37% with the lanterns lit, and the wall patch they stand beside
+does not move at all. The plaster keeps them out; no `excludeMeshes` was needed.
+
+**Decision, written down because it looks like a fault and is not:** the west gable at midnight remains the
+darkest of the five standard views (mean 23, 7.9% pure black). There is no fixture on that face, and adding a
+lamp there to move a number would be inventing an object to please a meter — a moonless gable face is a dark
+gable face. If the master wants that wall lit, the honest route is a lamp on the west path with a reason to
+stand there, not an emissive box.
