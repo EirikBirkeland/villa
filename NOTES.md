@@ -10505,3 +10505,10 @@ wears the material of the same name with `alpha 0.48` — the pond's is `pondWat
 after the fill was halved: mean **139.1**, spread sd **13.6**, **0.00%** over L200 and **0.00%** under L20. The
 water has light in it and detail in it, and nothing is crushed or blown, so the halved environment took some of the
 sky out of its reflection and not its life.
+
+## Session eighty-four, eighteenth stretch: the switch matrix, after a day of touching the engine room
+
+Ten combinations booted clean with no page errors, meshes and lights as expected: plain 1495/14, `?stream=0` 1448,
+`?rocket=0` 1377, `?flash=0` 1494 with one light fewer, `?frog=0` and `?lock=0` unchanged at 1495, `?sound=0` 1435,
+`?still=1&grain=0` 1495, the new `?envpx=64&msaa=1` 1495, and `?stream=0&rocket=0` 1330. This mattered because the
+day's work touched the day's own table, the post pipeline's grain, and the render loop itself.
