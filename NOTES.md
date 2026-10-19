@@ -10267,3 +10267,17 @@ not smuggled into a patch: it will move the calibrated tones far more than the s
 Also settled: the mip-map regeneration on `scene.onReadyObservable` *does* change the picture (front view
 127.2 → 119.5, hard steps down), so unlike the shadow and light writes of earlier stretches it is not a no-op —
 it is simply the wrong direction on its own.
+
+### Three more levers, all dead, so nobody tries them twice
+
+* **`roughness` 0.78 → 0.95** on the plaster: mean 81.5 → 75.2, hard steps 3.13% → 2.87%. A little darker, a
+  little calmer, not a cure.
+* **`iblSpecular = 0`**: 81.5 / 50.4 / 14.4 / 3.13% — identical to as-released. The property does nothing here.
+* **`useSphericalHarmonics = true`** on every PBR material: 81.5 / 50.3 / 14.5 / 3.15% — also nothing.
+
+Which pins the mechanism down further: the sky cube's contribution arrives by the diffuse (box-blurred) path,
+and neither the specular term nor the roughness that should blur it has any say. The environment cube is
+`RenderTargetTexture("skyCube", 256, ...)` rendered once from the sky dome alone (`src/main.js:196`), which is a
+small, un-convolved picture of a sky to hang as the whole Villa's image-based lighting. The edict's line
+*"image-based lighting from a Poly Haven HDRI"* is the cure; nothing short of it will do, and it moves the light
+of the entire Villa, so it is the master's decision and not a patch.
