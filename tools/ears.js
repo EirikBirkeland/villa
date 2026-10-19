@@ -133,7 +133,7 @@ const takes = await page.evaluate(async () => {
 		const rate = 22050;
 		const ctx = new OfflineAudioContext(1, Math.round(rate * 3), rate);
 		const buffer = await ctx.decodeAudioData(await res.arrayBuffer());
-		const rec = { buffer, gain: mod.peakGain(buffer) };
+		const rec = { buffer, gain: mod.recordingGain(buffer) };
 		const head = ctx.createGain();
 		head.gain.value = mod.LEVEL[name] ?? 0.4;
 		head.connect(ctx.destination);

@@ -50,6 +50,10 @@ const RECORDINGS = {
 	// times as loud, which is a pond shouting over the whole garden. Trimmed to a third it sits just above one
 	// animal's call, which is what a chorus a hundred metres away ought to do.
 	frog: { file: "sounds/frogs-night.mp3", slice: [1.0, 2.1], trim: 0.34 },
+	// The house gecko of this climate, recorded in the Philippines: a string of hard "tok" pulses ending in a
+	// drawn-out squeak. Short slices, because the animal says three or four syllables and no more, and trimmed
+	// hard, because a tokay recorded at the microphone is a scream and a gecko two metres up a wall is not.
+	gecko: { file: "sounds/gecko-tokay.mp3", slice: [0.55, 1.5], trim: 1.3 },
 };
 
 /** The file behind each recording, for a tool that wants to weigh it without waking the ear. */
@@ -57,21 +61,30 @@ export const RECORDING_FILES = Object.fromEntries(Object.entries(RECORDINGS).map
 export const recordingSpec = (name) => RECORDINGS[name] || { slice: [0.8, 1.6] };
 
 /**
- * The gain that brings a recording's loudest moment to about nine tenths of full scale, so a borrowed file and a
- * synthesised voice can be balanced by `LEVEL` alone instead of by guessing at how loud somebody else's
- * microphone was. Every seventh sample is enough: a peak missed at one sample in seven is a fraction of a
- * decibel.
+ * The gain that brings a recording to a known loudness, so a borrowed file and a synthesised voice can be
+ * balanced by `LEVEL` alone instead of by guessing at how loud somebody else's microphone was.
+ *
+ * TWO numbers are needed and not one. A peak alone is at the mercy of a single crack — a mic bumped, one shout
+ * closer than the rest — and a whole minute of frogs normalised to a peak of 0.9 is a wall of sound. So the
+ * steady loudness (the root mean square) is what the gain is set by, and the peak is only a ceiling: the file is
+ * brought up until its average sits at a twelfth of full scale, and never so far that its loudest moment goes
+ * past nine tenths. Every seventh sample is enough for both: a fraction of a decibel either way.
  */
-export function peakGain(buffer) {
+export function recordingGain(buffer) {
 	let peak = 0;
+	let sum = 0;
+	let n = 0;
 	for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
 		const data = buffer.getChannelData(ch);
 		for (let i = 0; i < data.length; i += 7) {
 			const v = Math.abs(data[i]);
 			if (v > peak) peak = v;
+			sum += v * v;
+			n++;
 		}
 	}
-	return peak > 0.0001 ? 0.9 / peak : 1;
+	const rms = Math.sqrt(sum / Math.max(1, n));
+	return Math.min(0.9 / Math.max(peak, 0.0001), 0.12 / Math.max(rms, 0.0001));
 }
 
 /**
@@ -132,7 +145,7 @@ export function buildSound(camera) {
 					const res = await fetch(spec.file);
 					if (!res.ok) throw new Error(`${spec.file} -> ${res.status}`);
 					const buffer = await ctx.decodeAudioData(await res.arrayBuffer());
-					recordings[name] = { buffer, gain: peakGain(buffer), seconds: buffer.duration };
+					recordings[name] = { buffer, gain: recordingGain(buffer), seconds: buffer.duration };
 				})
 			).catch((error) => {
 				loadError = String(error && error.message ? error.message : error);

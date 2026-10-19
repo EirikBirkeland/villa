@@ -51,40 +51,84 @@ export async function withPage(run) {
 	}
 }
 
-/** Everything the list page knows about each sound on it. */
+/**
+ * Read a search page the way a person reads it: find the links to sounds, and for each one look at the row it
+ * sits in. This used to be a regular expression over the page's HTML, and it broke the moment the site moved a
+ * div — and a broken search is worse than no search, because it reports "0 results" and a person believes it.
+ *
+ * What the anchor itself gives is the best of it: the link is /people/<who>/sounds/<id>/, so the id and the
+ * uploader are in the address and the title is the link's own text. The row around it gives the length and the
+ * licence. Nothing else is wanted from the list: the preview address is read from the sound's own page by look().
+ */
 export function parseList(html) {
+	// The same reading done on a string instead of a document, kept as the fallback. It is the weaker of the two.
 	const out = [];
-	// Each result is an <a> to /sounds/<id>/ with the title in it, inside a block that carries the player's
-	// data. The site's markup moves between releases, so this reads the page the way a person would: find the
-	// links, then look in the text around each one for the uploader, the length and the licence.
 	const seen = new Set();
-	for (const match of html.matchAll(/<a[^>]+href="\/sounds\/(\d+)\/"[^>]*>([\s\S]{0,300}?)<\/a>/g)) {
-		const id = Number(match[1]);
+	for (const match of html.matchAll(/<a[^>]+href="\/people\/([^/"?]+)\/sounds\/(\d+)\/[^"]*"[^>]*>([\s\S]{0,300}?)<\/a>/g)) {
+		const id = Number(match[2]);
 		if (seen.has(id)) continue;
 		seen.add(id);
-		const title = match[2].replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
-		const window = html.slice(Math.max(0, match.index - 1200), match.index + 4000);
-		const author = (window.match(/\/people\/([^/"?]+)\//) || [])[1] || "?";
-		const dur = (window.match(/(\d+:\d\d(?:\.\d+)?)/) || [])[1] || "?";
-		const preview = (window.match(/https:\/\/cdn\.freesound\.org\/previews\/[^"'\\ ]+\.mp3/) || [])[0] || "";
-		const licence = /Creative Commons 0/.test(window) ? "CC0"
-			: /NonCommercial/.test(window) ? "CC-BY-NC"
-			: /Attribution/.test(window) ? "CC-BY" : "?";
+		const title = match[3].replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+		const around = html.slice(Math.max(0, match.index - 800), match.index + 3000);
+		const dur = (around.match(/(\d+:\d\d(?:\.\d+)?)/) || [])[1] || "?";
+		const licence = /Creative Commons 0/.test(around) ? "CC0"
+			: /NonCommercial/.test(around) ? "CC-BY-NC"
+			: /Attribution/.test(around) ? "CC-BY" : "?";
 		if (!title) continue;
-		out.push({ id, title, author, dur, licence, preview });
+		out.push({ id, title, author: match[1], dur, licence, preview: "" });
 	}
 	return out;
 }
 
+/** The reading done inside the live page, which is what search() uses. */
+const READ_LIST = () => {
+	const rows = [];
+	const seen = new Set();
+	for (const a of document.querySelectorAll('a[href*="/sounds/"]')) {
+		const href = a.getAttribute("href") || "";
+		const withAuthor = href.match(/\/people\/([^/]+)\/sounds\/(\d+)\//);
+		const bare = href.match(/\/sounds\/(\d+)\//);
+		const author = withAuthor ? withAuthor[1] : "?";
+		const id = Number(withAuthor ? withAuthor[2] : bare && bare[1]);
+		if (!id || seen.has(id)) continue;
+		seen.add(id);
+		const title = (a.textContent || "").replace(/\s+/g, " ").trim();
+		if (!title) continue;
+		// The row: climb out of the heading until the block stops being about one sound only.
+		let box = a.parentElement;
+		for (let i = 0; i < 6 && box; i++) {
+			const links = box.querySelectorAll('a[href*="/sounds/"]').length;
+			if (links > 1) break;
+			if (box.className && /row|card|sound-list|bw-player/.test(box.className)) break;
+			box = box.parentElement;
+		}
+		const text = ((box && box.textContent) || "").replace(/\s+/g, " ");
+		const icon = box && box.querySelector('[title*="Creative"], [aria-label*="Creative"], [class*="license"] img');
+		const marks = text + " " + (icon ? (icon.getAttribute("title") || icon.getAttribute("aria-label") || "") : "");
+		rows.push({
+			id,
+			title,
+			author,
+			dur: (text.match(/(\d+:\d\d(?:\.\d+)?)/) || [])[1] || "?",
+			licence: /Creative Commons 0|CC0/i.test(marks) ? "CC0"
+				: /NonCommercial/i.test(marks) ? "CC-BY-NC"
+				: /Attribution/i.test(marks) ? "CC-BY" : "?",
+			preview: "",
+		});
+	}
+	return rows;
+};
+
 export async function search(query, { cc0 = false } = {}) {
 	return withPage(async (page) => {
 		const f = (cc0 || hasFlag("cc0")) ? '&f=license:"Creative Commons 0"' : "";
-		await page.goto(`https://freesound.org/search/?q=${encodeURIComponent(query)}&s=score+descending${f}`, {
+		await page.goto("https://freesound.org/search/?q=" + encodeURIComponent(query) + "&s=score+descending" + f, {
 			waitUntil: "networkidle",
 			timeout: 90000,
 		});
 		await page.waitForTimeout(3000);
-		return parseList(await page.content());
+		const rows = await page.evaluate(READ_LIST);
+		return rows.length ? rows : parseList(await page.content());
 	});
 }
 
