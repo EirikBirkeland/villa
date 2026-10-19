@@ -9946,3 +9946,11 @@ on a CPU and their graphics card may be doing something to edges that this sandb
 owner's word on whether the panel is the store's band of glass, which my scoring points at and which
 I can then treat on purpose — the pane is dark by day because the room's shelf lamp only burns after
 sunset, and there is a defensible fix for a dark panel, but I will not apply it to a guess.
+
+ONE OPEN ITEM CLOSED, by measurement rather than by work. The list said the watercourse has no
+reflection of its own. It does not need one: at `streamup` at hour 10 its surface reads mean 119 with
+a spread of 37 across the strip and no black in it at all, against the sky above at 163 — a lit,
+varied surface. `mats.streamWater` stands at roughness 0.06 with environmentalIntensity 0.85 and a
+mirror colour of its own, which is the same trick the pool plays (this Villa has no mirror texture
+anywhere; every reflection in it is the environment seen in a smooth material, and the pool's shader
+note says why). Nothing to build.
