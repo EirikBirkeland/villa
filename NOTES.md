@@ -10130,3 +10130,12 @@ takes this up should begin with it: **ask Babylon, at that stand, whether `deckW
 list contains `lampPostLight-6.9`.** If the light is in the mesh's list and still paints nothing, the fault is
 in the compiled effect; if it is not in the list, the fault is in the selection and the six-slot ceiling is
 still guilty after all. Two more hours should not be spent before that question is answered.
+
+One more test was asked for and could not be finished here: **thirteen slots at boot with the bollard lamps in
+the scene** — the one combination not yet tried, since the runtime raise does not recompile shaders and so proves
+nothing. On this sandbox that build did not reach `scene.isReady()` in seven minutes (118 materials recompiling
+in software, plus eight more point lights), so no A/B could be taken at all. That is itself worth writing down
+before anyone raises the light budget on the strength of a measured gain: the boot cost is real, and only a real
+GPU can say what it costs. Everything above stands as the shipped state — the bollard lamps were reverted, and
+the eight glowing bulbs by the terrace stay unlit until someone answers why a lamp made after the first compile
+paints nothing even when Babylon lists it among the mesh's light sources.
