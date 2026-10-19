@@ -621,17 +621,20 @@ function boot() {
 		if (!still) day.advance(delta);
 		if (koi) koi.animate(still ? 0 : time, still ? 0 : delta);
 		if (shark) shark.animate(still ? 0 : time, still ? 0 : delta);
-		// What a bite leaves on the visitor: a roll of the camera that is gone in half a second, and a red
-		// ring at the edges of the sight that takes a second and a half to drain out of the picture. The roll
-		// goes on `rotation.z` because that is the one angle the walk never writes to, and both are wound back
-		// to exactly nothing on the last frame — a camera left tilted two degrees by a bite that happened a
-		// minute ago is a broken camera, not an aftereffect.
-		if (knock > 0) {
-			knock = Math.max(0, knock - delta * 2.4);
-			camera.rotation.z = Math.sin(time * 44) * 0.03 * knock;
-		} else if (camera.rotation.z !== 0) {
-			camera.rotation.z = 0;
-		}
+		// What a bite leaves on the visitor: a roll of the sight that is gone in half a second, and a red
+		// ring at the edges of the sight that takes a second and a half to drain out of the picture.
+		//
+		// The roll is written onto the FRAME and wiped off again in the same frame, and it is never left on the
+		// camera at all. It used to be: `knock` set `camera.rotation.z` and a later branch put it back to zero when
+		// the counter ran out, and that is a worse arrangement than it sounds. The walk reads its heading out of
+		// the camera every frame, so a camera rolled by the animal is a camera that walks the visitor somewhere they
+		// did not steer; and a reset that only happens on the frame the counter hits zero is a tilt that can be
+		// left behind by anything that eats that frame — a backgrounded tab, a slow frame, an exception, a second
+		// bite arriving before the first has finished. So the roll goes on immediately before `scene.render()` and
+		// comes off immediately after, whatever the render does, and the only thing the animal is ever allowed to
+		// hold is one picture.
+		if (knock > 0) knock = Math.max(0, knock - delta * 2.4);
+		const jolt = knock > 0 ? Math.sin(time * 44) * 0.03 * knock : 0;
 		if (sting > 0 || stingShown) {
 			sting = Math.max(0, sting - delta * 0.8);
 			stingShown = sting > 0;
@@ -646,11 +649,24 @@ function boot() {
 			red.b = 0.08 * (1 - sting * 0.9);
 			pipeline.imageProcessing.vignetteWeight = 1.2 + sting * 1.8;
 		}
-		scene.render();
+		const rollWas = camera.rotation.z;
+		camera.rotation.z = rollWas + jolt;
+		try {
+			scene.render();
+		} finally {
+			camera.rotation.z = rollWas;
+		}
 	});
-
 	document.body.classList.add("ready");
 	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, duck, fireflies, day, sound, geckos };
+	// The two numbers a bite leaves, for the tools. Read them to see what the animal left behind; write them to
+	// pose a flinch, because a jolt that lasts a third of a second is not something a picture can wait for.
+	window.__villa.bite = {
+		get knock() { return knock; },
+		set knock(value) { knock = value; },
+		get sting() { return sting; },
+		set sting(value) { sting = value; },
+	};
 }
 
 /** How the visitor moves: the keys walk, the mouse looks, the ground holds them up — until they fly. */
@@ -793,13 +809,23 @@ function setupWalking(ground) {
 			const leftward = pressed(["KeyA", "ArrowLeft"]) ? 1 : 0;
 			const push = new Vector3(rightward - leftward, 0, ahead - back);
 			if (push.lengthSquared() > 0) {
-				camera.getDirectionToRef(BABYLON.Axis.Z, forward);
-				camera.getDirectionToRef(BABYLON.Axis.X, right);
-				right.y = 0;
-				// Walking, the sight line is flattened: looking up at the roof does not lift you off
-				// the paving. Flying, it is not flattened, which is the whole of the control — look
-				// where you want to go and press forward. No new keys for the visitor to remember.
-				if (!flying) forward.y = 0;
+				// Walking, the heading comes out of the yaw and from nowhere else: a flat forward and a flat right,
+				// both exactly one metre long, whatever the sight is doing. It used to be read off the camera with
+				// `getDirectionToRef` and then have its height rubbed off, which was two faults standing in a trench.
+				// Rubbing `forward.y` off a vector that was pointing at the roof leaves a stub, and a stub is a step
+				// taken at a tenth of the speed — look down at the water, where the shark is, and the walk goes heavy
+				// under you. And a direction read off the camera is a direction the camera can bend: anything that
+				// rolls the sight, a bite or any future sway, steers the visitor as well.
+				if (!flying) {
+					forward.set(Math.sin(camera.rotation.y), 0, Math.cos(camera.rotation.y));
+					right.set(Math.cos(camera.rotation.y), 0, -Math.sin(camera.rotation.y));
+				} else {
+					// Flying, the sight line is what you are steered by, up included: look where you want to go and
+					// press forward. No new keys for the visitor to remember.
+					camera.getDirectionToRef(BABYLON.Axis.Z, forward);
+					camera.getDirectionToRef(BABYLON.Axis.X, right);
+					right.y = 0;
+				}
 				const running = down.has("ShiftLeft") || down.has("ShiftRight");
 				const speed = flying ? (running ? FLY_RUN : FLY) : running ? RUN : WALK;
 				const step = (delta * speed) / Math.max(1, push.length());

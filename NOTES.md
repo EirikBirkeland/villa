@@ -8829,9 +8829,11 @@ Look at: `s96-gecko-window.png`, `s96-front-night.png`.
 Next after this, in order:
 
 1. **The raven, which is still only a voice.** `sound.js` has a caw and a coin's tink and nothing calls them. The
-   wish is a raven that sometimes sits on the roof, drops a gold coin stamped with the royal motif into the yard
-   every few days, and is heard now and then without being seen. Read the royal rule in `src/textures.js` before
-   stamping anything: portraiture is not done here, so the motif is a crown and two talk-backs and not a face.
+   wish is a raven that sometimes sits on the roof, drops a gold coin into the yard every few days, and is heard
+   now and then without being seen. Decided here, because it is the sort of thing a later session would otherwise
+   invent twice: the coin is stamped with a **royal emblem** — a pointed crown, a chakra wheel, two talk-back
+   scrolls either side — and not with the face of the living king, because a living person's likeness is not
+   something to paint into a toy. `royalCoinCanvas` in `src/textures.js`.
 2. Frogs are silent by day (right) and the toad never joins in — his croak is a deeper one and he is the one
    animal nobody has ever heard.
 3. The gecko eyes are the only emissive animals outdoors at night; if the night lamps are ever raised, they will
@@ -8843,6 +8845,48 @@ Next after this, in order:
 forty releases of drawing the pond in silence, and who measured a croak in samples because there is no other way
 to tell a frog from a gecko when the garden is dark. A Villa that will not croak is a worse adulteration than
 sugar in coffee — at least the sugar is honest about its teaspoon.
+
+## A bite could cost you your walk, and no longer can (v0.93.1)
+
+The master reported that after the shark bites, the camera stays wrong and walking gets difficult. Worth writing
+down, because the way it was found is the way the next fault will be found too.
+
+Nothing in the code looked wrong. The old after-effect decayed `knock` to zero and put `camera.rotation.z` back to
+zero, and a probe that walked the visitor before a bite and after one reported everything clean: same heading,
+same footing, same distance, 60 fps, 1265 meshes before and after, no leak. So the fault was not "the bite leaves
+the camera tilted", and reading the code harder was not going to say what it was.
+
+What it actually was, and the measurement that caught it: **the walk read its heading off the camera and then
+rubbed the height off the vector.** `getDirectionToRef(Axis.Z)` followed by `forward.y = 0` leaves a vector whose
+length is `cos(pitch)`, and it was never re-normalised — so a step taken while looking down at the water was
+shortened by that cosine. Measured on the released Villa with `tools/recover.js --steep`: one step level **220 cm
+**, the same step looking at their own feet **100 cm — 45% of a step**. That is the whole of "movement becomes
+difficult", and a bite is precisely the thing that makes a person point their sight at the pool. It had nothing to
+do with the bite at all, which is why it hid: the shark only supplied the reason to look down.
+
+The heading now comes from the yaw alone — a flat metre of forward and a flat metre of right, whatever the sight
+is aimed at — and flying still reads the camera, because there the sight line *is* the control. Same measurement
+after: **100% at both pitches.**
+
+The second fault was latent rather than felt, and it is fixed in the same breath. The jolt used to sit on
+`camera.rotation.z` and be cleaned up on the frame the counter happened to reach zero. That means the animal owns
+the camera in between, and the walk — which asks that camera where north is every frame — is steered by the bite
+while the shake lasts; and any frame eaten by a backgrounded tab, a slow draw, or a second bite arriving before
+the first finished was a horizon left tilted for good. Now the roll is put on immediately before `scene.render()`
+and taken off immediately after in a `finally`, so the camera is never the animal's for even one frame. Proved
+from inside the render, not from the code: with a flinch held, the wildest frame was drawn rolled **1.64°** over
+180 frames while the camera between frames held **exactly nothing**.
+
+`tools/recover.js` is the new instrument and does all of this without a human: stand on the coping, measure a
+step, wait to actually be bitten, measure again — camera, footing, heading, fps, mesh and material counts, and
+whether a step looking down is still a step. `--steep` weighs the pitch on the stride, `--jolt` weighs the shake
+from inside the render. Also learned here, and worth remembering: **in this Babylon build a Vector3's x, y and z do
+not survive spreading**, so `{...camera.position}` yields an empty object — ask for each number by name, or your
+probe reports `undefined` at you instead of a distance.
+
+— Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who was told the camera was
+broken and found the walk was the thing with its nose in the water, and who measured a step at 220 cm and 100 cm
+before believing it. A stride that shortens when you look down is an insult to the visitor's knees.
 
 ### What I would do next, in the order the pictures say
 
