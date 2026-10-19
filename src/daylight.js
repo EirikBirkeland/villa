@@ -77,10 +77,10 @@ const DAY = [
 	// way of an overcast morning and not of a sunrise: the difference is that most of its light is in one
 	// direction, and that needs the sun's own number to be worth something against the sky's.
 	{
-		h: 6.6, az: 108, el: 8, sun: 40, sunD: [1, 0.56, 0.3], sunS: [1, 0.76, 0.52],
+		h: 6.6, az: 108, el: 8, sun: 27, sunD: [1, 0.56, 0.3], sunS: [1, 0.76, 0.52],
 		hemi: 5.3, hemiD: [0.38, 0.5, 0.8], hemiG: [0.36, 0.31, 0.26],
 		bounce: 4.4, bounceD: [0.58, 0.46, 0.34],
-		lum: 0.17, rayl: 4.0, turb: 2.0, fog: [0.44, 0.46, 0.42], fogD: 0.0055, env: 0.32, night: 0.05,
+		lum: 0.21, rayl: 4.0, turb: 2.0, fog: [0.44, 0.46, 0.42], fogD: 0.0055, env: 0.32, night: 0.05,
 	},
 	// Mid-morning: the sun has cleared the palms and the garden is itself again, cooler and whiter than the
 	// late afternoon, which is the same light with the haze out of it.
@@ -133,11 +133,17 @@ const DAY = [
 	// whole front of the house turns copper. The lamps come in here, because a lamp lit at sunset is what a
 	// person actually does.
 	{
-		h: 18.6, az: 168, el: 5, sun: 44, sunD: [1, 0.54, 0.26], sunS: [1, 0.8, 0.5],
+		h: 18.6, az: 168, el: 5, sun: 26, sunD: [1, 0.54, 0.26], sunS: [1, 0.8, 0.5],
 		hemi: 5.4, hemiD: [0.42, 0.5, 0.78], hemiG: [0.4, 0.32, 0.24],
 		bounce: 5, bounceD: [0.6, 0.44, 0.3],
-		lum: 0.15, rayl: 4.6, turb: 2.6, fog: [0.48, 0.44, 0.4], fogD: 0.0055, env: 0.3, night: 0.2,
+		lum: 0.24, rayl: 4.6, turb: 2.6, fog: [0.48, 0.44, 0.4], fogD: 0.0055, env: 0.3, night: 0.2,
 	},
+	// Why `sun` is 26 and not the 44 it was: measured at 18:12 with the sun five degrees up, the ground of the
+	// frame was TWICE as bright as the sky over it — strip means 109.5 against 53.3, a ratio of 0.49. Light that
+	// has crossed seven times the air it crossed at noon cannot leave a wall brighter than the whole sky does;
+	// the copper at sunset is real but it is copper and not the same white flood, so the strength now falls with
+	// the altitude instead of only changing colour. The midday keys are untouched, so nothing the master matched
+	// to photographs between nine and four has moved by a single unit.
 	// The afterglow: the sun is gone — only just, and that is the whole trick — the dome is still lit, and
 	// this is the hour the string bulbs were designed for. Nothing here is bright and everything has colour.
 	// The sun sits a degree under the line and the dome's own 0.075 rather than a dark 0.04: put it five
