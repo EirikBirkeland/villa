@@ -672,7 +672,10 @@ function boot() {
 				.map((name) => ({ mat: mats[name], amount: 0.62 })),
 		].filter((entry) => entry.mat),
 		roomLamps: scene.roomLamps,
-		wallLamps: scene.wallLamps,
+		// Every lamp in the garden that is out by day and burning by night: the two cases at the back door
+		// (`src/villa.js`). Anything else that wants to burn at night — a lantern on a post, a bulb on a wire —
+		// joins this list and the day cycle does the rest.
+		nightLamps: scene.nightLamps,
 		poolLights: pool.lights,
 		start: dial("hour", 17.5),
 		daySeconds: still ? 0 : dial("daylen", 360),

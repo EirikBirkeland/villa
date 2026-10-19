@@ -332,9 +332,14 @@ export function buildVilla(scene, mats, shadows) {
 	// villa — a third of the frame from there — was painted (8,7,3) and its brightest pixel in the frame
 	// was (9,9,4): a black board with two bright dots screwed to it, because the lanterns were emissive
 	// boxes and threw nothing at all. Two real lights, one in each case, range 5 m so they warm the plaster
-	// and the step and stop there. They are handed to the day cycle by name in `src/daylight.js` and come
-	// up with the night, like every other bulb here.
-	const wallLamps = [];
+	// and the step and stop there.
+	//
+	// They are pushed onto `scene.nightLamps`, which is the Villa's list of every lamp that is dark by day
+	// and burns by night. Two things are on it now, these; the string lights over the terrace were the third
+	// and came back off again, and `src/garden.js` and session eighty-four say why: four lamps slung along the
+	// wire changed nothing that any instrument here could measure. The day cycle takes the list by that name in
+	// `src/daylight.js` and gives each one its flame with the night.
+	const nightLamps = [];
 	for (const px of [-4.1, -0.9]) {
 		const lamp = new BABYLON.PointLight(`backLanternLight${px}`, new BABYLON.Vector3(px, 2.5, backFace - 0.3), scene);
 		lamp.diffuse = new Color3(1, 0.68, 0.38);
@@ -342,9 +347,9 @@ export function buildVilla(scene, mats, shadows) {
 		lamp.range = 5;
 		lamp.intensity = 11;
 		lamp.baseIntensity = 11;
-		wallLamps.push(lamp);
+		nightLamps.push(lamp);
 	}
-	scene.wallLamps = wallLamps;
+	scene.nightLamps = (scene.nightLamps || []).concat(nightLamps);
 	add(boardBand, door, doorBack, backStep, ...doorFrame, ...lanterns);
 	boardBand.receiveShadows = true;
 	for (const mesh of [boardBand, door, doorBack, ...doorFrame]) mesh.checkCollisions = false;
