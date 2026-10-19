@@ -933,6 +933,12 @@ export function createMaterials(scene) {
 
 	mats.darkMetal = pbr(scene, "darkMetal", { roughness: 0.42, metalness: 0.75 });
 	mats.darkMetal.albedoColor = paint([46, 44, 42]);
+	// The inside of a shadow gap — the four centimetres between a door's leaf and its frame, where the
+	// light never reaches. This is not a stuff a builder would sell: it is the absence of light, so it is
+	// painted near-black and with no sheen whatever. `darkMetal` was tried here first and, being metal, it
+	// caught every lamp in the room and came back at L74 to L142 — a panel, and not a shadow.
+	mats.recessShadow = pbr(scene, "recessShadow", { roughness: 1, metalness: 0 });
+	mats.recessShadow.albedoColor = paint([18, 16, 15]);
 	mats.brass = pbr(scene, "brass", { roughness: 0.3, metalness: 0.9 });
 	mats.brass.albedoColor = paint([186, 146, 76]);
 

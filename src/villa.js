@@ -380,6 +380,14 @@ export function buildVilla(scene, mats, shadows) {
 	// The lining goes round the doorway as well as over the wall, so the opening has a reveal: the
 	// plaster of the room turns the corner of the hole and the doorway reads as being IN a wall instead
 	// of being a rectangle pasted on one.
+	// The barred-up back door, from the side a visitor actually stands on. Out on the garden it is a
+	// lined recess with a teak leaf and a shadow gap; in here the wall was bare plaster with a framed
+	// panel hung high over it, so the door you can walk round to does not exist on the face you look at
+	// from the room — which reads as a window, or as a boarded hatch, and not as a door. So the room gets
+	// the same recipe read from the other side: a hole in the lining, a dark board across its back, and a
+	// leaf standing in the middle of the reveal with four centimetres of that board showing all round it.
+	// Still not a hole in the wall — the wall behind is solid plaster, because this door was barred up.
+	const backDoorHole = { x0: -3.09, x1: -1.91, y0: wallBase, y1: 2.79 };
 	const backLining = zWallWithOpenings(scene, "liningBack", {
 		z: -11.625 + skin / 2,
 		thickness: skin,
@@ -387,7 +395,7 @@ export function buildVilla(scene, mats, shadows) {
 		x1: 7.35,
 		y0: wallBase,
 		y1: wallTop,
-		openings: [storeDoor],
+		openings: [backDoorHole, storeDoor],
 		mat: mats.interiorPlaster,
 		collide: false,
 	});
@@ -396,6 +404,22 @@ export function buildVilla(scene, mats, shadows) {
 	// room, and `ground.js` would hand a visitor a ledge to stand on inside a room they cannot enter.
 	const westLining = wallWithOpenings(scene, "liningWest", { x: -6.675 + skin / 2, thickness: skin, z0: -11.85, z1: -4.15, y0: wallBase, y1: wallTop, openings: westWindow, mat: mats.interiorPlaster, blockers: false });
 	const eastLining = wallWithOpenings(scene, "liningEast", { x: 6.675 - skin / 2, thickness: skin, z0: -11.85, z1: -4.15, y0: wallBase, y1: wallTop, openings: eastWindow, mat: mats.interiorPlaster, blockers: false });
+
+	// The leaf, its shadow gap and its furniture, from the room. The board is wider than the hole so no
+	// chink of it ever shows against the leaf; the leaf is 8 cm narrower than the hole, which is what puts
+	// the dark ring between them; and the two battens and the brass catch are there because a plain flush
+	// panel at this size is what a cupboard looks like, and this is a door that has been shut for years.
+	const backDoorRoom = [
+		box(scene, "backDoorRoomBoard", { x: 1.24, y: 2.36, z: 0.015, px: -2.5, py: 1.63, pz: -11.6175, mat: mats.recessShadow }),
+		box(scene, "backDoorRoomLeaf", { x: 1.06, y: 2.24, z: 0.03, px: -2.5, py: 1.62, pz: -11.6, mat: mats.teak }),
+		box(scene, "backDoorRoomRailHigh", { x: 1.0, y: 0.13, z: 0.02, px: -2.5, py: 2.4, pz: -11.575, mat: mats.teakWall }),
+		box(scene, "backDoorRoomRailLow", { x: 1.0, y: 0.13, z: 0.02, px: -2.5, py: 0.84, pz: -11.575, mat: mats.teakWall }),
+		box(scene, "backDoorRoomCatch", { x: 0.05, y: 0.2, z: 0.05, px: -2.05, py: 1.42, pz: -11.565, mat: mats.brass }),
+	];
+	backDoorRoom.forEach((m) => {
+		m.receiveShadows = true;
+	});
+	add(...backDoorRoom);
 
 	const interiorFloor = box(scene, "interiorFloor", { x: 14, y: 0.1, z: 7.6, px: 0, py: wallBase + 0.05, pz: -8, mat: mats.teakWall });
 	interiorFloor.receiveShadows = true;

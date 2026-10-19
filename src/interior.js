@@ -110,8 +110,13 @@ export function fitRoom(scene, mats, room) {
 	// luminance points apart, which at fourteen metres is nothing at all. So they are turned round: a dark
 	// teak square in a lighter timber frame, which is one dark rectangle on a pale wall from far off and
 	// two things from near. A lacquered panel is what a Thai house hangs here anyway.
-	for (const name of ["West", "East"]) {
-		const px = name === "West" ? -3.2 : 3.2;
+	//
+	// They are NOT symmetric about the alcove, and the wall's two doors are why. The west one used to hang
+	// at -3.2, which is square over the barred-up back door on the other side of that wall: from the room
+	// the only thing where the door is was a small dark panel high up, and no door at all. It stands at -4.7
+	// now, clear of the door's recess, and the east one could not answer by standing at +4.7 because the
+	// doorway into the store cuts the wall there — so it hangs at 3.9, and the pair is uneven by design.
+	for (const [name, px] of [["West", -4.7], ["East", 3.9]]) {
 		add(
 			box(scene, `panelFrame${name}`, { x: 1.7, y: 1.15, z: 0.05, px, py: F + 1.95, pz: room.back + 0.025, mat: mats.wood }),
 			box(scene, `panel${name}`, { x: 1.46, y: 0.94, z: 0.02, px, py: F + 1.95, pz: room.back + 0.055, mat: mats.teakWall }),
