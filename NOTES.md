@@ -10227,3 +10227,8 @@ with `m.visibility = 0.5` on the slab, or a stand taken 2 m further back and lev
 will tell in one picture. If that is what it is, the fault is not a glitch at all but the store's own cornice,
 too thick and too dark to read as one — and the fix is to thin it and put a drip shadow under it, not to chase
 the pixels any further.
+
+**One caveat on my own test, before anyone builds on it:** the hide-one-mesh run was shot at 960x720 and the runs
+that show the marks at 1280x960. The aspect is the same, so the same fraction of the frame should cover the same
+ground — but I have already been wrong once this session about a difference that turned out to be the instrument.
+Re-run the hide with both pictures at the same size before trusting that `storeRoof` is what carries the marks.
