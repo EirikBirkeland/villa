@@ -111,6 +111,67 @@ const measures = await page.evaluate(async () => {
 });
 console.log("voices:", JSON.stringify(measures, null, 1));
 
+/**
+ * The borrowed recording, weighed the same way as the shapes.
+ *
+ * A recording is a different sort of thing from a voice: it arrives as samples rather than as oscillators, it
+ * carries somebody else's microphone and level, and it is played in SLICES by `clip` rather than built note by
+ * note. So this fetches the file the Villa would fetch, decodes it, runs one slice through the same gain the
+ * mixer would put on it, and reports the same four numbers — and the whole length of the recording, since how
+ * long the borrowed pond is, and how long a piece of it is taken at a time, are both worth knowing.
+ */
+const takes = await page.evaluate(async () => {
+	const mod = await import("./src/sound.js");
+	const ear = window.__villa.sound;
+	const out = { loaded: ear.recordingsReady, error: ear.recordingError, takes: {} };
+	for (const [name, file] of Object.entries(mod.RECORDING_FILES)) {
+		const res = await fetch(file);
+		if (!res.ok) {
+			out.takes[name] = { error: `${file} -> ${res.status}` };
+			continue;
+		}
+		const rate = 22050;
+		const ctx = new OfflineAudioContext(1, Math.round(rate * 3), rate);
+		const buffer = await ctx.decodeAudioData(await res.arrayBuffer());
+		const rec = { buffer, gain: mod.peakGain(buffer) };
+		const head = ctx.createGain();
+		head.gain.value = mod.LEVEL[name] ?? 0.4;
+		head.connect(ctx.destination);
+		let seed = 20251019;
+		const rand = () => {
+			seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+			return seed / 0x7fffffff;
+		};
+		const says = mod.clip(rec, mod.recordingSpec(name), head, rand);
+		const rendered = await ctx.startRendering();
+		const data = rendered.getChannelData(0);
+		let peak = 0;
+		let sum = 0;
+		let crossings = 0;
+		let last = 0;
+		let heard = 0;
+		for (let i = 0; i < data.length; i++) {
+			const v = data[i];
+			const a = Math.abs(v);
+			if (a > peak) peak = a;
+			sum += v * v;
+			if (a > 0.002) heard = i;
+			if ((v > 0 && last <= 0) || (v < 0 && last >= 0)) crossings++;
+			last = v;
+		}
+		out.takes[name] = {
+			file,
+			recordingSeconds: Number(buffer.duration.toFixed(2)),
+			sliceSeconds: Number(String(says).slice(0, 4)),
+			peak: Number(peak.toFixed(4)),
+			rms: Number(Math.sqrt(sum / data.length).toFixed(5)),
+			pitchHz: Math.round(crossings / Math.max(0.05, heard / rate)),
+		};
+	}
+	return out;
+});
+console.log("recordings:", JSON.stringify(takes, null, 1));
+
 if (!only("--voices")) {
 	// Stand in the garden and count what it says. The counter is wrapped around the Villa's own `play`, so it
 	// hears exactly what the animals hear and not what this tool hopes they say.

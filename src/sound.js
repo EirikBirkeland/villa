@@ -5,12 +5,26 @@
 // cat of a shark in the water, is not a garden that is quiet. Sound is also the one sense this Villa has
 // never had, and the cheapest to add — no model, no texture, no download.
 //
-// NO FILES ARE FETCHED, and none will be. Every sound here is built out of oscillators and filtered noise at
-// the moment it is asked for, which keeps the Villa inside this folder as it must be, keeps the first picture
-// instant, and means a call can be placed at a metre and a half from the ear or thirty, and be quiet there.
-// What is synthesised is not a recording of a frog and does not pretend to be: it is the SHAPE of the thing —
-// a low pulse train for the frog, a high pip-pip-pip for a small gecko, a rasp for a raven, a ring for a coin
-// — and it is mixed low behind the picture rather than in front of it.
+// NO FILES ARE FETCHED BEFORE THE EAR IS WOKEN, and that is the whole of the rule about files. Every synthesised
+// sound here is built out of oscillators and filtered noise at the moment it is asked for, which keeps the first
+// picture instant and means a call can be placed at a metre and a half from the ear or thirty, and be quiet
+// there. What is synthesised is not a recording of a frog and does not pretend to be: it is the SHAPE of the
+// thing — a low pulse train for the frog, a high pip-pip-pip for a small gecko, a rasp for a raven, a ring for a
+// coin — and it is mixed low behind the picture rather than in front of it.
+//
+// THE ONE RECORDING, and why it is allowed. `sounds/frogs-night.mp3` is a real pond of frogs, recorded by WIM
+// and borrowed from freesound.org under a CC-BY licence; `sounds/CREDITS.md` says so, and the Villa says so too.
+// A recording is worth having where a shape is not enough, and a frog chorus is the case: three hundred animals
+// arguing on a pond is not five oscillators. So the frog's call is now a slice of the real thing, and the
+// recording is FETCHED ONLY AFTER THE EAR IS ARMED — the first picture is drawn and the first step taken with no
+// sound file asked for at all. Until the file has been read, and if it cannot be read at all, the garden falls
+// back on the synthesised croak above, so a missing file costs a shade of realism and nothing else.
+//
+// WHY A SLICE AND NOT THE WHOLE THIRTY-FOUR SECONDS. The scheduler in `src/creatures.js` places a call at a
+// stone, at a distance, and the whole pleasure of a placed sound is that it is somewhere: a thirty-four second
+// chorus looped at one stone would be a pond that never stops talking and a panner lying about it. A one-to-two
+// second slice, started at a random point in the recording, is the same animals heard at a different moment of
+// their argument, and the voice budget still means something.
 //
 // THE BROWSER WILL NOT MAKE A NOISE UNTIL A PERSON HAS TOUCHED THE PAGE. That is a rule of the platform and
 // not a choice: an `AudioContext` starts suspended and stays there until a click or a key. So the Villa stays
@@ -23,6 +37,42 @@
 // at arm's length is loud and in front. The listener is written from the camera every frame.
 
 import { randomGenerator } from "./noise.js";
+
+/**
+ * The recordings the Villa owns, and the slice taken from each. A name here wins over the synthesised voice of
+ * the same name, and the voice stays in the file underneath as the fallback.
+ *
+ * `slice` is the shortest and longest piece taken from the recording, in seconds.
+ */
+const RECORDINGS = {
+	// `trim` is the recording's own volume against `LEVEL`. It is not a guess: the borrowed chorus, brought to a
+	// known peak, came out at 0.449 against the synthesised croak's 0.117 at the same LEVEL — three and a half
+	// times as loud, which is a pond shouting over the whole garden. Trimmed to a third it sits just above one
+	// animal's call, which is what a chorus a hundred metres away ought to do.
+	frog: { file: "sounds/frogs-night.mp3", slice: [1.0, 2.1], trim: 0.34 },
+};
+
+/** The file behind each recording, for a tool that wants to weigh it without waking the ear. */
+export const RECORDING_FILES = Object.fromEntries(Object.entries(RECORDINGS).map(([n, s]) => [n, s.file]));
+export const recordingSpec = (name) => RECORDINGS[name] || { slice: [0.8, 1.6] };
+
+/**
+ * The gain that brings a recording's loudest moment to about nine tenths of full scale, so a borrowed file and a
+ * synthesised voice can be balanced by `LEVEL` alone instead of by guessing at how loud somebody else's
+ * microphone was. Every seventh sample is enough: a peak missed at one sample in seven is a fraction of a
+ * decibel.
+ */
+export function peakGain(buffer) {
+	let peak = 0;
+	for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+		const data = buffer.getChannelData(ch);
+		for (let i = 0; i < data.length; i += 7) {
+			const v = Math.abs(data[i]);
+			if (v > peak) peak = v;
+		}
+	}
+	return peak > 0.0001 ? 0.9 / peak : 1;
+}
 
 /**
  * How loud each kind of call is, against the master gain. Worked out by ear against the mix, and the frog is
@@ -46,6 +96,12 @@ export function buildSound(camera) {
 	let voices = 0;
 	let muted = false;
 	let armedBy = null;
+	// Each loaded recording, once read: its samples and the gain that brings its loudest moment to about full
+	// scale, so that a recording and a synthesised voice can be balanced against each other by `LEVEL` alone
+	// instead of by guessing at how loud somebody else's microphone was.
+	const recordings = {};
+	let loading = null;
+	let loadError = "";
 
 	const state = {
 		/** Called from the first click or key. Nothing is heard before it, and nothing is heard without it. */
@@ -58,7 +114,39 @@ export function buildSound(camera) {
 			master.gain.value = muted ? 0 : 0.9;
 			master.connect(ctx.destination);
 			armedBy = how || "click";
+			// And now, and not before, the recording is asked for: after the first picture, after the first
+			// gesture, and never at all if the ear was never woken.
+			state.loadRecordings();
 			return ctx;
+		},
+
+		/**
+		 * Read every recording in `RECORDINGS` into the context. Safe to call twice; it keeps the first promise.
+		 * A file that will not come, or audio that will not decode, is written into `loadError` and the garden
+		 * goes on making its own shapes instead.
+		 */
+		loadRecordings() {
+			if (!ctx || loading) return loading;
+			loading = Promise.all(
+				Object.entries(RECORDINGS).map(async ([name, spec]) => {
+					const res = await fetch(spec.file);
+					if (!res.ok) throw new Error(`${spec.file} -> ${res.status}`);
+					const buffer = await ctx.decodeAudioData(await res.arrayBuffer());
+					recordings[name] = { buffer, gain: peakGain(buffer), seconds: buffer.duration };
+				})
+			).catch((error) => {
+				loadError = String(error && error.message ? error.message : error);
+			});
+			return loading;
+		},
+		get recordingsReady() {
+			return Object.keys(recordings).length;
+		},
+		get recordingError() {
+			return loadError;
+		},
+		recordingSeconds(name) {
+			return recordings[name] ? recordings[name].seconds : 0;
 		},
 
 		get ready() {
@@ -131,7 +219,10 @@ export function buildSound(camera) {
 			head.connect(pan);
 			pan.connect(master);
 			voices += 1;
-			const stop = VOICES[what](ctx, head, rand);
+			// A recording if there is one, and the shape of the animal if there is not.
+			const stop = recordings[what]
+				? clip(recordings[what], recordingSpec(what), head, rand)
+				: VOICES[what](ctx, head, rand);
 			// The voice is given back when the sound it made has run out. `onended` cannot do this: it belongs to
 			// the oscillators, which are buried inside the voice and out of reach here, and a gain node never
 			// fires it at all — so a counter wired to it never comes back down and the garden goes silent for
@@ -155,6 +246,35 @@ export function buildSound(camera) {
 	};
 
 	return state;
+}
+
+/** The slice lengths asked for by name are in `RECORDINGS`; `recordingSpec` hands them out. */
+
+/**
+ * Play a piece of a recording into the gain it was given, and say how many seconds it will take.
+ *
+ * The piece starts at a random point in the recording — which is what makes five calls from five stones sound
+ * like five animals rather than one animal on a loop — and it is faded in and out over a few tens of
+ * milliseconds, because an AudioBufferSourceNode stopped mid-waveform is a click you can hear through a wall.
+ */
+export function clip(rec, { slice, trim = 1 }, out, rand) {
+	const ctx = out.context;
+	const from = slice[0] + rand() * (slice[1] - slice[0]);
+	const room = rec.buffer.duration - from - 0.05;
+	if (room <= 0.05) return 0.1;
+	const at = ctx.currentTime + 0.02;
+	const src = ctx.createBufferSource();
+	src.buffer = rec.buffer;
+	const env = ctx.createGain();
+	const level = rec.gain * trim;
+	env.gain.setValueAtTime(0, at);
+	env.gain.linearRampToValueAtTime(level, at + 0.03);
+	env.gain.setValueAtTime(level, at + Math.max(0.04, from - 0.09));
+	env.gain.exponentialRampToValueAtTime(0.0008, at + from);
+	src.connect(env);
+	env.connect(out);
+	src.start(at, rand() * Math.max(0.01, rec.buffer.duration - from), from);
+	return from;
 }
 
 /**

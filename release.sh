@@ -17,7 +17,7 @@ tag="v$version"
 
 # What the browser loads. Add to this when the Villa starts loading a new top-level file or folder.
 # A release must walk with no node_modules beside it and no network to fetch from.
-walkable_items="index.html src vendor assets"
+walkable_items="index.html src vendor assets sounds"
 
 if [ -z "$version" ] || [ -z "$summary" ]; then
   echo 'usage: ./release.sh <version> "<one line summary>"'
