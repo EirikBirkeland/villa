@@ -1,5 +1,11 @@
 [
   {
+    "version": "0.99.3",
+    "date": "2026-10-19",
+    "released": "2026-10-19T15:31:22.782Z",
+    "summary": "sharper where it matters: anisotropic filtering at 16 and 4x multisampling, both measured"
+  },
+  {
     "version": "0.99.2",
     "date": "2026-10-19",
     "released": "2026-10-19T14:17:55.328Z",

@@ -10087,3 +10087,18 @@ darkest of the five standard views (mean 23, 7.9% pure black). There is no fixtu
 lamp there to move a number would be inventing an object to please a meter — a moonless gable face is a dark
 gable face. If the master wants that wall lit, the honest route is a lamp on the west path with a reason to
 stand there, not an emissive box.
+
+## Session eighty-four, fourth stretch (the render settings the edict asked for, and a release for them)
+
+Two EDICT settings landed, each measured: **anisotropic filtering sixteen** on every pattern `src/textures.js`
+paints (from eight) and **four samples of multisampling** on the post chain. `tools/sharpness.js` weighs both —
+ground grain 8.64 → 9.62 going from one filter to sixteen, frame mean unmoved; staircase corners 1495 → 1440 at
+four samples, 1425 at eight. Eighteen textures were left at their own level and they are the sun's shadow map
+and the cube maps, not surfaces. `?aniso=` and `?msaa=` exist for the weighing. The release's own preview shows
+it: v0.99.2 staircases 1638, v0.99.3 staircases 1475, mean 106.7 to 107.1 — sharper, same colours.
+
+Restated for whoever picks this up, because it is the standing blocker on a whole class of improvement: the
+six-light budget per material (see the festoon entry above) and the *heavy* EDICT effects — SSAO2, bigger soft
+shadow maps, IBL from an HDRI — all want the same kind of decision and none of them can be judged on a software
+renderer. This sandbox renders at two to six frames a second and understates MSAA, anisotropy and any ambient
+occlusion badly; a gain measured here is a floor and not an estimate.
