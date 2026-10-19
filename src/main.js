@@ -13,7 +13,7 @@ import { makeGround } from "./ground.js";
 import { buildDuck } from "./duck.js";
 import { buildFireflies } from "./fireflies.js";
 import { buildDayCycle, hourWords } from "./daylight.js";
-import { buildSound } from "./sound.js";
+import { buildSound, LEVEL } from "./sound.js";
 import { buildGeckos } from "./gecko.js";
 import { buildRaven } from "./raven.js";
 import { buildCreatures } from "./creatures.js";
@@ -459,8 +459,38 @@ function boot() {
 	// wakes the ear up. `M` turns it off and on again, which is the only new key any of this costs.
 	const sound = dial("sound", 1) > 0 ? buildSound(camera) : null;
 	let nightHeld = false;
+	// The stream's murmur is a held sound, not a call: it is going all the time and the visitor's distance from
+	// the water is what turns it up and down. It cannot start where the water is built, because the ear does not
+	// exist until a person has touched the page, so it starts with the first touch and only once.
+	let waterHeard = false;
+	const startWater = () => {
+		if (waterHeard || !stream || !sound.context) return;
+		waterHeard = true;
+		sound.startMurmur({
+			name: "stream",
+			near: (p) => stream.distanceTo(p.x, p.z),
+			loud: LEVEL.stream,
+			bank: 1.1,
+			span: 12,
+		});
+		// The one place the water drops is the lip at the mouth, and it hisses there: a higher band, a shorter
+		// reach, and a gain that comes up only when the visitor stands over the landing stone.
+		sound.startMurmur({
+			name: "fall",
+			near: (p) => Math.hypot(p.x - stream.mouth.x, p.z - stream.mouth.z),
+			loud: LEVEL.fall,
+			bank: 0.8,
+			span: 7,
+			band: 1500,
+			hiss: 3000,
+			wobble: 1.3,
+		});
+	};
 	if (sound) {
-		const arm = (how) => { if (!sound.ready) sound.arm(how); };
+		const arm = (how) => {
+			if (!sound.ready) sound.arm(how);
+			startWater();
+		};
 		const keyHeld = new Set();
 		window.addEventListener("pointerdown", () => arm("click"), { passive: true });
 		window.addEventListener("keydown", (event) => {
@@ -655,6 +685,9 @@ function boot() {
 	window.addEventListener("resize", () => engine.resize());
 	window.addEventListener("error", (event) => reportFailure(event.error || event.message));
 
+	// Whether the last frame left the day's lamps shaded by a cloud. Outside the loop, because inside it the
+	// flag would be born again every frame and the branch that puts the light back would never be reached.
+	let litShaded = false;
 	engine.runRenderLoop(() => {
 		const delta = engine.getDeltaTime() / 1000;
 		time += delta;
@@ -692,6 +725,30 @@ function boot() {
 		// the day happens to be running would be a mark nobody could aim at.
 		if (gun) gun.animate(delta);
 		if (launcher) launcher.animate(time, delta);
+		// A cloud twenty-six metres over the garden shades the garden, and the day knows nothing about it: the
+		// sun, the sky's fill and the bounce are all written from the hour alone. So the shade is multiplied in
+		// here — after the day has written its numbers and after the cloud has measured itself, and before the
+		// frame is drawn — and it is multiplied rather than set, so that `?sun=3` and `?hemi=1` still mean what
+		// they say. The sun loses more than the fill does because a cloud stops the sharp light and lets the grey
+		// light through: the shadows go soft and the garden stays legible, which is what a cloud does and is not
+		// the same thing as a dimmer.
+		if (launcher && launcher.shade > 0) {
+			const under = launcher.shade;
+			const wrote = day.state.lamps;
+			light.intensity = wrote.sun * (1 - 0.62 * under);
+			hemi.intensity = wrote.hemi * (1 - 0.34 * under);
+			bounce.intensity = wrote.bounce * (1 - 0.5 * under);
+			litShaded = true;
+		} else if (litShaded) {
+			// And put the day's own numbers back. Without this branch the garden would stay dim after the cloud
+			// went, because under `?still=1` the day writes nothing at all and the lamps keep whatever they were
+			// last handed.
+			const wrote = day.state.lamps;
+			light.intensity = wrote.sun;
+			hemi.intensity = wrote.hemi;
+			bounce.intensity = wrote.bounce;
+			litShaded = false;
+		}
 		// What a bite leaves on the visitor: a roll of the sight that is gone in half a second, and a red
 		// ring at the edges of the sight that takes a second and a half to drain out of the picture.
 		//
@@ -729,7 +786,7 @@ function boot() {
 		}
 	});
 	document.body.classList.add("ready");
-	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, stream, duck, fireflies, day, sound, geckos, raven, gun, launcher };
+	window.__villa = { engine, scene, camera, mats, sun, sunLight: light, hemi, bounce, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, stream, duck, fireflies, day, sound, geckos, raven, gun, launcher };
 	// The two numbers a bite leaves, for the tools. Read them to see what the animal left behind; write them to
 	// pose a flinch, because a jolt that lasts a third of a second is not something a picture can wait for.
 	window.__villa.bite = {

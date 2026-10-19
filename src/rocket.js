@@ -128,6 +128,8 @@ export function buildRocket(scene, mats, { camera, sound = null, ground = null, 
 	let scorchLeft = 0;
 	let ringLeft = 0;
 	let ringSize = 0;
+	// How much daylight the cloud is holding off, recomputed every frame from the cards that are out.
+	let shade = 0;
 
 	// ---- the rockets -------------------------------------------------------------
 	const rockets = [];
@@ -268,6 +270,7 @@ export function buildRocket(scene, mats, { camera, sound = null, ground = null, 
 		}
 		scorchLeft = 0;
 		ringLeft = 0;
+		shade = 0;
 		scorch.isVisible = false;
 		ring.isVisible = false;
 		blown = 0;
@@ -361,6 +364,7 @@ export function buildRocket(scene, mats, { camera, sound = null, ground = null, 
 
 	// ---- every frame -------------------------------------------------------------
 	function animate(time, delta) {
+		let spread = 0;
 		// The rockets: a straight line, and a ray along it to ask whether anything is in the way. Straight is
 		// right here: at thirty metres a second and three and a half seconds of fuse, gravity takes a rocket
 		// eleven metres down over the whole garden, which is a droop a visitor would call a fault.
@@ -417,10 +421,20 @@ export function buildRocket(scene, mats, { camera, sound = null, ground = null, 
 			if (c.cap && c.mesh.position.y > c.baseY + CAP_AT && c.mesh.material !== mats.smokeCap) {
 				c.mesh.material = mats.smokeCap;
 			}
-			// Smoke fades in its last half-life; fire goes out at once, because fire does not linger.
-			c.mesh.visibility = c.mesh.material === mats.smoke ? Math.min(1, left * 1.9) : left * left;
+			// Smoke fades in its last half-life; fire goes out at once, because fire does not linger. The test is
+			// `cap` and not the material, because a smoke card changes material halfway up the column and would
+			// otherwise start going out like a flame the moment it turned pale.
+			c.mesh.visibility = c.cap ? Math.min(1, left * 1.9) : left * left;
 			if (c.left <= 0) c.mesh.isVisible = false;
+			if (c.cap) spread += Math.min(1, (1 - left) * 2);
 		}
+
+		// How much of the sky the cloud is covering, which the day knows nothing about. A card counts towards it
+		// by how far it has grown, and two dozen full cards is the whole of the shade — which is about what forty
+		// cards come to once half of them are thinning out. The number rises as the cloud spreads and falls as it
+		// thins, and `main.js` multiplies the sun and the sky's fill by it, so the garden goes dim under a cloud
+		// and comes back a minute later without anything having to be remembered.
+		shade = Math.min(1, spread / 24);
 
 		// The ring goes out along the ground in three quarters of a second, and the scorch stays.
 		if (ringLeft < 1 && ring.isVisible) {
@@ -487,6 +501,10 @@ export function buildRocket(scene, mats, { camera, sound = null, ground = null, 
 		},
 		get cardsOut() {
 			return cards.filter((c) => c.left > 0).length;
+		},
+		/** How much of the daylight the cloud is holding off, from nought to one. For the lights in `main.js`. */
+		get shade() {
+			return shade;
 		},
 		setMode,
 		fire,

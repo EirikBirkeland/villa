@@ -112,6 +112,64 @@ const measures = await page.evaluate(async () => {
 console.log("voices:", JSON.stringify(measures, null, 1));
 
 /**
+ * The held sounds, weighed.
+ *
+ * A murmur is not a call: it has no beginning, no end, and no peak worth speaking of, and its LEVEL is only
+ * ever reached when the visitor is standing in the water. So it is rendered at full gain for three seconds and
+ * the numbers that matter are the steady loudness (rms) and where the sound sits in the pitch range — a stream
+ * that comes out at four kilohertz is a hiss from a tap and not water over stone.
+ */
+const held = await page.evaluate(async () => {
+	const mod = await import("./src/sound.js");
+	const rate = 22050;
+	const out = {};
+	for (const [name, opts, level] of [
+		["stream", {}, mod.LEVEL.stream],
+		["fall", { band: 1500, hiss: 5200, wobble: 1.3 }, mod.LEVEL.fall],
+	]) {
+		const ctx = new OfflineAudioContext(1, Math.round(rate * 3), rate);
+		const head = ctx.createGain();
+		head.gain.value = level;
+		head.connect(ctx.destination);
+		let seed = 7717;
+		const rand = () => {
+			seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+			return seed / 0x7fffffff;
+		};
+		const voice = mod.murmurVoice(ctx, head, rand, opts);
+		// The ear rides this gain with distance; the measurement wants the loudest it is ever offered, so the
+		// level node is opened flat and the LEVEL gain above is the only one in the way.
+		voice.level.gain.setValueAtTime(1, 0);
+		const buffer = await ctx.startRendering();
+		const data = buffer.getChannelData(0);
+		let peak = 0;
+		let sum = 0;
+		let crossings = 0;
+		let last = 0;
+		// The first half second is the filters settling; it is left out of the pitch, which is otherwise dragged
+		// down by a silence that crosses the line twice a sample.
+		const skip = Math.floor(rate * 0.5);
+		for (let i = 0; i < data.length; i++) {
+			const v = data[i];
+			const a = Math.abs(v);
+			if (a > peak) peak = a;
+			if (i < skip) continue;
+			sum += v * v;
+			if ((v > 0 && last <= 0) || (v < 0 && last >= 0)) crossings++;
+			last = v;
+		}
+		out[name] = {
+			level,
+			peak: Number(peak.toFixed(4)),
+			rms: Number(Math.sqrt(sum / (data.length - skip)).toFixed(5)),
+			pitchHz: Math.round(crossings / 2 / ((data.length - skip) / rate)),
+		};
+	}
+	return out;
+});
+console.log("held:", JSON.stringify(held, null, 1));
+
+/**
  * The borrowed recording, weighed the same way as the shapes.
  *
  * A recording is a different sort of thing from a voice: it arrives as samples rather than as oscillators, it

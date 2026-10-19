@@ -9173,3 +9173,83 @@ Next after this, in order:
 — Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who put a mushroom twenty-seven
 metres across over a garden whose hedge is three, and who notes that the house came back whole at the tap of
 `R`, which is more than can be said for a coffee with an unmeasured spoon of sugar in it: that one is forever.
+
+---
+
+## Session seventy-two: the stream is no longer silent, and the cloud shades the garden — v0.97.0
+
+Both of these were left owed at the end of session seventy-one and they were the top two lines of the list.
+
+**The murmur** (`src/sound.js`). The ear has always made voices: a thing called, played, and given back to the
+pool. Water is not a voice. `murmurVoice` builds a **held sound** — two seconds of the Villa's own noise,
+looped, through two bands, with an oscillator a little under one hertz on the low band's centre frequency, which
+is the whole of why it reads as a burnble and not as a hiss off a tap. `startMurmur` hangs one on the mixer and
+the ear rides its gain inside `listen()`, which already runs every frame.
+
+**Why not a panner.** Sixty-two metres of watercourse is not a point. A panner would put a source somewhere in
+the middle of it and go quiet at both ends. So the gain is written from `stream.distanceTo(x, z)` — full within
+1.1 m, gone at 13.1 m, squared for a soft shoulder, and moved with `setTargetAtTime(…, 0.35)` so a visitor
+walking the bank hears the water come up rather than step. The fall at the mouth is a second held sound: higher
+band, shorter reach, and it only wakes when somebody stands over the landing stone.
+
+Measured, at the places a visitor actually stands:
+
+| where | m to water | stream gain | m to mouth | fall gain |
+|---|---|---|---|---|
+| on the bridge | 2.2 | 0.113 | 21.2 | 0 |
+| along the bank | 1.3 | 0.192 | 32.4 | 0 |
+| at the mouth | 0.5 | 0.219 | 2.1 | 0.067 |
+| by the house | 18.5 | 0 | 29.6 | 0 |
+
+and `tools/ears.js` now weighs held sounds too: stream `LEVEL 0.15`, peak 0.083, rms 0.0179, pitch 2178 Hz;
+fall `LEVEL 0.08`, peak 0.066, rms 0.0117, pitch 3167 Hz. The fall sits a third above the stream in pitch, which
+is the right ordering. Against the borrowed frogs (rms 0.0102) the murmur is a bed and not a wall, and it is
+only at full gain when the visitor is standing in the water.
+
+**Three things the first measurement caught.**
+1. The stream came out at **4342 Hz** — a television, not a stream. The bright band was a highpass at 4200 Hz,
+   which passes everything above it. It is a bandpass at 1600 Hz now, and the low band came down to 700: 2178 Hz.
+2. Nothing is heard before the first touch, and nothing at all with `?sound=0` or `?stream=0` — checked, with
+   the murmur's own level read back: `as built 0.113`, `&stream=0 []`, `&sound=0 null`.
+3. My own test script was wrong before the Villa was: appending `?stream=0` to a URL that already had a `?`
+   makes a query string that asks for nothing. Three identical rows and a minute lost to it.
+
+**The shade** (`src/rocket.js`, `src/daylight.js`, `src/main.js`). A cloud twenty-six metres over the garden and
+the sun shining on the lawn at full strength was the second fault. `launcher.shade` is now computed every frame
+from how far the smoke cards have grown (two dozen full cards is the whole of the shade), and `main.js` writes
+it into the day's three lamps after the day has written them and after the cloud has measured itself.
+
+**The bug in that, which the numbers caught at once.** The first version multiplied the lamps' live values.
+Under `?still=1` the day writes nothing at all, so the multiply ran again every frame on its own result: sun
+65.81 → 0 in a few frames, hemi to 0.03. A blackout, not a cloud. `src/daylight.js` now keeps `state.lamps` —
+the numbers the day last wrote — and the shade multiplies *those*. The curve, at a fixed hour:
+
+| | before | 1 s | 3 s | 7 s | 13 s | 23 s |
+|---|---|---|---|---|---|---|
+| sun | 65.81 | 53.94 | 30.60 | **25.01** | 30.11 | 65.81 |
+| hemi | 7.00 | 6.31 | 4.95 | 4.62 | 4.92 | 7.00 |
+| shade | 0 | 0.29 | 0.86 | 1.00 | 0.88 | 0 |
+
+and in the picture, at the same hour both times: mean luminance **106 → 79**, sky band 75 → 48, middle 100 → 80,
+no whites blown and no blacks. The sun loses more than the sky's fill does on purpose: a cloud stops the sharp
+light and lets the grey through, so the shadows go soft and the garden stays legible.
+
+Also mended on the way: a smoke card that turns pale at thirteen metres was being faded by the *fire* rule
+(`material === mats.smoke`), so the head of the cloud went out faster than the stem. The test is `cap` now.
+
+Look at: `s102-shade-before.png` and `s102-shade-under.png` (the same view, the same hour, one with a cloud
+over it), `s102-rocket-2-column.png`, `s102-rocket.png`.
+
+Next, in order:
+
+1. **The stream wants its own reflection.** The watercourse has a mirror of the garden cube in it and the pond
+   has one; the fall has neither, and the veil at the mouth is the one place in the garden where water meets
+   air in a sheet.
+2. **The pots are onions with moss balls on them** — owed since session sixty-nine.
+3. **The raven still has no coin photographed on the ground.**
+4. **More of the night**: crickets and a dawn chorus are still synthesised shapes rather than recordings, and
+   `tools/freesound.js` can now read the search page like a person can.
+
+— Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who reports that the garden
+has been quiet for seventy-two sessions and is quiet no longer, and that a mushroom cloud now costs the lawn a
+quarter of its daylight, which is the least it should cost. 🐎

@@ -101,6 +101,12 @@ export const LEVEL = {
 	// Measured: at 0.95 the blast came out at 1.01 of full scale — past the top of the numbers, which
 	// is a click and not a boom. Half that is the loudest thing in the garden by a distance and still fits.
 	boom: 0.5,
+	// Held sounds, which are heard at the ear's own distance rather than at a place in the garden. The stream is
+	// deliberately low: it is sixty-two metres of shallow water and not a waterfall, and a visitor standing on
+	// the plank bridge should hear it under the frogs rather than over them.
+	stream: 0.15,
+	// The fall at the mouth, which is the one place the water drops, and so the one place it hisses.
+	fall: 0.08,
 };
 
 /** No more of these at once. A pond full of frogs all starting together is a wall of buzz. */
@@ -119,6 +125,9 @@ export function buildSound(camera) {
 	const recordings = {};
 	let loading = null;
 	let loadError = "";
+	// Held sounds: chains that are started once and ridden up and down with the visitor's distance, rather than
+	// voices that are made, played and thrown away. See `startMurmur`.
+	const murmurs = [];
 
 	const state = {
 		/** Called from the first click or key. Nothing is heard before it, and nothing is heard without it. */
@@ -205,6 +214,47 @@ export function buildSound(camera) {
 				l.setPosition(p.x, p.y, p.z);
 				l.setOrientation(f.x, f.y, f.z, 0, 1, 0);
 			}
+			// And the held sounds ride with the ear. A panner is no use for sixty-two metres of water — a point
+			// source would go quiet at one end of it and loud at the other — so the gain is written from the
+			// distance to the nearest point of the watercourse instead, which is what `near` answers.
+			for (const m of murmurs) {
+				const over = Math.max(0, 1 - (m.near(p) - m.bank) / m.span);
+				const want = m.loud * over * over;
+				if (Math.abs(want - m.level) > 0.0005) {
+					m.level = want;
+					// Ridden with a time constant rather than set flat: a visitor walking along the bank should
+					// hear the water come up and go away, not step from one loudness to the next.
+					m.voice.level.gain.setTargetAtTime(want, ctx.currentTime, 0.35);
+				}
+			}
+		},
+
+		/**
+		 * Start a sound that holds. `near` is given the listener's place and answers metres to the water; the
+		 * gain is full within `bank` metres and gone at `bank + span`. Returns the handle, or nothing if the ear
+		 * has not been woken — and the ear is woken by the first click, which is the only reason this is not
+		 * called where the water itself is built.
+		 */
+		startMurmur({
+			name = "murmur",
+			near = () => 0,
+			loud = LEVEL.stream,
+			bank = 1.2,
+			span = 11,
+			band = 700,
+			hiss = 1600,
+			wobble = 0.7,
+		} = {}) {
+			if (!ctx) return null;
+			const voice = murmurVoice(ctx, master, rand, { band, hiss, wobble });
+			const entry = { name, near, loud, bank, span, voice, level: -1 };
+			murmurs.push(entry);
+			return entry;
+		},
+
+		/** What the held sounds are doing right now, for `tools/ears.js` and for anybody checking the mix. */
+		get murmurs() {
+			return murmurs.map((m) => ({ name: m.name, level: Math.round(m.level * 1000) / 1000 }));
 		},
 
 		/**
@@ -292,6 +342,74 @@ export function clip(rec, { slice, trim = 1 }, out, rand) {
 	env.connect(out);
 	src.start(at, rand() * Math.max(0.01, rec.buffer.duration - from), from);
 	return from;
+}
+
+/**
+ * The held noise of moving water: not a call with a beginning and an end, but a sound that is simply going.
+ *
+ * A looped buffer of noise, two bands taken off it, and a slow wobble on the centre of the low band so the
+ * burble is never twice the same. The buffer is two seconds and the Villa's own random source fills it, so the
+ * water in this garden is the same water every time the page is opened; the swell written into it has a whole
+ * number of turns in those two seconds, which is what keeps the loop from thumping.
+ *
+ * Returns the nodes, of which `level` is the one the ear rides up and down with the visitor's distance. The
+ * chain is left connected to `out` and is never taken apart, because this sound does not stop.
+ */
+export function murmurVoice(ctx, out, rand, { band = 700, hiss = 1600, wobble = 0.7 } = {}) {
+	const seconds = 2;
+	const frames = Math.floor(ctx.sampleRate * seconds);
+	const buffer = ctx.createBuffer(1, frames, ctx.sampleRate);
+	const data = buffer.getChannelData(0);
+	// Plain white noise through a bandpass is a television, not a stream. Two things fix it: a swell that comes
+	// and goes over the two seconds, which is water finding stones and going over them, and a slow drift under
+	// it, which is the deeper note of a channel with a lip in it.
+	let drift = 0;
+	for (let i = 0; i < frames; i++) {
+		const at = i / frames;
+		drift += ((rand() * 2 - 1) - drift) * 0.004;
+		const swell = 0.66 + 0.34 * Math.sin(at * Math.PI * 2 * 3);
+		data[i] = Math.max(-1, Math.min(1, (rand() * 2 - 1) * swell + drift * 1.6));
+	}
+	const source = ctx.createBufferSource();
+	source.buffer = buffer;
+	source.loop = true;
+
+	const low = ctx.createBiquadFilter();
+	low.type = "bandpass";
+	low.frequency.value = band;
+	low.Q.value = 0.9;
+	const bright = ctx.createBiquadFilter();
+	bright.type = "bandpass";
+	bright.frequency.value = hiss;
+	bright.Q.value = 0.7;
+	const lowGain = ctx.createGain();
+	lowGain.gain.value = 0.8;
+	const brightGain = ctx.createGain();
+	brightGain.gain.value = 0.16;
+	const level = ctx.createGain();
+	level.gain.value = 0;
+
+	source.connect(low);
+	low.connect(lowGain);
+	lowGain.connect(level);
+	source.connect(bright);
+	bright.connect(brightGain);
+	brightGain.connect(level);
+	level.connect(out);
+
+	// The wobble. An oscillator a little under one hertz on the low band's centre frequency: it is the whole of
+	// why the sound reads as water and not as a hiss from a tap.
+	const lfo = ctx.createOscillator();
+	lfo.type = "sine";
+	lfo.frequency.value = wobble;
+	const depth = ctx.createGain();
+	depth.gain.value = band * 0.34;
+	lfo.connect(depth);
+	depth.connect(low.frequency);
+
+	source.start();
+	lfo.start();
+	return { level, low, bright, lowGain, brightGain, source, lfo };
 }
 
 /**

@@ -296,6 +296,11 @@ export function buildDayCycle(scene, rig) {
 		bounce.direction.set(-dir.x * 0.7 - 0.3, -0.4, -dir.z * 0.7);
 		bounce.intensity = s.bounce;
 		bounce.diffuse = new Color3(...s.bounceD);
+		// The numbers the day last wrote, kept. Something standing between the sun and the garden — a blast's
+		// cloud — has to shade from the day's own value and not from whatever the lamp happens to be holding,
+		// because multiplying the live number every frame compounds: with a cloud overhead for a minute the sun
+		// arrives at nothing at all, which is what was measured before this line was written.
+		state.lamps = { sun: light.intensity, hemi: hemi.intensity, bounce: bounce.intensity };
 
 		sky.luminance = lock.sky ? sky.luminance : s.lum;
 		sky.rayleigh = lock.rayl ? sky.rayleigh : s.rayl;

@@ -119,6 +119,15 @@ const columnNow = () =>
 		return { top: Math.round(top * 10) / 10, out };
 	})()`);
 
+// What the day's three lights are offering, so the cloud's shade is a number and not a hope. The same hour and
+// the same lamps each time: the difference between one reading and the next is the cloud.
+const lightsNow = () =>
+	ask(`(() => {
+		const v = window.__villa;
+		const r = (x) => Math.round(x * 100) / 100;
+		return { sun: r(v.sunLight.intensity), hemi: r(v.hemi.intensity), bounce: r(v.bounce.intensity), shade: r(v.launcher.shade) };
+	})()`);
+
 // Three pictures: the fireball, the column, and what came down.
 const shot1 = out.replace(/\.png$/, "-1-fireball.png");
 const shot2 = out.replace(/\.png$/, "-2-column.png");
@@ -127,6 +136,8 @@ console.log(`at once: the column reaches ${(await columnNow()).top} m, ${(await 
 await page.waitForTimeout(1500);
 await page.screenshot({ path: shot2 });
 console.log(`at 1.5 s: the column reaches ${(await columnNow()).top} m`);
+const lit15 = await lightsNow();
+console.log(`at 1.5 s the lights stand at`, JSON.stringify(lit15));
 await page.waitForTimeout(Math.max(0, WAIT * 1000 - 1500));
 
 const blast = await ask(`(() => {
@@ -168,6 +179,8 @@ await page.screenshot({ path: out });
 // The column's height, from the cards that are still out.
 const column = await columnNow();
 console.log(`at ${WAIT} s: the column reaches ${column.top} m with ${column.out} cards still out`);
+const litEnd = await lightsNow();
+console.log(`at ${WAIT} s the lights stand at`, JSON.stringify(litEnd));
 
 // Put it back.
 await page.keyboard.press("r");
