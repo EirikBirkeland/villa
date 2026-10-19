@@ -326,6 +326,25 @@ export function buildVilla(scene, mats, shadows) {
 		lanterns.push(box(scene, `backLantern${px}`, { x: 0.15, y: 0.28, z: 0.04, px, py: 2.55, pz: backFace - 0.11, mat: mats.lampGlow }));
 		lanterns.push(box(scene, `backLanternTop${px}`, { x: 0.3, y: 0.07, z: 0.24, px, py: 2.76, pz: backFace - 0.04, mat: mats.darkMetal }));
 	}
+	// And the two lanterns are lamps, not painted glass. They were the second half of a fault the store
+	// room already wrote down: a light that is brighter than the wall around it is a light, and everything
+	// else is a hole. Measured at midnight from the lawn behind the house, the whole north face of the
+	// villa — a third of the frame from there — was painted (8,7,3) and its brightest pixel in the frame
+	// was (9,9,4): a black board with two bright dots screwed to it, because the lanterns were emissive
+	// boxes and threw nothing at all. Two real lights, one in each case, range 5 m so they warm the plaster
+	// and the step and stop there. They are handed to the day cycle by name in `src/daylight.js` and come
+	// up with the night, like every other bulb here.
+	const wallLamps = [];
+	for (const px of [-4.1, -0.9]) {
+		const lamp = new BABYLON.PointLight(`backLanternLight${px}`, new BABYLON.Vector3(px, 2.5, backFace - 0.3), scene);
+		lamp.diffuse = new Color3(1, 0.68, 0.38);
+		lamp.specular = new Color3(0.16, 0.11, 0.06);
+		lamp.range = 5;
+		lamp.intensity = 11;
+		lamp.baseIntensity = 11;
+		wallLamps.push(lamp);
+	}
+	scene.wallLamps = wallLamps;
 	add(boardBand, door, doorBack, backStep, ...doorFrame, ...lanterns);
 	boardBand.receiveShadows = true;
 	for (const mesh of [boardBand, door, doorBack, ...doorFrame]) mesh.checkCollisions = false;

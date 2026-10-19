@@ -243,6 +243,11 @@ export function buildDayCycle(scene, rig) {
 		waterEm: rig.water ? rig.water.emissiveIntensity : 1,
 		poolFill: (rig.poolLights || []).map((l) => l.intensity),
 		room: (rig.roomLamps || []).map((l) => l.intensity),
+		// The garden lanterns are the opposite of every other lamp here: the room and the pool fittings are
+		// written at their daytime strength and turned UP by the night, while a lantern is dark by day and
+		// burns at its captured strength only when it is night. So the number below is not a daylight value
+		// at all, it is the flame, and the night fraction multiplies it.
+		lantern: (rig.wallLamps || []).map((l) => l.intensity),
 		mirror: rig.water && rig.water.reflectionTexture ? rig.water.reflectionTexture.level : 1,
 	};
 	/**
@@ -338,6 +343,18 @@ export function buildDayCycle(scene, rig) {
 			lerp(off.lens.r, on.lens.r, n), lerp(off.lens.g, on.lens.g, n), lerp(off.lens.b, on.lens.b, n));
 		(rig.poolLights || []).forEach((l, i) => { l.intensity = off.poolFill[i] * (1 + (on.poolFill - 1) * n); });
 		(rig.roomLamps || []).forEach((l, i) => { l.intensity = off.room[i] * (1 + (on.room - 1) * n); });
+		// The garden lanterns: out by day, at full flame by night, and the two cases at the back door are what
+		// keeps the north face of the house off being a black board at midnight.
+		//
+		// And put out of the scene when they are out, not left burning at zero: a light at zero intensity still
+		// stands in the queue for the six slots any one surface is given, which is how the visitor's flashlight
+		// once stole the sky's fill light off the back wall. Measured here: with two dark lanterns left enabled,
+		// the room at ten in the morning fell from a mean of 120 to 117 while nothing else moved.
+		(rig.wallLamps || []).forEach((l, i) => {
+			const flame = off.lantern[i] * n;
+			l.intensity = flame;
+			l.setEnabled(flame > 0.02);
+		});
 		// A dark garden has nothing to show the water, and saying so is what keeps a stale mirror in the
 		// pool from handing midnight a sunset.
 		if (rig.water && rig.water.reflectionTexture) rig.water.reflectionTexture.level = off.mirror * (1 - 0.8 * n);

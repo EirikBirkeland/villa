@@ -672,6 +672,7 @@ function boot() {
 				.map((name) => ({ mat: mats[name], amount: 0.62 })),
 		].filter((entry) => entry.mat),
 		roomLamps: scene.roomLamps,
+		wallLamps: scene.wallLamps,
 		poolLights: pool.lights,
 		start: dial("hour", 17.5),
 		daySeconds: still ? 0 : dial("daylen", 360),
