@@ -11,6 +11,8 @@ import { makeGround } from "./ground.js";
 import { buildDuck } from "./duck.js";
 import { buildFireflies } from "./fireflies.js";
 import { buildDayCycle, hourWords } from "./daylight.js";
+import { buildSound } from "./sound.js";
+import { buildGeckos } from "./gecko.js";
 import { buildCreatures } from "./creatures.js";
 import { buildKoi } from "./koi.js";
 import { buildShark } from "./shark.js";
@@ -424,6 +426,32 @@ function boot() {
 	pipeline.grain.animated = true;
 
 	const walk = setupWalking(ground);
+	// The ear. Until now this Villa has been stone dead silent, and a garden at ten at night is not silent.
+	// Every sound is synthesised at the moment it is asked for (`src/sound.js`) — nothing is fetched — and the
+	// browser will not let a page make a noise until a person has touched it, so the first click or key is what
+	// wakes the ear up. `M` turns it off and on again, which is the only new key any of this costs.
+	const sound = dial("sound", 1) > 0 ? buildSound(camera) : null;
+	let nightHeld = false;
+	if (sound) {
+		const arm = (how) => { if (!sound.ready) sound.arm(how); };
+		const keyHeld = new Set();
+		window.addEventListener("pointerdown", () => arm("click"), { passive: true });
+		window.addEventListener("keydown", (event) => {
+			if (event.code === "KeyM") {
+				// One tap, one change of mind, the same rule the flying key follows: a held M would flick the
+				// garden in and out of silence forty times a second.
+				if (!keyHeld.has("KeyM")) {
+					arm("key");
+					sound.toggle();
+				}
+				keyHeld.add("KeyM");
+				return;
+			}
+			arm("key");
+		});
+		window.addEventListener("keyup", (event) => keyHeld.delete("KeyM"));
+		window.addEventListener("blur", () => keyHeld.clear());
+	}
 	// The butterflies and the cockroach, last of all, so they are not in the pool's mirror: a five
 	// centimetre dot baked into a 256-pixel cube of the garden is nothing to see and a thing that ought
 	// not to be frozen there in any case. `?bugs=0` leaves them out, which is how they were weighed.
@@ -434,6 +462,10 @@ function boot() {
 	if (dial("bugs", 1) > 0) creatures = buildCreatures(scene, mats, ground, {
 		roachCm: dial("roach", 14),
 		frogCm: dial("frog", 13),
+		sound,
+		// The frogs are given the ear and word of when it is dark, because a croak is a sound and this Villa
+		// had never made one before: the throat has been inflating on those stones for forty releases.
+		isNight: () => nightHeld,
 		perches: pond.perches,
 		// The frogs are told where the middle of the water is, how high its surface lies, how to mark a
 		// plunge on it, and where the visitor stands — which is the whole of what a frog needs to know about
@@ -493,6 +525,23 @@ function boot() {
 	// what it said. A whole day takes `?daylen` seconds — six minutes, so the light is visibly different
 	// whenever a visitor looks up from one corner to another — and `?still=1` or `?daylen=0` pins it.
 	const plate = document.querySelector("#plate .note");
+	// The geckos on the villa walls (`src/gecko.js`): four of them, and every one of them on a face with a
+	// light behind it or on it. Two are on the outside of the front glass, where a gecko sits against the light
+	// of the room and is seen as a shape and two beads — which is how a gecko is actually found at ten at night,
+	// and the answer to the master's "discoverable, not obvious". One is on the west wall between the shuttered
+	// windows for whoever walks the west path, and one on the east wall over the store room's end.
+	let geckos = null;
+	if (dial("gecko", 1) > 0 && sound) {
+		geckos = buildGeckos(scene, mats, {
+			sound,
+			spots: [
+				{ x: -2.95, y: 2.42, z: -3.9, face: [0, 0, 1], seed: 11 },
+				{ x: 4.25, y: 1.6, z: -3.9, face: [0, 0, 1], seed: 23 },
+				{ x: -7.05, y: 1.95, z: -6.3, face: [-1, 0, 0], seed: 37 },
+				{ x: 7.05, y: 2.12, z: -6.9, face: [1, 0, 0], seed: 53 },
+			],
+		});
+	}
 	const day = buildDayCycle(scene, {
 		sky, light, hemi, bounce, mats,
 		water: mats.water,
@@ -524,8 +573,10 @@ function boot() {
 		// `src/fireflies.js`), and the frogs are left alone, being amphibious and particular about nothing
 		// except being left alone.
 		onNight: (isNight) => {
+			nightHeld = isNight;
 			if (creatures) creatures.night(isNight);
 			if (fireflies) fireflies.night(isNight);
+			if (geckos) geckos.night(isNight);
 		},
 		// The line of type under the villa's name says what hour it is, because the Villa no longer keeps one.
 		onHour: (hour) => { if (plate) plate.textContent = `a Thai pool villa, ${hourWords(hour)}`; },
@@ -556,6 +607,13 @@ function boot() {
 		// and a ring that is never given a delta is a ring that sits on the water for the rest of the day.
 		pond.animate(time, delta);
 		if (creatures) creatures.animate(still ? 0 : time, still ? 0 : delta);
+		// The ear goes where the eye goes, and the geckos are told where the boots are so they can be shy of
+		// them. Both are cheap and both are wrong without the frame they live in.
+		if (sound) sound.listen();
+		if (geckos) {
+			geckos.visit(camera.position);
+			geckos.animate(still ? 0 : time, still ? 0 : delta);
+		}
 		if (duck) duck.animate(still ? 0 : time);
 		if (fireflies) fireflies.animate(still ? 0 : time, still ? 0 : delta);
 		// The day goes on whether the small things are frozen or not — unless `?still=1`, which stops it too,
@@ -592,7 +650,7 @@ function boot() {
 	});
 
 	document.body.classList.add("ready");
-	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, duck, fireflies, day };
+	window.__villa = { engine, scene, camera, mats, sun, ground, walk, pipeline, tone, creatures, koi, shark, pond, pool, duck, fireflies, day, sound, geckos };
 }
 
 /** How the visitor moves: the keys walk, the mouse looks, the ground holds them up — until they fly. */

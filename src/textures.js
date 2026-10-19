@@ -3552,3 +3552,42 @@ export function bloodCanvas(size = 128, { seed = 7, lobes = 14 } = {}) {
 	}
 	return canvas;
 }
+
+/**
+ * The skin of a small house gecko: pale ash over a warm undercoat, sprinkled with rust.
+ *
+ * Painted as an all-over mottle and not as a map, because the animal it goes on is a handful of squashed
+ * spheres a palm long — nobody is going to find a pattern in it, and what the picture needs is a skin that
+ * has some life in it instead of one flat colour at 15 cm. The rust spots are the reason for the canvas at
+ * all: the common house gecko of this climate is the colour of old plaster with orange spots on it, and a
+ * gecko the same colour as the wall it sits on is the animal's actual problem and not mine to repeat. It is
+ * kept a shade warmer and darker than the plaster for the same reason.
+ */
+export function geckoSkinCanvas(size = 128, { seed = 512, base = [146, 134, 120] } = {}) {
+	const canvas = canvasOfSize(size);
+	const ctx = context2d(canvas);
+	ctx.fillStyle = `rgb(${base[0]},${base[1]},${base[2]})`;
+	ctx.fillRect(0, 0, size, size);
+	const cloud = noiseField(size, 4, 3, seed);
+	wash(canvas, cloud, [base[0] - 34, base[1] - 34, base[2] - 32], [base[0] + 26, base[1] + 26, base[2] + 24], 0.5);
+	const rand = randomGenerator(seed + 7);
+	// The rust spots, which are the animal's whole character: scattered, uneven, and darker at the middle of
+	// each one. About forty, which at this size is what shows.
+	for (let i = 0; i < 42; i++) {
+		const x = rand() * size;
+		const y = rand() * size;
+		const r = size * (0.018 + rand() * 0.036);
+		ctx.fillStyle = `rgba(${base[0] + 42},${base[1] - 6},${base[2] - 44},${0.4 + rand() * 0.35})`;
+		ctx.beginPath();
+		ctx.ellipse(x, y, r, r * (0.7 + rand() * 0.7), rand() * Math.PI, 0, Math.PI * 2);
+		ctx.fill();
+	}
+	// The tubercles: a gecko's back is rough with tiny bumps, and at fourteen centimetres that roughness is
+	// three points of light and shade, which is enough to stop it reading as a plastic toy.
+	specks(canvas, 420, seed + 3, [[base[0] - 46, base[1] - 46, base[2] - 44], [base[0] + 38, base[1] + 36, base[2] + 32], [base[0] + 62, base[1] + 24, base[2] - 18]], {
+		min: 0.4,
+		max: 1.3,
+		alpha: 0.4,
+	});
+	return canvas;
+}

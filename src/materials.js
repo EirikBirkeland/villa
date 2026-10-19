@@ -2,7 +2,7 @@
 // Each one is a physically based material built from a painted canvas pattern, so no surface
 // in the Villa is a single flat colour.
 
-import { texture, grassCanvas, paverCanvas, poolTileCanvas, plasterCanvas, teakCanvas, roofTileCanvas, palmBarkCanvas, palmBladeCanvas, bananaBladeCanvas, stalkCanvas, bushCanvas, bushEdgeCanvas, bushClusterCanvas, tuftAtlasCanvas, clothCanvas, cushionCanvas, copingCanvas, poolWaterCanvas, causticsCanvas, rippleCanvas, hedgeCanvas, canopyClusterCanvas, canopyAtlas, farCanopyCanvas, distanceCanvas, greyNoiseCanvas, bumpFromCanvas, timberCanvas, terracottaCanvas, rockCanvas, soilCanvas, rugCanvas, butterflyWingCanvas, cockroachCanvas, frogSkinCanvas, lilyPadCanvas, rippleRingCanvas, koiCanvas, sharkSkinCanvas, bloodCanvas } from "./textures.js";
+import { texture, grassCanvas, paverCanvas, poolTileCanvas, plasterCanvas, teakCanvas, roofTileCanvas, palmBarkCanvas, palmBladeCanvas, bananaBladeCanvas, stalkCanvas, bushCanvas, bushEdgeCanvas, bushClusterCanvas, tuftAtlasCanvas, clothCanvas, cushionCanvas, copingCanvas, poolWaterCanvas, causticsCanvas, rippleCanvas, hedgeCanvas, canopyClusterCanvas, canopyAtlas, farCanopyCanvas, distanceCanvas, greyNoiseCanvas, bumpFromCanvas, timberCanvas, terracottaCanvas, rockCanvas, soilCanvas, rugCanvas, butterflyWingCanvas, cockroachCanvas, frogSkinCanvas, lilyPadCanvas, rippleRingCanvas, koiCanvas, sharkSkinCanvas, bloodCanvas, geckoSkinCanvas } from "./textures.js";
 
 const { PBRMaterial, Color3, Color4, Texture, ImageProcessingConfiguration } = BABYLON;
 
@@ -1607,6 +1607,28 @@ export function createMaterials(scene) {
 	mats.sharkEye.albedoColor = paint([16, 15, 16]);
 	mats.sharkEye.emissiveColor = new Color3(0.012, 0.012, 0.013);
 	mats.sharkEye.specularIntensity = 0.7;
+	// The gecko (`src/gecko.js`): a palm of lizard on the villa wall at night. The skin is the animal's own
+	// protection — the colour of old plaster with rust on it — and the wall it lives on is old plaster, so the
+	// skin is held a shade darker and warmer than the plaster and the EYES are what gets found. A gecko in this
+	// country is found by torchlight on two beads and nothing else.
+	mats.geckoSkin = pbr(scene, "geckoSkin", { roughness: 0.86, environmentalIntensity: 0.4 });
+	mats.geckoSkin.albedoTexture = texture(scene, geckoSkinCanvas(128, { seed: 512 }), { name: "gecko skin", scale: 1 });
+	mats.geckoSkin.bumpTexture = texture(scene, bumpFromCanvas(geckoSkinCanvas(96, { seed: 512 }), 3), { name: "gecko skin bump", scale: 1, gamma: false });
+	// Barely there: it is after dark that these are looked at, and a matte animal in a lamp's spill still has
+	// to be a little bit seen.
+	mats.geckoSkin.emissiveColor = new Color3(0.014, 0.013, 0.012);
+	mats.geckoSkin.specularIntensity = 0.1;
+	// The eyes: amber, big for the head, and the only part of the animal with a wet shine on it. The emissive
+	// is small — a bead's worth, not a lamp's — but it is the difference between a wall with a mark on it and a
+	// wall with somebody home.
+	mats.geckoEye = pbr(scene, "geckoEye", { roughness: 0.2, environmentalIntensity: 1.1 });
+	mats.geckoEye.albedoColor = paint([206, 152, 58]);
+	mats.geckoEye.emissiveColor = new Color3(0.075, 0.05, 0.014);
+	mats.geckoEye.specularIntensity = 0.75;
+	// The pupil: a vertical slit, which is the mark that says NOCTURNAL before anything else does.
+	mats.geckoPupil = pbr(scene, "geckoPupil", { roughness: 0.35, environmentalIntensity: 0.3 });
+	mats.geckoPupil.albedoColor = paint([12, 11, 10]);
+	mats.geckoPupil.emissiveColor = new Color3(0.004, 0.004, 0.003);
 	// The blood (`src/blood.js`). Unlit on purpose, like the pond's ripple rings: the cloud lies under a
 	// sheet of water that is already painting everything under it half-cyan, and a lambert surface down there
 	// is a surface that has been asked to be a shape when all it is asked to be is a stain. Two materials so

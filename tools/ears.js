@@ -1,0 +1,136 @@
+// ears — measure the Villa's sounds, since a screenshot cannot show a noise.
+//
+// The Villa makes its sounds out of oscillators (`src/sound.js`), so they can be rendered and weighed instead
+// of believed. This opens the Villa in the browser, clicks it the way a visitor would to wake the ear up,
+// renders every voice into a buffer of samples in the page, and reports how loud each one is, how long it
+// lasts, and how high it sits — the last by counting how often the wave crosses zero, which is a crude pitch
+// and the right crude pitch: a frog should come out low and a gecko high, and if they come out the same the
+// two animals are one animal.
+//
+// It then sits in the garden for a while at night and counts what the garden actually says out loud, so a
+// "chorus" can be reported as a number and not as a hope.
+//
+//   node tools/ears.js                          every voice, then forty seconds of night by the pond
+//   node tools/ears.js --voices                the voices only
+//   node tools/ears.js --listen 60              how long to stand in the garden and count
+//   node tools/ears.js --view 0,1.6,12,0.1     where to stand while counting
+//
+// Peak is the loudest single sample and rms is the steady loudness, both of a full-scale 1. A call that comes
+// out under about 0.02 peak is a call nobody would hear over the wind in the palms.
+
+import { chromium } from "playwright-core";
+import { requireHeadroom } from "./headroom.js";
+
+requireHeadroom();
+
+const flags = [
+	"--no-sandbox",
+	"--disable-dev-shm-usage",
+	"--use-angle=vulkan",
+	"--enable-features=Vulkan",
+	"--ignore-gpu-blocklist",
+	"--autoplay-policy=no-user-gesture-required",
+];
+
+const argv = process.argv.slice(2);
+const flag = (name, at) => (argv.includes(name) ? argv[argv.indexOf(name) + 1] ?? at : at);
+const only = (name) => argv.includes(name);
+const listenFor = Number(flag("--listen", "40"));
+const view = flag("--view", "-14,1.6,13.5,2.2,-0.05"); // the pond bank, where the frogs are
+const url = `http://localhost:8090/villa/?hour=21.5&float=1&view=${view}`;
+
+const browser = await chromium.launch({ executablePath: "/usr/bin/chromium", args: flags });
+const page = await browser.newPage();
+await (await page.context().newCDPSession(page)).send("Network.setCacheDisabled", { cacheDisabled: true });
+page.on("pageerror", (error) => console.log(`page error: ${error.message}`));
+await page.goto(url, { waitUntil: "load", timeout: 120000 });
+await new Promise((resolve) => setTimeout(resolve, 5000));
+
+// The click a visitor has to make before any browser will let a page make a noise.
+await page.mouse.click(400, 300);
+await new Promise((resolve) => setTimeout(resolve, 600));
+
+const gate = await page.evaluate(async () => {
+	const villa = window.__villa;
+	if (!villa.sound) return { error: "no ear — is the Villa built with one?" };
+	const mod = await import("./src/sound.js");
+	return {
+		ready: villa.sound.ready,
+		armedBy: villa.sound.armedBy,
+		muted: villa.sound.muted,
+		voicesBuilt: Object.keys(mod.VOICES).length,
+	};
+});
+console.log("ear:", JSON.stringify(gate));
+
+const measures = await page.evaluate(async () => {
+	const { VOICES, LEVEL } = await import("./src/sound.js");
+	const rate = 22050;
+	const out = {};
+	for (const [name, make] of Object.entries(VOICES)) {
+		const ctx = new OfflineAudioContext(1, Math.round(rate * 2.2), rate);
+		// The same gain `play` would put on it, so these numbers are what a listener is offered and not the raw
+		// voice before the mixer ever got near it.
+		const head = ctx.createGain();
+		head.gain.value = LEVEL[name] ?? 0.4;
+		head.connect(ctx.destination);
+		let seed = 20251019;
+		const rand = () => {
+			seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+			return seed / 0x7fffffff;
+		};
+		const says = make(ctx, head, rand);
+		const buffer = await ctx.startRendering();
+		const data = buffer.getChannelData(0);
+		let peak = 0;
+		let sum = 0;
+		let crossings = 0;
+		let last = 0;
+		let heard = 0;
+		for (let i = 0; i < data.length; i++) {
+			const v = data[i];
+			const a = Math.abs(v);
+			if (a > peak) peak = a;
+			sum += v * v;
+			if (a > 0.002) heard = i;
+			if ((v > 0 && last <= 0) || (v < 0 && last >= 0)) crossings++;
+			last = v;
+		}
+		out[name] = {
+			peak: Number(peak.toFixed(4)),
+			rms: Number(Math.sqrt(sum / data.length).toFixed(5)),
+			// Zero crossings a second, over the part that is actually sound: twice the mean zero-crossing
+			// frequency, which is a pitch for a wave this simple and a good enough sort for a frog against a
+			// gecko.
+			pitchHz: Math.round(crossings / Math.max(0.05, heard / rate)),
+			seconds: Number((heard / rate).toFixed(2)),
+			toldMe: Number(String(says).slice(0, 5)),
+		};
+	}
+	return out;
+});
+console.log("voices:", JSON.stringify(measures, null, 1));
+
+if (!only("--voices")) {
+	// Stand in the garden and count what it says. The counter is wrapped around the Villa's own `play`, so it
+	// hears exactly what the animals hear and not what this tool hopes they say.
+	await page.evaluate(() => {
+		const ear = window.__villa.sound;
+		window.__counted = {};
+		const before = ear.play.bind(ear);
+		ear.play = (what, at, loud) => {
+			window.__counted[what] = (window.__counted[what] || 0) + 1;
+			return before(what, at, loud);
+		};
+	});
+	await new Promise((resolve) => setTimeout(resolve, listenFor * 1000));
+	const chorus = await page.evaluate(() => ({
+		counted: window.__counted,
+		voices: window.__villa.sound.voices,
+		abroad: window.__villa.geckos ? window.__villa.geckos.abroad : null,
+		hour: Number(window.__villa.day.hour.toFixed(2)),
+	}));
+	console.log(`night over ${listenFor}s:`, JSON.stringify(chorus));
+}
+
+await browser.close();

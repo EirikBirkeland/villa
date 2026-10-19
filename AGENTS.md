@@ -107,3 +107,14 @@ The script checks the syntax, copies the walkable Villa into `releases/v<version
 - Do not try to leave your sandbox.
 - Do not delete `AGENTS.md`, `EDICT.md`, `jargon.md`, `NOTES.md`, `CHANGELOG.md`, `release.sh` or `releases/`.
 - Do not ask questions. Decide, write the decision in `NOTES.md`, and continue.
+
+## Version control
+
+This folder is a git repository. Use it.
+
+1. At the start of a session, run `git status` and `git log --oneline -15` to see where things stand.
+2. Before committing, read your own `git diff`. Look for typos, undefined names and broken imports.
+3. If a change makes things worse, undo it with `git checkout -- <file>`.
+4. After each working step, commit: `git add -A && git commit -m "<what changed, in plain words>"`.
+
+Never force anything and never rewrite history: no `git push --force`, no `git reset --hard`, no `git rebase`, no amending a commit that is already pushed. Do not push at all; pushing is done from outside the sandbox.

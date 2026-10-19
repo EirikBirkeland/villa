@@ -511,3 +511,19 @@ sense, so they are set down here:
   camera-facing cards that come out of the wound and sink and spread, and `slicks`, flat cards that ride up
   under the surface and are the part of the stain legible from the far side of the pool. `PLUMES` and
   `SLICKS` in `src/blood.js`, which says why a spill is a cloud of lumps and not one expanding disc.
+- **the ear**: the Villa's one sound rig, `buildSound()` in `src/sound.js`. Called the ear and not the audio
+  system because there is exactly one of it, it is the visitor's ear and not a mixer, and every noise in the
+  garden is placed in it at the place that made it. Asked for by `window.__villa.sound`.
+- **arm** (the ear): wake the sound up. A browser will not let a page make a noise until a person has touched
+  it, so nothing is heard until a click or a key, and `arm()` is what that first touch calls. `armedBy` says
+  which of the two it was. `M` mutes and unmutes; that is the only key any of this costs.
+- **voice**: one animal's noise, made out of oscillators at the moment it is asked for — `frog`, `gecko`,
+  `raven`, `coin` in the table `VOICES` in `src/sound.js`. The Villa keeps count of how many are sounding
+  (`MAX_VOICES`, fourteen) and refuses the fifteenth, because a pond that all starts croaking in one frame is
+  a wall of buzz and not a pond.
+- **scuttle**: how a gecko moves on a wall — a sit, then three or four quick moves with a stutter between,
+  then nothing for a long while. The state is `scuttle` in `src/gecko.js`, against `sit`. Not a walk, and the
+  difference is the whole of the animal.
+- **abroad** (of a night animal): out and about. A gecko, a firefly or a cockroach is `abroad` after dark and
+  put away by daylight; `tools/ears.js` prints `abroad: true` to say the night ones are actually awake, since
+  a sound nobody can hear can also be a sound nobody switched on.

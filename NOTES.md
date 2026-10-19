@@ -674,6 +674,16 @@ it. `pictures/s95-lunge3.png` is the first time that attitude has ever stood sti
 the animal is clearly above the water rather than in it, and the red of the throat is the first thing the sight
 meets. Nothing about the behaviour needed changing to get there; only the tool did.
 
+
+**A red ball where a throat should be (v0.92.4).** Holding the lunge long enough to photograph it from above
+showed a red bauble with a white rivet in the middle of the face. The gullet had been built as fat as the head,
+so it filled its own window and showed the sight its FACE instead of sitting behind the opening; and the
+palate was taking a specular highlight, which three centimetres from a sight is a coin and nothing else. The
+gullet is now a hand narrower than the skin (`GULLET_*` down from 0.46 to 0.36 at the widest) and
+`mats.sharkMouth` carries `specularIntensity = 0` — the inside of an animal is matte beside its own skin.
+`pictures/s95-gape-nocoin.png` is the cure; `s95-gape-top.png`, taken straight down at last, shows the animal
+reads as a shark from overhead as well as from the side: broad shoulders, dorsal, both pectorals, tail.
+
 **Still to do.** The dorsal could be swept back more. The eyes are black beads and
 never catch the light from a normal sight — held to be right, since a shark's eye is a bead, but untried.
 `tools/where.js` does not know sharks exist yet.
@@ -8759,6 +8769,80 @@ The new standing set is `pictures/2910-home.png` … `2928-backstore.png`.
 
 Released as **v0.88.0**. Nothing WRONG, 81.0% on foot, 60.0 fps at 1050 meshes, 2005 of 2048 process slots
 free.
+
+## The Villa gets an ear, and geckos on the walls at night (v0.93.0)
+
+The master asked for night: geckos on the villa walls, small but not tiny (cockroach-sized), cute, discoverable
+and not obvious, with gecko noises; and frogs croaking at night. Looking first, the Villa had **no sound at
+all** — no `AudioContext` anywhere, nothing in `vendor/` that made a noise. The pond had been drawing itself for
+forty releases without once croaking. So the ear came before the animals that use it.
+
+**`src/sound.js`, `buildSound()`.** Every noise is synthesized out of oscillators when it is asked for: nothing
+is downloaded, and the first picture is no slower than it was. Four voices — a frog's croak, a gecko's piping, a
+raven's caw, a coin's tink — each placed in the garden where it happened, so a croak behind you is behind you and
+quiet. Two things that had to be learned:
+
+- A browser will not let a page make a noise until a person touches it, so the ear sleeps through the first
+  picture (which the Villa's own rule about not delaying the first picture allows) and is armed by the first
+  click or key. `M` mutes, and the hint line says so, because a key nobody knows is not a sound.
+- A pond where every frog starts croaking in one frame is a wall of buzz. The ear counts its live voices and
+  refuses the fifteenth. The first cut raised the count when a voice started and lowered it only by a
+  `setTargetAtTime` ramp, which approaches zero and never arrives — so after fourteen calls the garden was silent
+  for the rest of the night. Voices are now booked at once and returned on a timer, without waiting for the fade.
+
+**`tools/ears.js`, because a screenshot cannot show a noise.** It clicks the page the way a visitor does, prints
+`ready: true, armedBy: click`, renders each voice into samples in the page and reports peak, loudness and a rough
+pitch from zero crossings; then it stands in the garden and counts what the animals actually say. What it found
+and what was then changed:
+
+- The first frog measured 1314 crossings a second — two and a half times too bright, sitting in the gecko's
+  register, which is one animal and not two. Its throat band is down to 400 Hz; it now measures 1014 against the
+  gecko's 2605.
+- The first coin was the loudest thing in the garden, 0.90 of full scale against the frog's 0.23, so a gold coin
+  landed like a karst dropped in a tin shed. Partials and level both down; it now measures 0.12, about a frog.
+- Ninety seconds of night on the pond bank: **104 croaks and 21 gecko calls**, with no voices left stuck.
+- At half past five, `{"geckosAbroadAtDaytime":false,"anyOn":false,"earBuilt":true}` — the night ones are away by
+  day, which is the whole point of night ones.
+
+**`src/gecko.js`, four of them**, fifteen centimetres nose to tail, the cockroach's size class as ordered. Plaster-
+coloured bumps with rust spots so a gecko on a wall *is* the wall until it moves; amber eyes, wet, faintly lit
+from inside, with a black slit — the eyes are the whole of finding one. It sits, then scuttles with a stutter in
+the middle of the run, then nothing for a long while; a boot within two and a half metres sends it climbing out of
+reach; each one pipes every eight to twenty-six seconds and lifts its head while it does, and the noise travels
+with the animal.
+
+What the pictures said: the first four went high on corners, which put two of them behind the terrace roof from
+every place a person can stand, and against dark teak at night nothing is visible at all. A 15 cm animal 2.5 m off
+measures forty pixels in a 1280-wide frame — the size was never the fault, the wall was. So two went onto the
+**outside of the front glass at eye level**, where the lit room throws them as silhouettes, which is exactly how a
+gecko is found in a real Thai villa at ten at night. That picture then showed the fault that mattered: it read as
+a hanging sausage with two eyes on it, because the legs were tucked in at 0.95 radians and a fifth of the body
+long. A gecko pressed on a window IS four splayed spoons and a tail and nothing else; the legs are now out to
+nearly a right angle and long enough for the pads to stand clear of the flank in the silhouette.
+`s96-gecko-window.png` is the record.
+
+Standing stone: the geckos are night things and gone by day; the ear is silent until touched; `M` is the only key
+any of this costs the visitor.
+
+Look at: `s96-gecko-window.png`, `s96-front-night.png`.
+
+Next after this, in order:
+
+1. **The raven, which is still only a voice.** `sound.js` has a caw and a coin's tink and nothing calls them. The
+   wish is a raven that sometimes sits on the roof, drops a gold coin stamped with the royal motif into the yard
+   every few days, and is heard now and then without being seen. Read the royal rule in `src/textures.js` before
+   stamping anything: portraiture is not done here, so the motif is a crown and two talk-backs and not a face.
+2. Frogs are silent by day (right) and the toad never joins in — his croak is a deeper one and he is the one
+   animal nobody has ever heard.
+3. The gecko eyes are the only emissive animals outdoors at night; if the night lamps are ever raised, they will
+   want matching, because a gecko that glows is a gecko that is obvious.
+4. The shark follow-ups still owed: a dorsal swept back a little more, and `tools/where.js` does not know sharks
+   exist.
+
+— Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who gave the Villa an ear after
+forty releases of drawing the pond in silence, and who measured a croak in samples because there is no other way
+to tell a frog from a gecko when the garden is dark. A Villa that will not croak is a worse adulteration than
+sugar in coffee — at least the sugar is honest about its teaspoon.
 
 ### What I would do next, in the order the pictures say
 

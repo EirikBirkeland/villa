@@ -122,7 +122,7 @@ const ROACH_SHOWN_CM = 14;
  * Builds every creature and hands back the one thing `main.js` needs: `animate`.
  * `ground` is the visitor's own ground, so a cockroach walks on the paving it is on and not through it.
  */
-export function buildCreatures(scene, mats, ground, { roachCm = ROACH_SHOWN_CM, frogCm = FROG_SHOWN_CM, perches = [], pond = null } = {}) {
+export function buildCreatures(scene, mats, ground, { roachCm = ROACH_SHOWN_CM, frogCm = FROG_SHOWN_CM, perches = [], pond = null, sound = null, isNight = () => false } = {}) {
 	const beasts = [];
 	let seed = 7;
 	for (const b of BUTTERFLIES) beasts.push(makeButterfly(scene, mats, { ...b, seed: seed++ }));
@@ -143,7 +143,7 @@ export function buildCreatures(scene, mats, ground, { roachCm = ROACH_SHOWN_CM, 
 	for (let i = 0; i < FROG_SPOTS.length; i++) {
 		const spot = FROG_SPOTS[i];
 		const perch = nearestOf(homes, spot.near) || nearestOf(perches, spot.near);
-		if (perch) frogs.push(makeFrog(scene, mats, { tag: i + 1, perch, perches, long: frogCm / 100, seed: spot.seed, pond, bold: spot.bold }));
+		if (perch) frogs.push(makeFrog(scene, mats, { tag: i + 1, perch, perches, long: frogCm / 100, seed: spot.seed, pond, bold: spot.bold, sound, isNight, croakAt: spot.croak }));
 	}
 	return {
 		butterflies: beasts,
@@ -546,7 +546,7 @@ const FROG_SPOTS = [
  * can lie with everything else under water and still breathe and see, and that is the shape people
  * recognise, so the eyes go up on stalks of their own and the mouth line is left to the body's front end.
  */
-function makeFrog(scene, mats, { tag, perch, perches, long, seed, pond = null, bold = false }) {
+function makeFrog(scene, mats, { tag, perch, perches, long, seed, pond = null, bold = false, sound = null, isNight = null, croakAt = 9 }) {
 	const n = (what) => `frog${tag}${what}`;
 	const root = new TransformNode(`frog${tag}`, scene);
 	const rand = mulberry(seed);
@@ -657,6 +657,8 @@ function makeFrog(scene, mats, { tag, perch, perches, long, seed, pond = null, b
 		// hands these over. A frog with no pond cannot dive, and is left to sit and croak like a toy.
 		pond,
 		bold, // whether a person at the bank is worth a plunge (see `FROG_SPOTS`)
+		sound, // the Villa's ear, or nothing at all if the ear is switched off
+		isNight, // a frog is not asked to croak at noon
 		home: perch, // the stone it came from, and the one it climbs back onto
 		hides: 0, // how many times it has refused to come up while somebody stands at the bank
 		state: "sit",
@@ -777,6 +779,14 @@ function croak(f, time, delta) {
 			f.state = "croak";
 			f.croak = 0;
 			f.left = 0.45 + f.rand() * 0.5;
+			// And the sound of it, once per croak and not on every frame. Only after dark: the master asked
+			// for a night that can be heard, and a frog bellowing at noon over a garden full of butterflies is a
+			// different garden from this one. The pitch of it is chosen by the animal's own size inside
+			// `src/sound.js`, so a big frog on a near stone is a deep one and the small one across the water is
+			// a squeak, which is the whole of what makes a chorus instead of a machine.
+			if (f.sound && f.isNight && f.isNight()) {
+				f.sound.play("frog", { x: f.x, y: f.y + f.long * 0.3, z: f.z }, f.bold ? 1 : 0.7);
+			}
 		} else {
 			f.state = "sit";
 			f.left = 1.2 + f.rand() * 4.2;
