@@ -14,6 +14,17 @@ function pbr(scene, name, { color = [255, 255, 255], roughness = 0.8, metalness 
 	if (pattern) mat.patternMetres = pattern;
 	mat.albedoColor = new Color3(color[0] / 255, color[1] / 255, color[2] / 255);
 	mat.roughness = roughness;
+	// The library's own name for this is `metallic`; `metalness` is the plain word used at every call site, and
+	// writing only that sets a property nothing reads — so six materials that asked to be metal (the gold, the
+	// brass, the steel, the dark iron, and the raven's feather and sheen) have been rendering as painted plaster.
+	//
+	// It is written ONLY where metal is asked for, and that is not laziness. `metallic` ships as null on a new PBR
+	// material and null is not the same as zero: setting 0 on the grass, the plaster and the rest lifted the whole
+	// start view's mean from 130.1 to 188.7 and turned the lawn from (62,105,79) to (132,219,73), measured across
+	// three identical runs each. Every colour in this Villa has been matched to photographs under the shading it
+	// has always had, so re-shading all of it is a change for the master's eye and not something to slip in
+	// beside a coin. The metals are fixed here; the finding about the rest is written in NOTES.md.
+	if (metalness) mat.metallic = metalness;
 	mat.metalness = metalness;
 	mat.alpha = alpha;
 	mat.environmentIntensity = environmentalIntensity;
@@ -1588,16 +1599,33 @@ export function createMaterials(scene) {
 	// The fins: a carp's fins are thin membrane over a few rays, and you can see the light through them.
 	// Half the skin's own colour, drawn from both sides because a fin turns edge-on to the eye a hundred
 	// times a minute as the fish swims, and a culled fin is a fish with half its tail missing.
-	mats.koiFin = pbr(scene, "koiFin", { color: [214, 186, 146], roughness: 0.5, alpha: 0.42, environmentalIntensity: 0.5 });
-	mats.koiFin.albedoColor = paint([214, 186, 146]);
+	//
+	// It used to be drawn at four tenths alpha, which at three metres is not a translucent fin but no fin at
+	// all: the water takes the rest and the fish swims about with nothing on it (`pictures/koi-before-top.png`).
+	// Half membrane and half veil: a fin has to be SEEN before it can be transparent.
+	//
+	// And no more of the sky than the body is allowed. The first of them wore half the vault and came back
+	// paler than the fish it was attached to, so the fins take a little of the sky now and the pattern does
+	// the rest. They are still the brightest thing on the animal, which is right: a carp's fins are pale
+	// membrane and a koi at the surface shows them before it shows anything else.
+	mats.koiFin = pbr(scene, "koiFin", { color: [206, 178, 140], roughness: 0.6, alpha: 0.62, environmentalIntensity: 0.28 });
+	mats.koiFin.albedoColor = paint([206, 178, 140]);
 	mats.koiFin.transparencyMode = 2; // blend
 	mats.koiFin.backFaceCulling = false;
 	mats.koiFin.twoSidedLighting = true;
 	mats.koiFin.emissiveColor = new Color3(0.05, 0.042, 0.03);
 	// The eye: a black bead in a pale ring. A fish's eye is on the side of its head and mostly hidden at
 	// this size, but where it shows it is the one mark that says the front end is a head.
-	mats.koiEye = pbr(scene, "koiEye", { roughness: 0.3, environmentalIntensity: 0.35 });
+	//
+	// No sheen worth speaking of. A wet bead of that size catches the sky and comes back as a bright coin
+	// stuck on the fish's face (`pictures/koi-face.png`), and two bright coins on a head are goggles, not
+	// eyes. A koi's eye is a matte bead in a socket.
+	//
+	// The duck's eyes are made of this too (`src/duck.js`), which is right: a rubber duck's eyes are printed
+	// flat on the plastic and shine only as much as the whole bird does.
+	mats.koiEye = pbr(scene, "koiEye", { roughness: 0.55, environmentalIntensity: 0.12 });
 	mats.koiEye.albedoColor = paint([26, 24, 22]);
+	mats.koiEye.specularIntensity = 0.12;
 	mats.koiEye.emissiveColor = new Color3(0.02, 0.019, 0.017);
 
 	// The shark that lives in the pool (`src/shark.js`). Five surfaces: the countershaded skin, the fins,
@@ -1716,7 +1744,7 @@ export function createMaterials(scene) {
 	// the colour of whatever it is reflecting, and a yellow plastic with a painted shine on it is the one way to
 	// make a gold coin look worthless. The stamp does the rest — the same canvas is laid down as a bump so the
 	// crown, the wheel and the beads are struck and not printed.
-	mats.royalGold = pbr(scene, "royalGold", { roughness: 0.28, metalness: 1, environmentalIntensity: 1.5 });
+	mats.royalGold = pbr(scene, "royalGold", { color: [255, 198, 96], roughness: 0.28, metalness: 1, environmentalIntensity: 1.5 });
 	mats.royalGold.albedoTexture = texture(scene, royalCoinCanvas(320), { name: "royal coin", scale: 1 });
 	mats.royalGold.bumpTexture = texture(scene, bumpFromCanvas(royalCoinCanvas(256), 1.6), { name: "royal coin strike", scale: 1, gamma: false });
 	mats.royalGold.emissiveColor = new Color3(0.028, 0.02, 0.004);
