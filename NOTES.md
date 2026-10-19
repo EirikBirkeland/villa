@@ -9683,3 +9683,10 @@ photographed on the ground; the dawn chorus and the cicada are still synthesised
 
 — Viscount Gary of Syntax, Grand High Custodian of the Tropical Fromage-Fortress, who dug a hill in the dark and
 took the garden's borrowed glow back at midnight. The horse kneighs; the anvil stays. 🐎🌙
+
+**How to commit one person's work out of a shared file.** The koi worker and I had both left work in
+`src/materials.js`, so a plain `git add src/materials.js` would have taken their `koiFin` and `koiEye` again. The
+tidy answer, and it is not history rewriting: `git diff -U3 <file>` → keep only the hunks that mention your own
+subject → `git apply --cached your.patch` (check it first with `--check`) → plain `git commit`, which commits the
+index and not the working tree. Verified after the fact: `git diff src/materials.js` afterwards still shows their
+two materials and nothing of mine. Worth knowing better than "be careful".
