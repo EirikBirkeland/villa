@@ -11,6 +11,22 @@ import { canopyAtlas } from "./textures.js";
 
 const { Vector3, Color3, Color4, Scene, Mesh, MeshBuilder, VertexBuffer, HemisphericLight, DirectionalLight, ShadowGenerator, SkyMaterial } = BABYLON;
 
+/**
+ * The softness filters a shadow map can be read with, by the plain word the address bar uses.
+ * `?shadowq=` picks one so the master's eye can be asked which of them he wanted, and the shipped build
+ * stays on `medium` until a picture says otherwise.
+ */
+const SHADOW_FILTERS = {
+	low: ShadowGenerator.QUALITY_LOW,
+	medium: ShadowGenerator.QUALITY_MEDIUM,
+	high: ShadowGenerator.QUALITY_HIGH,
+	pcf: ShadowGenerator.FILTER_PCF,
+	poisson: ShadowGenerator.FILTER_POISSONSAMPLING,
+	exponential: ShadowGenerator.FILTER_EXPONENTIALSHADOWMAP,
+	soft: ShadowGenerator.FILTER_PCSS,
+	blur: ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP,
+};
+
 /** Where the sun is, as a unit vector. az is degrees clockwise from north, el degrees above the horizon. */
 export function sunDirection(az, el) {
 	const a = (az * Math.PI) / 180;
@@ -71,7 +87,7 @@ export function shutOutSkyFill(scene, meshes) {
 }
 
 /** The sun, the sky's fill light, and the shadow caster for the whole scene. */
-export function buildLights(scene, sun) {
+export function buildLights(scene, sun, { mapSize = 2048, filter = "medium", blur = 0 } = {}) {
 	const light = new DirectionalLight("sun", sun.scale(-1), scene);
 	light.intensity = 60;
 	light.diffuse = new Color3(1, 0.71, 0.46);
@@ -118,11 +134,19 @@ export function buildLights(scene, sun) {
 	bounce.diffuse = new Color3(0.62, 0.5, 0.36);
 	bounce.specular = new Color3(0, 0, 0);
 
-	const shadows = new ShadowGenerator(2048, light);
+	const shadows = new ShadowGenerator(mapSize, light);
 	shadows.usePercentageCloserFiltering = true;
-	shadows.filteringQuality = ShadowGenerator.QUALITY_MEDIUM;
+	shadows.filteringQuality = SHADOW_FILTERS[filter] ?? ShadowGenerator.QUALITY_MEDIUM;
 	shadows.bias = 0.0009;
 	shadows.normalBias = 0.02;
+	// A soft edge for the shadow, paid for in blur passes over the map rather than in more taps while every
+	// surface is shaded. `?shadowblur=1` lays it on; the number of passes rides on it. See `main.js` for what
+	// the master's eye was shown either way.
+	if (blur > 0) {
+		shadows.useBlurExponentialShadowMap = true;
+		shadows.numBlurPasses = Math.max(1, Math.round(blur));
+		shadows.useBlurHighShadowFilter = true;
+	}
 	return { light, hemi, bounce, shadows };
 }
 

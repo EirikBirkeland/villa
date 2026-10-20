@@ -117,6 +117,9 @@ function boot() {
 	//   ?gun=0                      leave the gun out of the build (see src/weapon.js)
 	//   ?rocket=0                   leave the launcher out, and keep the house standing (see src/rocket.js)
 	//   ?stream=0                   take the watercourse out of the garden (see src/stream.js)
+	//   ?shadowpx=4096              the sun's shadow map, in pixels across
+	//   ?shadowq=high|pcss|poisson  how that map is read: crisp or soft (see src/world.js)
+	//   ?shadowblur=2               blur passes laid over the shadow map, 0 for none
 	const switches = new URLSearchParams(window.location.search);
 	const dial = (name, value) => (switches.has(name) ? Number(switches.get(name)) : value);
 
@@ -143,7 +146,14 @@ function boot() {
 	sky.luminance = dial("sky", sky.luminance);
 	sky.turbidity = dial("turb", sky.turbidity);
 	sky.rayleigh = dial("rayl", sky.rayleigh);
-	const { light, hemi, bounce, shadows } = buildLights(scene, sun);
+	const { light, hemi, bounce, shadows } = buildLights(scene, sun, {
+		// The sun's shadow map: how big, how read, and whether a blur is laid over it. All three ride on the
+		// address bar (`?shadowpx=4096`, `?shadowq=high`, `?shadowblur=2`) so the question can be put to the
+		// master's eye and answered with a picture, and so the shipped Villa stays where the picture put it.
+		mapSize: dial("shadowpx", 2048),
+		filter: switches.get("shadowq") || "medium",
+		blur: dial("shadowblur", 0),
+	});
 	light.intensity = dial("sun", light.intensity);
 	hemi.intensity = dial("hemi", hemi.intensity);
 	if (switches.has("noshadow")) scene.shadowsEnabled = false;
