@@ -1542,6 +1542,15 @@ export function createMaterials(scene) {
 	mats.streamEarth.emissiveColor = new Color3(0.062, 0.046, 0.028);
 	// Damp clay, not dry dust: almost no specular, and what there is comes from the water film on it.
 	mats.streamEarth.specularIntensity = 0.05;
+	// The damp foot of each bank: the hand's width of soil next to the water. Same clay, and a different colour,
+	// because soil next to water has drunk some of it and there is no prettier or plainer sign that a channel
+	// carries water than a dark ring where it meets the bank. Darker by about a third, a shade redder for the
+	// iron in it, and no longer quite so matte: a wet film is a specular film. `src/stream.js` lays it.
+	mats.streamWet = pbr(scene, "streamWet", { roughness: 0.78, environmentalIntensity: 0.42, pattern: 0.55 });
+	mats.streamWet.albedoColor = paint([104, 80, 56]);
+	mats.streamWet.albedoTexture = texture(scene, soilCanvas(256, [60, 41, 27]), { name: "streamWet skin", scale: 1 });
+	mats.streamWet.emissiveColor = new Color3(0.03, 0.022, 0.014);
+	mats.streamWet.specularIntensity = 0.16;
 
 	// A lily pad: a waxy disc lying on the water. It keeps a little of the water's own glass — a bead of
 	// rain sits on a pad for a whole morning — but not much, and none of it in the middle of the pad.

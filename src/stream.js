@@ -115,9 +115,22 @@ const SWAY = [0.7, 2.4, 1.1, 4.2];
 export function halfAtRun(run) {
 	return 0.8 + 0.17 * Math.sin(run * 0.29 + SWAY[0]) + 0.1 * Math.sin(run * 0.71 + SWAY[1]);
 }
-/** How wide the bare damp band is at a running distance. */
+/**
+ * How wide the bare damp band is at a running distance.
+ *
+ * IT USED TO BE A KERB. The first answer was 0.44 m plus or minus 0.2, which never went thin enough to lose the
+ * eye: seen from the lawn the two bare bands ran thirty-four metres as two parallel lines, and a pair of
+ * parallel lines along the length of a garden is a cut edge, a drain, a kerb (`pictures/s85-crop-near4.png`).
+ * A washed-out bank is not evenly washed: the grass creeps down to the water here, and there the last flood took
+ * a metre of soil away. So two long waves of unequal length, of different length again from the water's own
+ * sway so the wide places and the narrow ones never keep step with the bends, and a FLOOR of sixteen centimetres
+ * — because the cut edge of a lawn meeting water is a black hairline and a green fringe at the same time, and
+ * that lesson was paid for once already.
+ */
 export function bermAtRun(run) {
-	return 0.44 + 0.2 * Math.sin(run * 0.23 + SWAY[2]);
+	const a = 0.5 + 0.5 * Math.sin(run * 0.23 + SWAY[2]);
+	const b = 0.5 + 0.5 * Math.sin(run * 0.097 + 2.6);
+	return 0.16 + 0.94 * (0.4 * a + 0.6 * a * a * b);
 }
 /** How high the bank's inner lip stands at a running distance. */
 export function deckAtRun(run) {
@@ -374,6 +387,35 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	// section is invisible in the geometry and plain as day in the picture.
 	const bankSouth = strip("streamBermSouth", (s) => [[-(s.hw + s.berm), 0.015], [-s.hw, s.deck]], earth);
 	const bankNorth = strip("streamBermNorth", (s) => [[s.hw, s.deck], [s.hw + s.berm, 0.015]], earth);
+	/**
+	 * How high the bank's surface stands at a given offset from the centre line. The bare band runs from the
+	 * lip (height `deck`, at the water's edge) down to the lawn (0.015, at `hw + berm`), and anything laid on
+	 * that band — a stone, or the damp foot below — must be sunk into THAT surface. The first attempt put the
+	 * stones at the water's edge at a height of its own, and the bank swallowed every one: a view down the
+	 * channel measured 0.1% stone, and `pickat` answered the pond's boulders rather than a single `streamStone`.
+	 */
+	const bankAt = (s, off) => s.deck - (Math.max(0, off - s.hw) / s.berm) * (s.deck - 0.015);
+	// THE DAMP FOOT. Soil next to water is wet, and wet soil is a hand's width darker than the same soil a metre
+	// away: that band is the whole reason a puddle reads as a puddle and not as a grey stain. The bare bands had
+	// none of it, so from the near bank the channel lay in a moulded brown gutter of one colour throughout
+	// (`pictures/s85-crop-near4.png`, where bank, lip and water's edge are all one brown).
+	//
+	// It is a strip and not a shade because a shade would need a second set of UVs or a vertex colour, and this
+	// file already knows how to lay a strip. It lies ON the bank's face, six millimetres proud of it — coplanar
+	// with the face the two would fight for every pixel down thirty-four metres — and it is wound the same way
+	// round as the bank it sits on, for the reason two strips above.
+	const wet = mats.streamWet || earth;
+	const wetAt = (s) => Math.min(0.26, s.berm * 0.7);
+	const wetSouth = strip(
+		"streamWetSouth",
+		(s) => [[-(s.hw + wetAt(s)), bankAt(s, s.hw + wetAt(s)) + 0.006], [-s.hw, s.deck + 0.006]],
+		wet
+	);
+	const wetNorth = strip(
+		"streamWetNorth",
+		(s) => [[s.hw, s.deck + 0.006], [s.hw + wetAt(s), bankAt(s, s.hw + wetAt(s)) + 0.006]],
+		wet
+	);
 	// The grass aprons, in the lawn's own material with its pattern measured from the ground, so a bank and the
 	// turf it rises out of are one sward. Their feet are laid TUCK under the lawn plane: the seam where grass
 	// meets bare earth keeps going below the turf, so no ray can slip through the joint and find sky.
@@ -382,7 +424,7 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	// A bend in the pattern's grid: soil laid on a grid is a floor. Two sines of unequal length push the tiles
 	// off their lines by a decimetre, which is enough that the eye cannot find the repeat.
 	const soilBend = (x, z) => [0.13 * Math.sin(z * 0.71), 0.13 * Math.sin(x * 0.63)];
-	for (const m of [wallSouth, wallNorth, bankSouth, bankNorth]) groundUVs(m, 0.8, soilBend);
+	for (const m of [wallSouth, wallNorth, bankSouth, bankNorth, wetSouth, wetNorth]) groundUVs(m, 0.8, soilBend);
 	groundUVs(bed, 0.55, soilBend);
 	for (const m of [apronSouth, apronNorth]) groundUVs(m, 6);
 
@@ -455,14 +497,6 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	/** A box or a stone's yaw that lays its local +z ALONG the water's way (the normal's, turned a quarter turn). */
 	const tangentYaw = (s) => Math.atan2(-s.nz, s.nx);
 	const totalRun = line[line.length - 1].run;
-	/**
-	 * How high the bank's surface stands at a given offset from the centre line. The bare band runs from the
-	 * lip (height `deck`, at the water's edge) down to the lawn (0.015, at `hw + berm`), and a stone laid on
-	 * that band must be sunk into THAT surface. The first attempt put them at the water's edge at a height of
-	 * its own, and the bank swallowed every one: a view down the channel measured 0.1% stone, and `pickat`
-	 * answered the pond's boulders rather than a single `streamStone`.
-	 */
-	const bankAt = (s, off) => s.deck - (Math.max(0, off - s.hw) / s.berm) * (s.deck - 0.015);
 	/**
 	 * Sink a worked stone into a surface until it shows the height asked for, in metres.
 	 *
