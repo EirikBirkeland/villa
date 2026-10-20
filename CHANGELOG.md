@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.103.0 — 2026-10-20
+- The watercourse gives up the sky. From the bank at arm's length its surface was painting (70,78,58) — a spill
+  of milk in a ditch — and the reason was the sky cube: a smooth sheet seen at a graze takes nearly all of it.
+  Measured one term at a time against the same stand, the sky term was worth **25 points of luminance** and
+  nothing else came near it (the mirror, the emissive, the alpha and the environment-as-spelled-by-the-helper
+  were all under three points; the property is `environmentIntensity`, which is not the name the material
+  helper takes). It stands at 0.4 with the roughness at 0.18: dark water over a mud bed, with a glint left on
+  the chop for the current to catch.
+- The banks stop being a kerb. The bare band was 0.44 m plus or minus 0.2 and ran thirty-four metres as two
+  parallel lines, which is a cut edge and not a bank; it now swings from a hand's width, where the grass has
+  crept down to the water, to a metre where the last flood took the soil — with a floor of sixteen centimetres,
+  because a lawn's cut edge meeting water is a black hairline and a green fringe. And it wears a **damp foot**:
+  a hand's width of darker clay where the soil meets the water, which is the sign that a channel carries water.
+- The veil is a grid and not a pane. Nine columns and three rows, with the crest cut down between fingers of
+  water so the rock shows in the notches, the sheet gathering towards its middle and wandering sideways as it
+  falls, and every thread kept whole by giving each column its own texture coordinate from its own crest.
+
 ## 0.102.0 — 2026-10-20
 - The watercourse is water and not a grey tarpaulin. Seen from the lawn the whole thirty-four metres of it came
   out at (73,87,60) with regular ribs across it, like a canvas sheet laid in a trench (`tools/cover.js` named

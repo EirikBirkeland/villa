@@ -10733,3 +10733,51 @@ whose preview is the front of the house at half past five with the duck in the p
 - The convolved sky is still the big one, and the SSAO note above is now part of that argument: anything that
   bolts a second post-process chain on the camera loses the tone map, so the sky cube must be made good in the
   material and not added later.
+
+## Session eighty-five, sixth stretch: the channel gave up the sky, its banks stopped being a kerb, and the fall goes over in fingers
+
+Three faults, all found by photographing places nobody had photographed, all fixed with a number next to them.
+
+**The water was a spill of milk, and it was the SKY.** From the bank at arm's length — `-16.8,1.45,17.2` looking
+back up the channel — the surface painted (70,78,58) over a bed that, with the water switched off, is a proper
+dark brown ditch. Every term was weighed on its own against that same stand with `tools/cover.js --js`, and the
+honest arithmetic is this: the mirror colour, the emissive, the alpha and the surface roughness together moved
+the mean by less than ten points; the sky cube moved it **25 on its own** (0.2 of it left: (45,57,26); none of
+it and the emissive cut: (40,53,17)). The trap that cost the first hour: Babylon's property is
+`environmentIntensity`, and the Villa's material helper takes the option under the name
+`environmentalIntensity` — so the first several measurements were setting a property that does not exist and
+reading back an unchanged picture, which is a lie you tell yourself very easily. Now 0.4 with the roughness at
+0.18, and the channel is dark water over mud with a glint on its chop: `pictures/s85-mouth-sky4-crop.png`
+against `pictures/s85-crest-face2-crop.png`, and the far stand in `pictures/s85-lawn-sky4.png`.
+
+**The banks were a kerb.** The bare band was 0.44 m ± 0.2 with a jitter, which never went thin enough to lose the
+eye, so it ran thirty-four metres as two parallel brown lines; and one earth colour ran the whole bank from the
+water to the grass, so there was no waterline. Now: `bermAtRun` is two long waves of unequal length, of a length
+different again from the water's own sway, swinging from a hand's width to a metre — with a FLOOR of sixteen
+centimetres, because the cut edge of a lawn meeting water is a black hairline and a green fringe and that lesson
+was paid for once. And the bank wears a **damp foot**: `mats.streamWet`, a hand's width of darker, faintly
+glossier clay lying on the bank's face six millimetres proud of it, from the water out as far as seven tenths of
+the bare band (so it never overruns the grass where the band is thin). `pictures/s85-bank-near-wet-crop.png`.
+
+**The veil was a pane of glass.** It was two triangles: straight crest, straight sides, one flat wash of light.
+It is nine columns by three rows now. `fingerAt` is two swept sines of unequal length against each other, and
+where the scallop is low the crest is cut down into the sheet by up to 8.5 cm — and because the lip's rock face
+hangs behind the veil by `veilStandoff`, what shows in the notches is ROCK, which is what shows in the real
+thing. The dip dies out as the sheet falls; the columns gather towards the middle and wander sideways a little;
+and each column carries its own `v` from its own crest, so a notch cuts the threads short instead of skewing
+them. From the pond it reads as it did and better (`pictures/s85-pondbank-sky4.png`); from arm's length the
+fingers are there (`pictures/s85-crest-near-crop.png`).
+
+**Released v0.103.0**, walked at the mouth from the released copy, 1 504 meshes, no page errors.
+
+**What the next hand should do.**
+- **The edging stones read as cowpats.** At arm's length the lumps along the channel's edge are brown with dark
+  speckles (`pictures/s85-mouth-sky4-crop.png`) — laterite loaves, not rock. `mats.rock` is the Villa's grey
+  weathered stone and is used at the pond's fall; the stream's edging stones should wear a greyer stone, or the
+  same stone with its brown taken out at the near end, and the question should be settled with `cover.js --js`
+  on `mats.pondStone` against a grey clone at the mouth stand before anything is written down.
+- The channel's inner lip is still a hard straight edge along its whole length: the bank's *face* is fine, but
+  the top line where the water ends is a ruler, and it wants nibbled — the water's edge offset jittering in and
+  out by a decimetre, not the ±3 cm it has now.
+- The convolved sky is still the big one, and this stretch's `environmentIntensity` finding is another brick in
+  that wall: the sky cube is bright at the horizon and everything smooth in this garden pays for it.
