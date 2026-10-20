@@ -10650,3 +10650,37 @@ panel high up on the wall" — was closed in session eighty-two and I did not be
 `backDoorRoomLeaf` at (73,40,14) and (83,44,16), the reveal either side of it is near black at L8–L14, and the
 plaster beside is the palest thing in the frame at L163–L168. `pictures/s85-backdoor.png` is a full-height timber
 door with a shadow gap all round it and a brass catch. Nothing left to fix there; both lines can go.
+
+## Session eighty-five, fourth stretch: the heavier effects, tried in the order that costs least
+
+The edict's list after the material work is ambient occlusion, softer and larger shadows, bloom, and
+image-based lighting. Two of them were cheap enough to try in one sitting and both are now written down with the
+number on them.
+
+**The shadow map, on the address bar.** `buildLights` takes `{ mapSize, filter, blur }` and `main.js` feeds it
+`?shadowpx=`, `?shadowq=` (low, medium, high, pcf, poisson, exponential, soft, blur) and `?shadowblur=`. A new
+tool, `tools/shadowsoft.js`, finds the biggest sideways luminance step in every row of a picture and measures
+how many pixels the crossing takes; `tools/crop.js` cuts a rectangle out and blows it up so an edge can be
+looked at instead of argued about. **The verdict is a negative and it stands: 2048 and `medium` stay.** Going to
+4096 changed 6 319 pixels of 454 500 and the strongest pixel by 200 of 765, and on the strip in
+`pictures/s85-front-shadowstrip.png` (the paving and the deck edge at the front corner, top to bottom: 2048,
+4096, 4096 with the high filter) the three are the same picture to the eye; `shadowsoft` put the crossing at
+4 px, then 5 px, then 4 px, which is noise, not softness. The reason is in the light: Babylon fits the shadow
+frustum to whatever casts, so the map already covers the whole garden and the edge is limited by the PCF kernel,
+not by the texel size. A 4096 map is four times the memory and four times the shadow pass for nothing. The dials
+stay so the master can put the question to his own card.
+
+**Ambient occlusion does not go in, and this is the finding to keep.** The vendored library's
+`DefaultRenderingPipeline` in this build has no `ssao2` on it at all (`grep` for `ssao2Enabled` in
+`vendor/babylon/babylon.js`: nothing), so `pipeline.ssao2Enabled = true` is a property that nothing reads and
+`pipeline.ssao2.intensity` throws. The standalone `new BABYLON.SSAO2RenderingPipeline(name, scene, ratio,
+cameras)` — that signature is the one that works, the `(name, diameter, scenes, ratio, cameras)` form is not
+this build's — does draw: threads of occlusion appear in the creases. But it takes the frame over and the
+picture comes back **un-tone-mapped**: the sala view went from a mean L66 to L126 and every colour went pale
+and hazy (`pictures/s85-sala-ssao1.png` against `pictures/s85-sala-base.png`), and it is speckled all over
+because the AO's depth read and the pipeline's four samples of MSAA do not agree; `?msaa=1` does not cure it.
+Building the AO pass before the colour pipeline, so the tone curve is the last thing to touch the frame, makes
+no difference: L126 either way. The whole experiment is out of the code again — a Villa washed out is worse than
+a Villa without crease shadows — and the way in is to make the AO a pass *inside* the colour pipeline's chain,
+or to give the AO chain the scene's image-processing configuration, not to bolt a second chain on the camera.
+`pictures/s85-sala-*.png` are both states, for whoever takes it up.
