@@ -10550,3 +10550,103 @@ of the house at one o'clock after the daylight rebalance), and `s100-panel-now.p
 cropped from the stand that matches the master's `owner-flickering-wall.png` — the diagonal and the comb are still
 visible there, which is what stopped me calling the panel cured). `owner-flickering-wall.png` in the folder root is
 the master's own picture and is tracked.
+
+## Session eighty-five, first stretch: the koi in the working tree were looked at before they were believed
+
+The fish rebuild was sitting uncommitted from an earlier hand, with its own pictures in `pictures/` (`tmp-koi-*.png`,
+`koi-before-*.png`). Before committing it I ran `tools/koishot.js` again on the working tree — a new tool in
+`tools/`, which asks the running scene where a chosen fish is, stands off it at a stated distance and bearing,
+and prints every piece with where it falls along the fish (`t` = 0 at the tail tip, 1 at the snout). Two things
+came out of it. Every piece now lies between -0.05 and 1.00 along the fish, which is the check that no fin is
+out in the water behind the animal any more; and 1 500 triangles a fish, four fish, which the garden can afford.
+
+`pictures/s85-koi-close.png` (fish one at 1.1 m, eye 0.7 m above the water) is the picture that let me sign for
+it: a blunt head with an eye and a mouth on it, a red saddle over the loaf, a dorsal standing clear of the back
+and a forked fan on the stalk. `pictures/koi-before-side.png`, the same animal before, is a flat lozenge with
+nothing standing up off it and no tail on it at all. Committed as it stood; nothing of it needed changing.
+
+## Session eighty-five, second stretch: the white ladder on the pond is the stream's fall, and it was not a fall
+
+A grazing view from the pond's bank (`pictures/s85-koi-bank.png`) showed a comb of hard white slats lying on the
+water at the basin's north corner. `tools/pickat.js` named every one of them `streamFall`, so it was the veil at
+the stream's mouth and nothing else. The reason was in the numbers, once asked: the water in the channel stood
+at 0.074 m and the pond's surface at -0.035 m, eleven centimetres of drop, and the veil was built with a run of
+1.35 m. Four and a half degrees. The threads, which run down the fall, were therefore nearly horizontal, and
+seen from any standing height they merged into rungs. A fall needs a height.
+
+So the tail of the course is banked up (`mouthLiftAtRun` in `src/stream.js`): a smoothstep over the last 2.4 m
+lifts the deck, bed and water table together by 0.34 m, and the water now leaves the lip at 0.414 m — a drop of
+0.449 m over a lean of 0.5 m, which is 42 degrees. The berm widens with the height so the bank stays a bank.
+
+Four things had to come after that, all of them found by looking and not by reasoning:
+
+* **The channel was a tube with its end cut off.** `poly` makes single-sided faces, so with the mouth standing
+  half a metre over the water you could look up through the bank walls into the inside of a dirt box. The end is
+  closed now by `streamLip`: a grid, 8 by 5, in `mats.pondStone`, each vertex pushed out along the face by two
+  slow waves that come to nothing at the border so the joints to the banks stay shut. Flat, it was a brown beam
+  (`pictures/s85-mouth5.png`); lumped, it is a ledge with light in it.
+* **A raised bank of bare earth is a berm.** The first lift was spread over seven metres and a browser showed
+  an aqueduct: a long brown wall with the water standing in it above the lawn. Gathered into the last two metres
+  it is a knoll, and the last three metres of bank are dressed with six boulders out of the same barrow as the
+  rim (`streamCascadeRock*`), which is both how a garden spends its stones at a step and how it holds a bank
+  where the water runs hardest.
+* **The veil was a glow and not water.** It was additive and self-lit, and up close it was a plastic curtain
+  standing in front of the rock with hard cut ends at the top (`pictures/s85-mouth6.png`). It is a translucent
+  PBR sheet now — one canvas used as both `opacityTexture` and `emissiveTexture`, so where there is no water
+  there is neither body nor sparkle — with a streaked bump along the fall and a foam band at lip and plunge.
+  Too little light in it and dusk leaves it the colour of slate (`pictures/s85-mouth7.png`); emissive
+  (0.26, 0.30, 0.33) is about the mark: bright in the dusk garden, quiet at noon (`pictures/s85-mouth-day.png`).
+* **The streaks had to be continuous.** `streakCanvas` broke every thread into three to seven lengths with gaps
+  between, which is right for a tall veil and made a chain of white drips out of a half-metre one. `breaks: 0`
+  asks for one thread from lip to plunge; `haze` and `thin` scale the wash and the thread widths; `soft` blurs
+  the finished canvas, because a thread a pixel wide is exactly what minifies into a comb — which is how the
+  ladder read in the first place.
+
+`?still=1` and the standing bank view (`pictures/s85-pondbank2.png`, and the same hour in daylight
+`pictures/s85-pondbank-day.png`) both look like a garden now: a bright fall at the corner of the basin, stones
+about it, koi under the pads. The mouth from a visitor's eye is `pictures/s85-mouth-stand2.png`.
+
+Two smaller things found on the way. `stream.waterY` returned `WATER_Y`, which is a name that exists only in
+`src/pond.js`, so any tool that asked it got a ReferenceError — it answers `mouth.waterY` now, which is what it
+always meant. And a foot could walk into the raised bank, so the mouth has its own walk block, as the head
+hummock always had.
+
+## Where this session's pictures are
+
+In `pictures/`, which is gitignored: `s85-koi-close.png`, `s85-koi-side.png` and `s85-koi-bank.png` (the fish as
+they now are, and the standing bank view that showed the ladder), `s85-pick.png` and `s85-pick` output (the pick
+that named the slats), then the mouth's own series — `s85-mouth.png` as it was, `s85-mouth2` to `s85-mouth9` and
+`s85-mouth-day.png` as the fall was built and the veil was argued out, `s85-mouth-stand2.png` from a visitor's
+eye, `s85-pondbank2.png` and `s85-pondbank-day.png` for the whole basin, and `s85-home.png` and `s85-pool.png`
+to show the house and the pool were not disturbed.
+
+## What the next hand should do
+
+1. **The sky cube is still not convolved.** Everything the master's dark panel complained about — the diagonal
+   and the comb of level marks — is the un-convolved procedural sky read as diffuse light into a rough face, and
+   the cure is image-based lighting from a real HDRI. The network is reachable from this sandbox (npm answers),
+   so a Poly Haven `.hdr` can be fetched, but it wants converting to a prefiltered `.env` or convolving at
+   runtime before it helps a rough face. This is the one standing fault the measurements keep pointing at.
+2. **The veil is a rectangle.** Up close its four corners are plain: `pictures/s85-mouth9.png` shows a pane of
+   water with straight edges at the lip. It draws in as it goes now, which is most of it; a ragged top edge would
+   want the veil built as a strip with a noisy crest rather than a quad.
+3. **The channel's banks are flat brown dirt** with straight cut edges, well dressed at the mouth now and bare
+   everywhere else. Grass tufts or damp moss at the water's edge along the last stretch is the cheap way to
+   break the seam; the pond has done this with `MARGIN` and sedge for a long time and the stream never caught up.
+4. The trickle under the fall is 0.45 m of water now and the recording has not been touched, deliberately: a
+   sound the master chose does not move without being asked. If he wants it louder at the mouth, that is one
+   number in `src/main.js` beside the held bed.
+
+## Session eighty-five, third stretch: both of the master's "fix first" lines are now closed, and one of them was not mine
+
+Released as **v0.101.0** with the koi and the fall in it; the menu has it and `releases/v0.101.0/preview.png` is
+the front of the house at half past five, pool, tiles, string lights and the duck, which is the Villa as it should
+look.
+
+The edict carries two `Fix first` lines. The flickering panel was closed last session (the grain). The second —
+"the exterior door looks fine from outside, but from inside it looks like a window: a small wooden shuttered
+panel high up on the wall" — was closed in session eighty-two and I did not believe it until I ran
+`tools/interiordoor.js` again in the released build: at the door and from the middle of the room the leaf answers
+`backDoorRoomLeaf` at (73,40,14) and (83,44,16), the reveal either side of it is near black at L8–L14, and the
+plaster beside is the palest thing in the frame at L163–L168. `pictures/s85-backdoor.png` is a full-height timber
+door with a shadow gap all round it and a brass catch. Nothing left to fix there; both lines can go.
