@@ -125,6 +125,37 @@ export function deckAtRun(run) {
 }
 
 /**
+ * How much higher the water stands at the mouth than anywhere along the course, and so how tall the fall is.
+ *
+ * THIS IS HERE BECAUSE THE FALL WAS NOT ONE. The channel ran level to its last station, which left the water
+ * eleven centimetres above the pond over a run of a metre and a half: a four-degree sheet laid across the
+ * north of the basin. Seen from the bank — `pictures/s85-koi-bank.png`, and the master's own eye — the threads
+ * of the veil lay flat and merged into a ladder of white slats floating on the water, which is a planked
+ * drain and not a garden's stream. A fall needs a height, so the tail of the channel is banked up: this is a
+ * Thai garden that has piled earth to get its water to move, and the same earth the channel is already built
+ * of. The rise is a smoothstep, so there is no crease where it starts.
+ *
+ * The bank widens with the height (the `lift` added to the berm below) for the same reason: a bank half a metre
+ * high with the old narrow shoulder is a garden wall of dirt.
+ */
+const MOUTH_LIFT = 0.34;
+/**
+ * How many metres of the channel's tail carry the rise. SHORT on purpose: spread over seven metres it lifts
+ * the whole tail into an aqueduct whose banks are a long brown wall over the lawn, which is what a browser
+ * showed at the first setting; gathered into the last two metres and a bit it is a knoll of earth and rock the
+ * water spills over at the pond, which is what the garden wanted. The water's own grade over those two metres
+ * is eight degrees — a rill in a hurry, and not a canal.
+ */
+const MOUTH_LIFT_RUN = 2.4;
+
+export function mouthLiftAtRun(run, total) {
+	const u = (run - (total - MOUTH_LIFT_RUN)) / MOUTH_LIFT_RUN;
+	if (u <= 0) return 0;
+	const t = Math.min(1, u);
+	return MOUTH_LIFT * t * t * (3 - 2 * t);
+}
+
+/**
  * The course, resampled at an even spacing, with a unit normal at every station.
  *
  * The normal at a station is the mean of the two segments that meet there, which is what keeps the channel
@@ -248,10 +279,12 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	// The waves are of deliberately unequal length (0.29, 0.71, 0.23 and 0.41 radians to the metre) so nothing
 	// along the course repeats at a pitch the eye can catch.
 	const sway = SWAY;
+	const courseLength = line[line.length - 1].run;
 	for (const s of line) {
+		s.lift = mouthLiftAtRun(s.run, courseLength);
 		s.hw = halfAtRun(s.run) + (rand() - 0.5) * 0.07;
-		s.berm = bermAtRun(s.run) + (rand() - 0.5) * 0.08;
-		s.deck = deckAtRun(s.run);
+		s.berm = bermAtRun(s.run) + (rand() - 0.5) * 0.08 + s.lift * 1.0;
+		s.deck = deckAtRun(s.run) + s.lift;
 		s.bedY = s.deck - 0.2;
 		// The water's surface: five and a half centimetres under the lip. Deep enough that the bank's face shows
 		// above the water as a band of damp earth; shallow enough that the bed is plainly there under it.
@@ -573,34 +606,114 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	const runX = mouth.x - before.x;
 	const runZ = mouth.z - before.z;
 	const runLen = Math.hypot(runX, runZ) || 1;
-	const fallTo = -0.035; // the pond's own surface, `WATER_Y` in src/pond.js
-	// How far the veil travels before it reaches the water. The pond's gravel band is a metre wide between
-	// the lawn's cut edge and the water's edge, and the mouth stands at the outer edge of it: shorter than this and
-	// the water goes down onto the gravel and stops, which is a stream that has run out of garden rather than
-	// into a pond. The rim stones are cleared here (`inStreamMouth` in src/pond.js) so the sheet has a gap to
-	// pass through.
-	const fallRun = 1.35;
-	// The veil is narrower than the channel — eight tenths of the water's own width at the mouth — because a
-	// fall across the whole of a bank-to-bank sheet is a weir. Water goes over an earth step at the place where
-	// it has cut through, and the banks stand either side of it dry.
-	const veilHalf = mouth.hw * 0.8;
+	const fallTo = -0.12; // a little under the pond's own surface, so the veil's foot is in the water and not over it
+	// How far the veil leans out before it reaches the water. It used to be a metre and a half of run for eleven
+	// centimetres of drop, which is the flat white ladder this file's `MOUTH_LIFT` note is about; now the water
+	// leaves the lip from half a metre up and only has to clear the rim. The rim stones are cleared here
+	// (`inStreamMouth` in src/pond.js) so the sheet has a gap to pass through.
+	const veilRun = 0.5;
+	const veilDrop = mouth.waterY - fallTo;
+	// Which way the mouth's faces look. The sign of the section normal is not a thing to guess at from the seat:
+	// the cross product of `across` and `up` is taken and matched against the way the water runs, and every face
+	// built at the mouth is wound whichever way round that answers. A reversed face is a hole in the world, and
+	// the same mistake is what once turned a stream bank the colour of grass.
+	const faceUp = new BABYLON.Vector3(0, 1, 0);
+	const faceAcross = new BABYLON.Vector3(mouth.nx, 0, mouth.nz);
+	const runDir = new BABYLON.Vector3(runX / runLen, 0, runZ / runLen);
+	const runsDownstream = BABYLON.Vector3.Dot(BABYLON.Vector3.Cross(faceAcross, faceUp), runDir) > 0;
+	// The veil is narrower than the channel — eight and a half tenths of the water's own width at the mouth —
+	// because a fall across the whole of a bank-to-bank sheet is a weir. Water goes over an earth step at the
+	// place where it has cut through, and the banks stand either side of it dry. It draws in a little more as it
+	// goes, because a sheet leaving a lip gathers towards its middle, and a rectangle of water is a pane of
+	// glass (`pictures/s85-mouth-stand2.png`).
+	const veilHalf = mouth.hw * 0.85;
+	// The veil's own length, which is what its streaks are measured in: the canvas runs down the fall, and one
+	// repeat of it is one repeat of the fall.
+	const veilLen = Math.hypot(veilRun, veilDrop);
+	// The sheet hangs a hand's width out from the face of the lip. Coplanar with it, the two would fight for
+	// every pixel down the whole height of the fall.
+	const veilStandoff = 0.05;
+	const along = (from) => (runX / runLen) * from;
+	const alongZ = (from) => (runZ / runLen) * from;
 	const fall = poly(scene, "streamFall", {
 		positions: [
-			mouth.x + mouth.nx * -veilHalf, mouth.waterY, mouth.z + mouth.nz * -veilHalf,
-			mouth.x + mouth.nx * veilHalf, mouth.waterY, mouth.z + mouth.nz * veilHalf,
-			mouth.x + mouth.nx * -veilHalf + (runX / runLen) * fallRun, fallTo,
-			mouth.z + mouth.nz * -veilHalf + (runZ / runLen) * fallRun,
-			mouth.x + mouth.nx * veilHalf + (runX / runLen) * fallRun, fallTo,
-			mouth.z + mouth.nz * veilHalf + (runZ / runLen) * fallRun,
+			mouth.x + mouth.nx * -veilHalf + along(veilStandoff), mouth.waterY, mouth.z + mouth.nz * -veilHalf + alongZ(veilStandoff),
+			mouth.x + mouth.nx * veilHalf + along(veilStandoff), mouth.waterY, mouth.z + mouth.nz * veilHalf + alongZ(veilStandoff),
+			mouth.x + mouth.nx * -veilHalf * 0.86 + along(veilRun), fallTo,
+			mouth.z + mouth.nz * -veilHalf * 0.86 + alongZ(veilRun),
+			mouth.x + mouth.nx * veilHalf * 0.86 + along(veilRun), fallTo,
+			mouth.z + mouth.nz * veilHalf * 0.86 + alongZ(veilRun),
 		],
-		uvs: [0, 0, 1, 0, 0, -1.6, 1, -1.6],
-		// Two triangles for the veil. The winding does not matter here: the material is self-lit and painted
-		// from both sides, so there is no normal for a face to be wrong about.
-		indices: [0, 1, 2, 1, 3, 2],
+		uvs: [0, 0, 1, 0, 0, -veilLen, 1, -veilLen],
+		// Two triangles for the veil, wound to look DOWN the fall at the pond: the sheet is lit now, and a face
+		// pointing back upstream takes its light from the wrong side and comes out the colour of slate.
+		indices: runsDownstream ? [0, 2, 1, 1, 2, 3] : [0, 1, 2, 1, 3, 2],
 		mat: mats.streamFall,
 	});
 	fall.isPickable = false;
 	built.push(fall);
+
+	/**
+	 * The face of the lip: the rock the water goes over, from under the pond's surface up to the top of the
+	 * banks, and as wide as the channel.
+	 *
+	 * Since the tail of the course was banked up the mouth stands a hand and a half over the water, and the
+	 * channel was a tube with its end cut off: `poly` makes single-sided faces, so looking up at the fall from
+	 * the basin you saw straight through the bank walls into the inside of a dirt box. This closes the end, and
+	 * the veil hangs on the outside of it — which is what a fall is.
+	 *
+	 * It is a grid and not a quad because a flat sheet of stone a metre wide with the light lying across it is a
+	 * beam (`pictures/s85-mouth5.png`). Every vertex is pushed out along the face by a pair of slow waves that
+	 * come to nothing at the border, so the joints to the two banks stay shut and the light has a lumped ledge to
+	 * find instead of a plank.
+	 */
+	const lipCols = 8;
+	const lipRows = 5;
+	const lipBulge = (u, v) =>
+		(0.05 * Math.sin(u * 7.1 + 0.4) + 0.045 * Math.sin(v * 5.3 + 1.9)) * Math.sin(Math.PI * u) * Math.sin(Math.PI * v);
+	const lipPositions = [];
+	const lipUvs = [];
+	for (let j = 0; j <= lipRows; j++) {
+		for (let i = 0; i <= lipCols; i++) {
+			const u = i / lipCols;
+			const v = j / lipRows;
+			const off = -mouth.hw + 2 * mouth.hw * u;
+			const y = fallTo + (mouth.deck - fallTo) * v;
+			const out = lipBulge(u, v);
+			lipPositions.push(
+				mouth.x + mouth.nx * off + along(out),
+				y,
+				mouth.z + mouth.nz * off + alongZ(out)
+			);
+			// METRES of ground over the stone's own 0.34 to the repeat, so the face wears the same rock as the
+			// boulders pinned either side of it and reads as one ledge and not as a wall with a picture pasted on it.
+			lipUvs.push(off / 0.34, y / 0.34);
+		}
+	}
+	const lipIndices = [];
+	for (let j = 0; j < lipRows; j++) {
+		for (let i = 0; i < lipCols; i++) {
+			const a = j * (lipCols + 1) + i;
+			const b = a + 1;
+			const c = a + lipCols + 1;
+			const d = c + 1;
+			if (runsDownstream) lipIndices.push(a, b, c, b, d, c);
+			else lipIndices.push(a, c, b, b, c, d);
+		}
+	}
+	const lip = poly(scene, "streamLip", {
+		positions: lipPositions,
+		uvs: lipUvs,
+		indices: lipIndices,
+		// Stone and not the bank's dirt. A half-metre of bare earth standing over a pond is a landslide; the same
+		// half-metre of wet rock is a garden's cascade, and it comes out of the same barrow as the two boulders
+		// that pinch the mouth and the rim the basin is edged with.
+		mat: mats.pondStone,
+	});
+	lip.receiveShadows = true;
+	if (shadows) shadows.addShadowCaster(lip);
+	built.push(lip);
+
 	// The stones the water goes over, one on each bank, and the stone it lands on. All three are boulders out
 	// of the same barrow as the edging stones, not cut stone: an earth step with a stone at each shoulder is
 	// how a garden's stream arrives at a pond, and a dressed lintel across the channel is how a mill does it.
@@ -633,6 +746,42 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 		built.push(pinch);
 		feet.push({ x: px, z: pz, r: across / 2 });
 	}
+	// THE CASCADE DRESSED IN STONE. The tail of the course was banked up to give the water a fall, and a raised
+	// bank of bare earth, however neatly cut, is a berm: `pictures/s85-mouth8.png` shows the water standing in a
+	// gutter of dirt above the lawn. So the last three metres are dressed with boulders out of the same barrow as
+	// the rim — which is both how a garden spends its stones at a step and how it holds a bank where the water
+	// runs hardest.
+	for (let k = 1; k <= 3; k++) {
+		const s = line[line.length - 1 - k];
+		for (const side of [-1, 1]) {
+			const across = 0.4 + rand() * 0.35;
+			const tall = 0.26 + rand() * 0.24;
+			const off = s.hw + 0.1 + rand() * 0.16;
+			const px = s.x + s.nx * side * off;
+			const pz = s.z + s.nz * side * off;
+			const rock = sphere(scene, `streamCascadeRock${k}${side}`, {
+				diameterX: across,
+				diameterY: tall,
+				diameterZ: across * (0.9 + rand() * 0.5),
+				segments: 7,
+				px,
+				py: bankAt(s, off) - tall * 0.18,
+				pz,
+				mat: mats.pondStone,
+			});
+			rock.rotation.y = tangentYaw(s) + (rand() - 0.5) * 0.8;
+			rock.rotation.x = (rand() - 0.5) * 0.35;
+			rock.rotation.z = (rand() - 0.5) * 0.35;
+			const workedRock = crumple(rock, { at: 0.3, seed: 8600 + k * 7 + side, lobes: 5 });
+			skinTint(rock, workedRock, { at: 0.3, low: 0.55 });
+			settle(rock, bankAt(s, off), 0.1 + rand() * 0.1);
+			rock.refreshBoundingInfo();
+			rock.receiveShadows = true;
+			if (shadows) shadows.addShadowCaster(rock);
+			built.push(rock);
+			feet.push({ x: px, z: pz, r: across / 2 });
+		}
+	}
 	// The landing stone the water falls on, in the pond, a hand under the veil: without it the veil ends in
 	// mid-air over the water and the eye reads a picture of water rather than water arriving. It is not
 	// called an apron here: this folder already uses that word for the free stone round the pool deck.
@@ -645,9 +794,9 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 		diameterY: 0.26,
 		diameterZ: 2 * mouth.hw * 0.8,
 		segments: 7,
-		px: mouth.x + (runX / runLen) * (fallRun * 0.72),
+		px: mouth.x + (runX / runLen) * (veilRun * 0.7),
 		py: -0.06,
-		pz: mouth.z + (runZ / runLen) * (fallRun * 0.72),
+		pz: mouth.z + (runZ / runLen) * (veilRun * 0.7),
 		mat: mats.pondStone,
 		ry: tangentYaw(mouth),
 	});
@@ -707,6 +856,16 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	// visitor walking into it at lawn height would walk through a hill. The channel's own blocks stop short of
 	// it — they run to `streamKeepOff` either side of the water, and the hummock is wider than that.
 	blockers.push([moundX - moundRX, moundX + moundRX, moundZ - moundRZ, moundZ + moundRZ * 0.75]);
+	// And the mouth gets the same courtesy from the other end. Since the tail of the course was banked up, the
+	// cascade stands half a metre over the lawn, and a visitor walked to the usual distance from the water would
+	// walk into it. The band is the raised bank's own width, and nothing that wants walking on lies inside it:
+	// the basin blocks its own water on the far side and the lawn carries on round this.
+	blockers.push([
+		mouth.x - (mouth.hw + mouth.berm),
+		mouth.x + (mouth.hw + mouth.berm),
+		mouth.z - 1.1,
+		mouth.z + 0.5,
+	]);
 
 	// ---- the flow ---------------------------------------------------------------
 	//
@@ -722,8 +881,10 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 		get length() {
 			return line[line.length - 1].run;
 		},
+		// The height of the water where it leaves the channel. This used to read `WATER_Y`, a name that exists
+		// only in src/pond.js, so anything that asked the question got a ReferenceError instead of an answer.
 		get waterY() {
-			return WATER_Y;
+			return mouth.waterY;
 		},
 		get reach() {
 			return streamReach;
@@ -746,7 +907,7 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 				splashIn -= delta;
 				if (splashIn <= 0) {
 					splashIn = 1.9 + rand() * 1.1;
-					pond.splash(mouth.x + (runX / runLen) * 1.2, mouth.z + (runZ / runLen) * 1.2, {
+					pond.splash(mouth.x + (runX / runLen) * (veilRun + 0.25), mouth.z + (runZ / runLen) * (veilRun + 0.25), {
 						across: 0.2,
 						span: 1.5,
 						show: 0.5,

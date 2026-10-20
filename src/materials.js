@@ -1460,20 +1460,43 @@ export function createMaterials(scene) {
 	// More chop than the pond's 0.2 and less than the pool's 0.7: a shallow channel is rougher than a still
 	// basin, and a stream this narrow never gets the long swell a wide pool does.
 	mats.streamWater.bumpTexture.level = 0.34;
-	// The veil at the mouth: the sheet of water going over the lip into the pond. Added rather than blended,
-	// because a fall is a great deal of small bright water with the light straight through it, and a fall
-	// painted opaque is a plank. Its pattern runs: `animate` slides the streaks down a metre a second, which
-	// is the one thing that makes a still quad read as water falling.
-	mats.streamFall = pbr(scene, "streamFall", { roughness: 1, environmentalIntensity: 0 });
-	mats.streamFall.disableLighting = true;
-	mats.streamFall.emissiveColor = new Color3(0.86, 0.94, 1.0);
-	mats.streamFall.opacityTexture = texture(scene, streakCanvas(256, { threads: 52, seed: 611 }), {
+	// The veil at the mouth: the sheet of water going over the lip into the pond.
+	//
+	// IT IS WATER AND NOT A GLOW. The first version was an additive white sheet, self-lit, with the light straight
+	// through it — and a browser at the mouth showed what that is: a glowing plastic curtain standing in front of
+	// the rock, brighter than anything in the garden and with hard cut ends at the top (`pictures/s85-mouth6.png`).
+	// So the veil is now a translucent PBR sheet: the rock shows wherever the water is thin, the sky is caught in
+	// it where the sheet runs thick and glassy, and it is no brighter than the water it came from. Its pattern
+	// runs: `animate` slides the streaks down, which is the one thing that makes a still quad read as falling.
+	mats.streamFall = pbr(scene, "streamFall", { roughness: 0.12, environmentalIntensity: 1.2 });
+	mats.streamFall.albedoColor = paint([226, 236, 236]);
+	// The alpha of the water AND its foam, out of one picture: thick in the threads, nearly nothing between
+	// them, and washed a little across all of it. The same canvas lights the sheet and thins it, which is the
+	// truth of it — where there is no water there is neither opacity nor sparkle. Seventy threads, running whole
+	// from lip to plunge, blurred so they are rivulets and not a comb of hard white slats, which is what the
+	// first narrow unblurred version minified into when it was seen from the far bank.
+	const fallSkin = texture(scene, streakCanvas(256, { threads: 70, seed: 611, breaks: 0, haze: 0.5, thin: 1.4, soft: 3 }), {
 		name: "stream fall",
 		scale: 1,
 	});
-	mats.streamFall.transparencyMode = 3; // add
+	mats.streamFall.opacityTexture = fallSkin;
+	// And the foam: a falling sheet is bright because a hundred little surfaces scatter the sky sideways, and
+	// shade alone in a dusk garden leaves it the colour of slate (`pictures/s85-mouth7.png`). Kept well under
+	// what an additive sheet used to throw — the water is the brightest thing at the mouth, not the brightest
+	// thing in the garden.
+	mats.streamFall.emissiveTexture = fallSkin;
+	mats.streamFall.emissiveColor = new Color3(0.26, 0.3, 0.33);
+	mats.streamFall.transparencyMode = 2; // blend
 	mats.streamFall.backFaceCulling = false;
-	mats.streamFall.specularIntensity = 0;
+	mats.streamFall.specularIntensity = 0.7;
+	// A bump of its own, drawn out along the fall: water going over a lip is ribbed lengthways, and a flat sheet
+	// of it is a board.
+	mats.streamFall.bumpTexture = texture(scene, rippleCanvas(256, { strength: 9, seed: 617 }), {
+		name: "streamFallRipple",
+		scale: 1,
+		gamma: false,
+	});
+	mats.streamFall.bumpTexture.level = 0.35;
 
 	// The basin: a liner of damp silt and stone, dark, and it wants nothing of the sky's mirror.
 	mats.pondSilt = pbr(scene, "pondSilt", { roughness: 0.92, environmentalIntensity: 0.55, pattern: 0.55 });

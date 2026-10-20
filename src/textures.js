@@ -3916,39 +3916,65 @@ export function smokeCanvas(size = 256, { seed = 77, lobes = 17, rings = 3 } = {
  * like a corrugated roof; streaks laid on it look like water you cannot see through. The streaks are drawn
  * full height and deliberately broken at intervals, because a real veil keeps starting and stopping as the
  * lip's edge varies by a millimetre.
+ *
+ * `haze` scales the wash laid between the threads (1 is what the function always painted) and `thin` scales
+ * the threads' own width. Both are dials for one reason: threads a pixel or two wide, seen from the far bank,
+ * are not threads any more, they are a comb of hard white slats.
  */
-export function streakCanvas(size = 256, { threads = 46, seed = 611, breaks = 5 } = {}) {
+export function streakCanvas(size = 256, { threads = 46, seed = 611, breaks = 5, haze = 1, thin = 1, soft = 0 } = {}) {
 	const canvas = canvasOfSize(size);
 	const ctx = context2d(canvas);
 	const rand = randomGenerator(seed);
 	ctx.clearRect(0, 0, size, size);
 	for (let i = 0; i < threads; i++) {
 		const x = rand() * size;
-		const w = size * (0.004 + rand() * rand() * 0.035);
+		const w = size * (0.004 + rand() * rand() * 0.035) * thin;
 		const strength = 0.25 + rand() * 0.7;
 		// Three to six lengths of thread, with a bare gap between them: the thread does not run the whole
-		// height of the veil in one piece.
-		const parts = 3 + Math.floor(rand() * breaks);
-		let y = -rand() * size * 0.3;
-		while (y < size) {
-			const len = size * (0.12 + rand() * 0.4);
+		// height of the veil in one piece. `breaks: 0` asks for the other animal altogether — one thread from
+		// lip to plunge, which is what a short fall of half a metre needs: broken into lengths at that height the
+		// veil is a chain of white drips and not water (`pictures/s85-mouth5.png`).
+		const whole = breaks === 0;
+		const parts = whole ? 1 : 3 + Math.floor(rand() * breaks);
+		let y = whole ? 0 : -rand() * size * 0.3;
+		for (let p = 0; p < parts && y < size; p++) {
+			const len = whole ? size : size * (0.12 + rand() * 0.4);
 			const band = ctx.createLinearGradient(x, y, x, y + len);
-			band.addColorStop(0, "rgba(255,255,255,0)");
-			band.addColorStop(0.25, `rgba(255,255,255,${strength})`);
-			band.addColorStop(0.7, `rgba(255,255,255,${strength * 0.85})`);
-			band.addColorStop(1, "rgba(255,255,255,0)");
+			if (whole) {
+				band.addColorStop(0, `rgba(255,255,255,${strength})`);
+				band.addColorStop(0.7, `rgba(255,255,255,${strength * 0.92})`);
+				band.addColorStop(1, `rgba(255,255,255,${strength * 0.72})`);
+			} else {
+				band.addColorStop(0, "rgba(255,255,255,0)");
+				band.addColorStop(0.25, `rgba(255,255,255,${strength})`);
+				band.addColorStop(0.7, `rgba(255,255,255,${strength * 0.85})`);
+				band.addColorStop(1, "rgba(255,255,255,0)");
+			}
 			ctx.fillStyle = band;
 			ctx.fillRect(x - w / 2, y, w, len);
 			y += len + size * (0.02 + rand() * 0.09);
 		}
 	}
 	// The haze between the threads, so the veil is not a comb.
-	const haze = ctx.createLinearGradient(0, 0, 0, size);
-	haze.addColorStop(0, "rgba(255,255,255,0.34)");
-	haze.addColorStop(0.6, "rgba(255,255,255,0.2)");
-	haze.addColorStop(1, "rgba(255,255,255,0.42)");
-	ctx.fillStyle = haze;
+	const hazeBand = ctx.createLinearGradient(0, 0, 0, size);
+	// Bright at the lip, thinner through the middle, bright again at the plunge: where water leaves an edge and
+	// where it hits the pool is the foam, and the run between is mostly clear.
+	hazeBand.addColorStop(0, `rgba(255,255,255,${0.5 * haze})`);
+	hazeBand.addColorStop(0.55, `rgba(255,255,255,${0.18 * haze})`);
+	hazeBand.addColorStop(1, `rgba(255,255,255,${0.52 * haze})`);
+	ctx.fillStyle = hazeBand;
 	ctx.fillRect(0, 0, size, size);
+	// `soft` blurs the whole sheet by a couple of picture-pixels. A thread is a filled rectangle and so has a
+	// hard side edge, and a hard edge a pixel wide is exactly what minifies into a comb of white slats seen from
+	// the far bank; the blur takes the edge off and leaves the water its streaks.
+	if (soft > 0) {
+		const blurred = canvasOfSize(size);
+		const bl = context2d(blurred);
+		bl.filter = `blur(${soft}px)`;
+		bl.drawImage(canvas, 0, 0);
+		ctx.clearRect(0, 0, size, size);
+		ctx.drawImage(blurred, 0, 0);
+	}
 	return canvas;
 }
 
