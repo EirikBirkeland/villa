@@ -10684,3 +10684,52 @@ no difference: L126 either way. The whole experiment is out of the code again �
 a Villa without crease shadows — and the way in is to make the AO a pass *inside* the colour pipeline's chain,
 or to give the AO chain the scene's image-processing configuration, not to bolt a second chain on the camera.
 `pictures/s85-sala-*.png` are both states, for whoever takes it up.
+
+## Session eighty-five, fifth stretch: the watercourse was a grey tarpaulin, and now it is water
+
+Found by standing on the lawn at (-13.5, 1.5, 8) and looking along the channel, which is a view nobody had
+photographed: `pictures/s85-lawnfar.png`. The whole stream came out as a **grey band with regular ribs across
+it**, kerbed in brown earth — a tarpaulin laid in a trench, or a road. `tools/cover.js` named it: `streamWater`,
+4.4% of the frame, painted at **(73,87,60)**, alpha 0.5, and — the tell — NO COLOUR MAP, so everything it looks
+like is light and not ink.
+
+Three things were wrong and each was measured, most of them with `tools/cover.js --js`, which lets a material be
+changed in the live page and the same stand re-read:
+
+1. **The chop was a grid.** The channel's UVs are metres (`u` across the water, `v` the distance run) and the
+   ripple texture was laid at one repeat to the metre: a rib every metre, lined up bank to bank, for thirty-four
+   metres. The steep angle-of-view film in `src/water.js` turns every ripple into a bright rib, so the grid
+   showed. The tiles are now stretched with the flow (`uScale` 1/0.55, `vScale` 1/2.3 — a current is long and
+   thin) and bent off their lines in `src/stream.js` by a slow pair of sines on both axes, the same trick the
+   banks' soil uses two lines above. With the chop silenced the mean moved two points, so the grid was not the
+   brightness; it was the ribs.
+2. **It mirrored the open sky.** `mirrorColor` (112,130,106) is baked into the patched shader as the colour the
+   film turns into where the view runs along the water, and along a narrow channel from the lawn every view runs
+   along the water. The pond has been through this and has the law written next to it: a bright mirror spread
+   over a shallow sheet is a sheet of milk. The mirror is now (46,58,42), the shade of the bank and the hedge
+   leaning over it, and it is darker than the pond's own because there is a tenth as much water here and half of
+   what is seen is the bed through it.
+3. **The mirror was spread too broad.** Roughness 0.06 → 0.08, and the chop's level 0.34 → 0.16: `?strib=` reaches
+   it from the address bar, and `pictures/s85-crop-strib012.png` against `pictures/s85-streamcrop.png` is the
+   before and after at the same stand.
+
+Together: the same stand paints **(57,69,40)** and the surface reads as a dark run of water with a current in
+it — `pictures/s85-stream-far-final.png`, `pictures/s85-crop-far-day.png` at ten in the morning, and the near
+view from the east bank at `pictures/s85-stream-near4.png`, which is where the animation still shows the water
+moving. Ruled out on the way, and recorded so nobody re-runs them: it is not shadow banding (`?noshadow=1`,
+identical), not the alpha, not the environment term and not the emissive — each of those three moved the mean by
+two points or less on its own, measured with `cover.js --js`.
+
+**Also done:** the shadow dials and the SSAO refusal, both above in the fourth stretch; released as **v0.102.0**,
+whose preview is the front of the house at half past five with the duck in the pool.
+
+**What the next hand should do.**
+- The near bank of the channel is a flat brown kerb a metre wide with nothing on it. Stones are pinned along the
+  edge and there are a few tufts, but between them it is bare laterite from bank to bank; grass should be grown
+  down to the water's edge in places, and the moss/wet-earth darkening the pond has should reach the waterline here.
+- The veil at the mouth is a four-vertex sheet. It reads well from the bank (`releases/v0.101.0/preview.png`) but
+  from close its two side edges are straight lines and its crest is a straight line: a grid mesh with the crest
+  scalloped would be an hour's work and would finish the fall.
+- The convolved sky is still the big one, and the SSAO note above is now part of that argument: anything that
+  bolts a second post-process chain on the camera loses the tone map, so the sky cube must be made good in the
+  material and not added later.
