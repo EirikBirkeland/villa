@@ -1420,6 +1420,14 @@ export function createMaterials(scene) {
 	// which the sky it also takes reads bright. Compare the pool's [150,182,188] under mats.water: this is
 	// a third of the light, because a pond in the palm shade has a third of the sky over it.
 	mats.pondWater.mirrorColor = paint([98, 122, 100]);
+	// WHY THE WATERCOURSE MIRRORS THE SKY AT A LESS THAN THE POOL AND THE POOL DOES NOT MIRROR IT AT ALL.
+	// The sky cube is paid to a PBR surface through `environmentIntensity`, and at a graze a smooth surface takes
+	// nearly all of it: measured on the channel from the bank at arm's length, the surface painted (70,78,58) as
+	// it stands, (45,57,26) with that term at 0.2, and (40,53,17) with it off and the film's own breath cut with
+	// it — which is to say the pale grey sheet that made the watercourse read as a spill of milk was the SKY, and
+	// nothing else about it moved the number more than three points. A stream twelve centimetres deep over mud
+	// does mirror the sky, but it also has a bed, and the bed is the reason it is not blue: so it keeps a little
+	// of the sky — enough for the chop to catch a glint — and gives the rest of it up.
 	mats.pondWater.bumpTexture = texture(scene, rippleCanvas(256), { name: "pondRipple", scale: 1, gamma: false });
 	// Gentler chop than the pool's: the same 0.7 of bump the pool carries turned the pond's whole surface
 	// to flecks of white in a picture taken from above (pictures/s80-pond-beads.png), because the sheet is a
@@ -1438,7 +1446,7 @@ export function createMaterials(scene) {
 	// and nothing else. The channel is dirt now — earth banks, an earth bed, stones at the edge — and water over
 	// mud is not blue. It is the pond's tannin, lighter, because there is a tenth as much of it and it is being
 	// dragged along its bed: a shallow run of muddy water, the colour of what lies under it.
-	mats.streamWater = pbr(scene, "streamWater", { roughness: 0.08, alpha: 0.5, environmentalIntensity: 0.85, pattern: 2.0 });
+	mats.streamWater = pbr(scene, "streamWater", { roughness: 0.18, alpha: 0.5, environmentalIntensity: 0.4, pattern: 2.0 });
 	mats.streamWater.transparencyMode = 2;
 	mats.streamWater.albedoColor = new Color3(0.014, 0.026, 0.018);
 	// The colour of fifteen centimetres of moving water over damp silt: a green with a breath of brown in it,

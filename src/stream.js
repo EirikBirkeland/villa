@@ -678,27 +678,76 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 	// goes, because a sheet leaving a lip gathers towards its middle, and a rectangle of water is a pane of
 	// glass (`pictures/s85-mouth-stand2.png`).
 	const veilHalf = mouth.hw * 0.85;
-	// The veil's own length, which is what its streaks are measured in: the canvas runs down the fall, and one
-	// repeat of it is one repeat of the fall.
-	const veilLen = Math.hypot(veilRun, veilDrop);
 	// The sheet hangs a hand's width out from the face of the lip. Coplanar with it, the two would fight for
 	// every pixel down the whole height of the fall.
 	const veilStandoff = 0.05;
 	const along = (from) => (runX / runLen) * from;
 	const alongZ = (from) => (runZ / runLen) * from;
+	/**
+	 * The veil, as a grid and not as a quad, because a quad is a pane of glass.
+	 *
+	 * The first sheet was two triangles: its crest was a straight line along the lip, its two side edges were
+	 * straight lines down to the plunge, and its surface was one flat plane catching the light in one flat
+	 * wash (`pictures/s85-mouth-near-wet-crop.png`, looked at from the bank at arm's length). Water does none of
+	 * that over a rock. It goes over in FINGERS — thick here, thin there, the thin places so thin that the rock
+	 * behind shows through them — and the sheet gathers and wanders as it falls.
+	 *
+	 * So: nine columns and three rows. `fingerAt` is the scallop along the lip, two swept sines of unequal length
+	 * against each other so the fingers are not a rhythm a reader could pick out; where the scallop is low the
+	 * crest is cut DOWN into the sheet by up to `crestSag`, and since the lip's rock face hangs behind the veil
+	 * by `veilStandoff`, what shows in those notches is rock, which is exactly what shows in the real thing.
+	 * The dip dies out as the sheet falls — the fan is a fan at the lip and one sheet in the plunge pool. The
+	 * columns draw in towards the middle as they go (a sheet leaving a lip does gather) and wander sideways a
+	 * little, and each column's own texture coordinate runs from its own crest, so the threads stay whole and
+	 * none of them stretches.
+	 */
+	const veilCols = 9;
+	const veilRows = 3;
+	const crestSag = 0.085;
+	const fingerAt = (a) => 0.5 + 0.5 * Math.sin(a * 9.4 + 0.7) * Math.sin(a * 4.1 + 2.2);
+	const crestAt = (a) => mouth.waterY - crestSag * (1 - fingerAt(a));
+	const veilPositions = [];
+	const veilUvs = [];
+	const veilIndices = [];
+	for (let j = 0; j <= veilRows; j++) {
+		const t = j / veilRows;
+		for (let i = 0; i <= veilCols; i++) {
+			const a = i / veilCols;
+			// The draw-in towards the middle, and the sideways wander, which is nothing at the lip and a
+			// hand's width by the plunge.
+			const gather = 1 - 0.14 * t;
+			const wander = 1 + 0.07 * Math.sin(a * 7.7 + 0.3) * t;
+			const off = (a - 0.5) * 2 * veilHalf * gather * wander;
+			const crest = crestAt(a) - (crestAt(a) - mouth.waterY) * t;
+			const y = crest + (fallTo - crest) * t;
+			const out = veilStandoff + 0.07 * t;
+			veilPositions.push(
+				mouth.x + mouth.nx * off + along(out),
+				y,
+				mouth.z + mouth.nz * off + alongZ(out)
+			);
+			// `u` is the whole width, as it always was, so the streak canvas's seventy threads lie across the
+			// fall; `v` is metres down from THIS column's crest, so a notch cuts the threads short and does not
+			// skew them.
+			veilUvs.push(a, crest - y);
+		}
+	}
+	for (let j = 0; j < veilRows; j++) {
+		for (let i = 0; i < veilCols; i++) {
+			const a = j * (veilCols + 1) + i;
+			const b = a + 1;
+			const c = a + veilCols + 1;
+			const d = c + 1;
+			// Wound to look DOWN the fall at the pond, as the two-triangle veil was: the sheet is lit now, and a
+			// face pointing back upstream takes its light from the wrong side and comes out the colour of slate.
+			if (runsDownstream) veilIndices.push(a, c, b, b, c, d);
+			else veilIndices.push(a, b, c, b, d, c);
+		}
+	}
 	const fall = poly(scene, "streamFall", {
-		positions: [
-			mouth.x + mouth.nx * -veilHalf + along(veilStandoff), mouth.waterY, mouth.z + mouth.nz * -veilHalf + alongZ(veilStandoff),
-			mouth.x + mouth.nx * veilHalf + along(veilStandoff), mouth.waterY, mouth.z + mouth.nz * veilHalf + alongZ(veilStandoff),
-			mouth.x + mouth.nx * -veilHalf * 0.86 + along(veilRun), fallTo,
-			mouth.z + mouth.nz * -veilHalf * 0.86 + alongZ(veilRun),
-			mouth.x + mouth.nx * veilHalf * 0.86 + along(veilRun), fallTo,
-			mouth.z + mouth.nz * veilHalf * 0.86 + alongZ(veilRun),
-		],
-		uvs: [0, 0, 1, 0, 0, -veilLen, 1, -veilLen],
-		// Two triangles for the veil, wound to look DOWN the fall at the pond: the sheet is lit now, and a face
-		// pointing back upstream takes its light from the wrong side and comes out the colour of slate.
-		indices: runsDownstream ? [0, 2, 1, 1, 2, 3] : [0, 1, 2, 1, 3, 2],
+		positions: veilPositions,
+		uvs: veilUvs,
+		indices: veilIndices,
 		mat: mats.streamFall,
 	});
 	fall.isPickable = false;
