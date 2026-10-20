@@ -202,6 +202,9 @@ function boot() {
 	mats.water.emissiveIntensity = dial("wem", mats.water.emissiveIntensity);
 	// How hard the water's own chop bites — the bump level of its ripple map. See `src/materials.js`.
 	mats.water.bumpTexture.level = dial("wrib", mats.water.bumpTexture.level);
+	// The same dial for the watercourse, whose chop is its own and coarser. This is the knob that was turned when
+	// the channel read as a brushed band rather than water — see `src/materials.js`, "THE RIBS".
+	if (mats.streamWater.bumpTexture) mats.streamWater.bumpTexture.level = dial("strib", mats.streamWater.bumpTexture.level);
 
 	// The sky, reflected: every glossy surface in the Villa reads the same sky out of this cube.
 	// One cube render at the start, then it is a still picture: the sky does not move.

@@ -398,6 +398,23 @@ export function buildStream(scene, mats, shadows, { pond = null } = {}) {
 		{ uvAlong: true }
 	);
 	water.isPickable = true;
+	// THE RIBS WERE A GRID, and this is where it is unbent. The water's own UVs are metres — across, and along —
+	// laid down in perfect registers by `strip`, which is exactly right for a canal and wrong for water: the ripple
+	// pattern then repeats at the same distance from bank to bank every so many metres all the way down the course,
+	// and the steep angle-of-view film in `src/water.js` turns each ripple into a bright rib. Seen from the lawn
+	// that was a tarpaulin with ribs in it (`pictures/s85-lawnfar.png`, `tools/cover.js` painting the surface
+	// (73,87,60)). Pushing the tiles about by a slow pair of sines, on both axes and out of step with each other,
+	// leaves a current that wanders instead of a grid that marches. The banks' soil is bent the same way, two
+	// lines above.
+	const waterUv = water.getVerticesData(BABYLON.VertexBuffer.UVKind);
+	const waterPos = water.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+	for (let i = 0; i < waterUv.length / 2; i++) {
+		const wx = waterPos[i * 3];
+		const wz = waterPos[i * 3 + 2];
+		waterUv[i * 2] += 0.4 * Math.sin(wz * 0.53 + 0.9) + 0.22 * Math.sin(wx * 1.1);
+		waterUv[i * 2 + 1] += 0.7 * Math.sin(wx * 0.63) + 0.5 * Math.sin(wz * 0.21 + 2.2);
+	}
+	water.setVerticesData(BABYLON.VertexBuffer.UVKind, waterUv);
 
 	// ---- stones laid along the edge, the pond's way ------------------------------
 	//

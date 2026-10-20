@@ -1438,28 +1438,40 @@ export function createMaterials(scene) {
 	// and nothing else. The channel is dirt now — earth banks, an earth bed, stones at the edge — and water over
 	// mud is not blue. It is the pond's tannin, lighter, because there is a tenth as much of it and it is being
 	// dragged along its bed: a shallow run of muddy water, the colour of what lies under it.
-	mats.streamWater = pbr(scene, "streamWater", { roughness: 0.06, alpha: 0.5, environmentalIntensity: 0.85, pattern: 2.0 });
+	mats.streamWater = pbr(scene, "streamWater", { roughness: 0.08, alpha: 0.5, environmentalIntensity: 0.85, pattern: 2.0 });
 	mats.streamWater.transparencyMode = 2;
 	mats.streamWater.albedoColor = new Color3(0.014, 0.026, 0.018);
 	// The colour of fifteen centimetres of moving water over damp silt: a green with a breath of brown in it,
 	// and stronger than the pond's (0.02,0.045,0.026) because a shallow sheet lets more of the bottom through
 	// and the bottom here is soil at its lightest, not a metre of dark water over a basin.
 	mats.streamWater.emissiveColor = new Color3(0.055, 0.075, 0.045);
-	// What it mirrors: the hedge behind, the palms leaning over from the east, and open lawn — a grey-green, a
-	// little brighter than the pond's leaf shade because the watercourse runs in the open and not under the
-	// palms. The blue is gone from here too: a blue mirror over an olive bed paints a wet band of anything at
-	// all, and the eye is not fooled by that.
-	mats.streamWater.mirrorColor = paint([112, 130, 106]);
+	// What it mirrors: the hedge behind, the palms leaning over from the east, and open lawn. It used to be
+	// (112,130,106), and the pictures say what that bought: seen along its length the whole thirty-four metres of
+	// the channel came out (73,87,60) — a band of pale foil lying on the lawn, which is the same fault the pond
+	// had and under the same law (`mats.pondWater` above): a bright mirror spread over a shallow sheet is a sheet
+	// of milk. A hand darker than the pond's own (98,122,100), because the watercourse is a tenth as deep and
+	// half of what is seen of it is the bed through the film.
+	mats.streamWater.mirrorColor = paint([46, 58, 42]);
 	// Its OWN ripple pattern, and it has to be its own: `animate` slides this texture's offsets downstream at
 	// eight centimetres a second, and sharing it with the pond would set the pond's surface running too.
+	//
+	// THE RIBS, AND WHERE THEY CAME FROM. The channel's UVs are metres — `u` across the water, `v` the running
+	// distance down the course — and this texture was laid at one repeat to the metre, which is a grid: a ripple
+	// every metre all the way down thirty-four metres of stream, lined up from bank to bank. Photographed from
+	// the lawn (`pictures/s85-lawnfar.png`) the surface came out (73,87,60) and ribbed like a tarpaulin, and the
+	// ribs were this line. So the pattern is stretched a long way with the flow and kept short across it — a
+	// current is long and thin, not a chessboard — and `src/stream.js` bends the tiles off their lines the same
+	// way the banks' soil is bent, so there is no grid left to see.
 	mats.streamWater.bumpTexture = texture(scene, rippleCanvas(256, { strength: 11, seed: 671 }), {
 		name: "streamRipple",
 		scale: 1,
 		gamma: false,
 	});
+	mats.streamWater.bumpTexture.uScale = 1 / 0.55;
+	mats.streamWater.bumpTexture.vScale = 1 / 2.3;
 	// More chop than the pond's 0.2 and less than the pool's 0.7: a shallow channel is rougher than a still
 	// basin, and a stream this narrow never gets the long swell a wide pool does.
-	mats.streamWater.bumpTexture.level = 0.34;
+	mats.streamWater.bumpTexture.level = 0.16;
 	// The veil at the mouth: the sheet of water going over the lip into the pond.
 	//
 	// IT IS WATER AND NOT A GLOW. The first version was an additive white sheet, self-lit, with the light straight
